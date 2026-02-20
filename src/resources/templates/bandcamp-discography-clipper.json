@@ -1,0 +1,10 @@
+{
+		"schemaVersion": "0.1.0",
+		"name": "Bandcamp Discography",
+		"behavior": "create",
+		"noteContentFormat": "{% set baseUrl = url|slice:0,-1 %}{% set albumUrls = selector:ol.music-grid li.music-grid-item a?href %}{% set albumLisHtml = selectorHtml:ol.music-grid li.music-grid-item %}- [{{meta:property:og:title}}]({{url}})\n{% for liHtml in albumLisHtml %}{% set albumName = liHtml|remove_html:\"img\"|markdown|strip_md|trim %}- [{{albumName}}]({{baseUrl}}{{albumUrls[loop.index0]}})\n{% endfor %}",
+		"properties": [],
+		"triggers": [],
+		"noteNameFormat": "{{meta:property:og:title}} - Discography",
+		"path": ""
+}
