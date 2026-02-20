@@ -13,13 +13,13 @@ import { test, runHarTest, getExpectedMarkdown, expectEqualsIgnoringNewlines } f
 
 test('should clip page correctly', async ({ context, extensionId }) => {
   const actual = await runHarTest(context, extensionId, {
-    harPath: 'www.example.com.har',
+    harPath: 'category/example.har',
     templatePath: 'example-clipper.json',
-    expectedPath: 'Example Page.md',
+    expectedPath: 'category/Example Page.md',
     url: 'https://www.example.com/page',
   });
 
-  const expected = getExpectedMarkdown('Example Page.md', 'https://www.example.com/page');
+  const expected = getExpectedMarkdown('category/Example Page.md', 'https://www.example.com/page');
   expectEqualsIgnoringNewlines(actual, expected);
 });
 ```
@@ -33,7 +33,6 @@ The helper handles:
 - Reading clipboard content
 - Closing the page
 
-All paths are relative to `test resources/` (HAR and expected) or `test resources/templates/` (template JSON).
+All paths are relative to `src/resources/` (HAR and expected) or `src/resources/templates/` (template JSON).
 
 `getExpectedMarkdown()` replaces `{{TEST_URL}}` and `{{DATE}}` placeholders automatically.
-

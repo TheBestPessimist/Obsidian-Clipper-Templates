@@ -7,32 +7,34 @@ related:
   - "[[gotchas/Date Must Be Fixed for Reproducible Tests]]"
   - "[[gotchas/URL Affects Domain and Link Resolution]]"
   - "[[gotchas/Expected Files Must End With One Newline]]"
+  - "[[patterns/Reusable HAR Test Helper]]"
+  - "[[guide/Playwright Tests With HAR Files]]"
 ---
 
-**Save the HTML fixture** — Open the page in your browser and save the complete HTML to `test resources/<category>/<page-name>.html`. For example: `test resources/imdb/Andromeda (TV Series 2000–2005) - IMDb.html`.
+**Record a HAR file** — In Chrome DevTools, open Network tab, browse the page fully, then right-click and "Save all as HAR with content". Save to `src/resources/<category>/<domain>.har`. For example: `src/resources/imdb/imdb - Another Earth.har`.
 
-**Export your template** — In [[Obsidian Clipper]] settings, export the template to `test resources/templates/<name>-clipper.json`.
+**Export your template** — In [[Obsidian Clipper]] settings, export the template to `src/resources/templates/<name>-clipper.json`.
 
-**Create the expected output** — Clip the page with your template normally, copy the output from the clipper preview, and save it to `test resources/<expected-name>.md`. Make sure the file ends with exactly one newline.
+**Create the expected output** — Clip the page with your template normally, copy the output from the clipper preview, and save it to `src/resources/<category>/<expected-name>.md`. Use `{{TEST_URL}}` and `{{DATE}}` placeholders for dynamic values. Make sure the file ends with exactly one newline.
 
-**Write the test** — Add to an existing test file or create a new one in `test-harness/src/`:
+**Write the test** — Use the `runHarTest()` helper in `src/test-playwright/tests/`:
 
 ```typescript
-it('should render My Page correctly', async () => {
-  const html = readFixture('category/page.html');
-  const template: ClipperTemplate = JSON.parse(readFixture('templates/my-template-clipper.json'));
-  const expected = readFixture('Expected Output.md');
+import { test, runHarTest, getExpectedMarkdown, expectEqualsIgnoringNewlines } from '../fixtures';
 
-  const actual = await evaluateTemplate(html, template, {
-    url: 'https://original-page-url.com/path',
-    date: new Date('2026-02-20'),
+test('should clip page correctly', async ({ context, extensionId }) => {
+  const actual = await runHarTest(context, extensionId, {
+    harPath: 'category/example.har',
+    templatePath: 'example-clipper.json',
+    expectedPath: 'category/Expected Output.md',
+    url: 'https://original-url.com/page',
   });
 
-  expect(actual).toBe(expected);
+  const expected = getExpectedMarkdown('category/Expected Output.md', 'https://original-url.com/page');
+  expectEqualsIgnoringNewlines(actual, expected);
 });
 ```
 
-**Run** — `cd test-harness && npm test`
+**Run** — `npm test` from project root.
 
-Always use a fixed date if your template uses `{{date}}`. Always use the real URL that matches how the page was originally clipped.
-
+Always use the real URL that matches how the page was originally clipped. See [[guide/Playwright Tests With HAR Files]] for details.

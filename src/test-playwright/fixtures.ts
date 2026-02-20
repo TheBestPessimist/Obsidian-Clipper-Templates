@@ -21,7 +21,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const EXTENSION_PATH = path.join(__dirname, '../../Other Sources/obsidian-clipper/dist');
 
 // Path to test resources
-const TEST_RESOURCES_PATH = path.join(__dirname, '../../test resources');
+const TEST_RESOURCES_PATH = path.join(__dirname, '../resources');
 
 export interface ClipperFixtures {
   context: BrowserContext;

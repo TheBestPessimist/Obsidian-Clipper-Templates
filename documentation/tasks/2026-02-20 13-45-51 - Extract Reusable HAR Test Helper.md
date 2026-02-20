@@ -19,12 +19,13 @@ expectEqualsIgnoringNewlines(actual, expected);
 **What worked:**
 - Extracted `runHarTest()`, `getExpectedMarkdown()`, and `expectEqualsIgnoringNewlines()` to `fixtures.ts`
 - Created `HarTestConfig` interface with `harPath`, `templatePath`, `expectedPath`, `url`
-- All paths are relative to `test resources/` — no need for `path.join()` boilerplate in tests
+- All paths are relative to `src/resources/` — no need for `path.join()` boilerplate in tests
 - Refactored existing test and added new test — both pass
+
+**Note:** Resource paths were later reorganized. See [[2026-02-20 14-18 - Reorganize Test Resources and Root npm test]].
 
 **Files changed:**
 - `src/test-playwright/fixtures.ts` — added helper functions
 - `src/test-playwright/tests/imdb-har.spec.ts` — refactored to use helpers, added second test
 
 **Result:** Test file reduced from 112 lines to 47 lines. Adding a new HAR test is now ~10 lines of code.
-

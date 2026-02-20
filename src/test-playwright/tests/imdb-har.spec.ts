@@ -20,27 +20,15 @@ import { test, runHarTest, getExpectedMarkdown, expectEqualsIgnoringNewlines } f
 const IMDB_URL = 'https://www.imdb.com/title/tt1549572/';
 
 test.describe('IMDB Movie Template (HAR)', () => {
-  test('should clip Another Earth (HAR 1)', async ({ context, extensionId }) => {
+  test('should clip Another Earth', async ({ context, extensionId }) => {
     const actual = await runHarTest(context, extensionId, {
-      harPath: '2www.imdb.com.har',
+      harPath: 'imdb/imdb - Another Earth.har',
       templatePath: 'imdb-movie-clipper.json',
-      expectedPath: 'Another Earth (2011).md',
+      expectedPath: 'imdb/Another Earth (2011).md',
       url: IMDB_URL,
     });
 
-    const expected = getExpectedMarkdown('Another Earth (2011).md', IMDB_URL);
-    expectEqualsIgnoringNewlines(actual, expected);
-  });
-
-  test('should clip Another Earth (HAR 2)', async ({ context, extensionId }) => {
-    const actual = await runHarTest(context, extensionId, {
-      harPath: 'imdb - Another Earth.har',
-      templatePath: 'imdb-movie-clipper.json',
-      expectedPath: 'Another Earth (2011).md',
-      url: IMDB_URL,
-    });
-
-    const expected = getExpectedMarkdown('Another Earth (2011).md', IMDB_URL);
+    const expected = getExpectedMarkdown('imdb/Another Earth (2011).md', IMDB_URL);
     expectEqualsIgnoringNewlines(actual, expected);
   });
 });

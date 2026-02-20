@@ -1,0 +1,13 @@
+{
+  "name": "obsidian-clipper-templates",
+  "version": "1.0.0",
+  "description": "Obsidian Clipper templates with E2E tests",
+  "private": true,
+  "scripts": {
+    "test": "npm test --prefix src/test-playwright",
+    "test:headed": "npm run test:headed --prefix src/test-playwright",
+    "test:debug": "npm run test:debug --prefix src/test-playwright",
+    "test:ui": "npm run test:ui --prefix src/test-playwright"
+  }
+}
+
