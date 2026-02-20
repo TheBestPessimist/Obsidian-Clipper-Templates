@@ -1,14 +1,14 @@
-- [byron]({{TEST_URL}})
-- [Totul e sub control](https://byron.bandcamp.com/track/totul-e-sub-control)
-- [Efemeride](https://byron.bandcamp.com/album/efemeride)
-- [Cine sunt eu să mă opun?](https://byron.bandcamp.com/track/cine-sunt-eu-s-m-opun)
-- [Cadou](https://byron.bandcamp.com/track/cadou)
-- [Prea târziu](https://byron.bandcamp.com/track/prea-t-rziu)
-- [Monstrul de sub pat](https://byron.bandcamp.com/track/monstrul-de-sub-pat)
-- [Memento (single)](https://byron.bandcamp.com/album/memento-single)
-- [30 Seconds of Fame](https://byron.bandcamp.com/album/30-seconds-of-fame)
-- [30 de secunde de faimă](https://byron.bandcamp.com/album/30-de-secunde-de-faim)
-- [Road Trip (single)](https://byron.bandcamp.com/album/road-trip-single)
-- [Forbidden Drama](https://byron.bandcamp.com/album/forbidden-drama)
-- [A Kind of Alchemy](https://byron.bandcamp.com/album/a-kind-of-alchemy)
-- [Perfect](https://byron.bandcamp.com/album/perfect)
+- [ ] ttt [byron](https://byron.bandcamp.com/) ➕ 2026-02-20
+- [ ] ttt [Totul e sub control](https://byron.bandcamp.com/track/totul-e-sub-control) ➕ 2026-02-20
+- [ ] ttt [Efemeride](https://byron.bandcamp.com/album/efemeride) ➕ 2026-02-20
+- [ ] ttt [Cine sunt eu să mă opun?](https://byron.bandcamp.com/track/cine-sunt-eu-s-m-opun) ➕ 2026-02-20
+- [ ] ttt [Cadou](https://byron.bandcamp.com/track/cadou) ➕ 2026-02-20
+- [ ] ttt [Prea târziu](https://byron.bandcamp.com/track/prea-t-rziu) ➕ 2026-02-20
+- [ ] ttt [Monstrul de sub pat](https://byron.bandcamp.com/track/monstrul-de-sub-pat) ➕ 2026-02-20
+- [ ] ttt [Memento (single)](https://byron.bandcamp.com/album/memento-single) ➕ 2026-02-20
+- [ ] ttt [30 Seconds of Fame](https://byron.bandcamp.com/album/30-seconds-of-fame) ➕ 2026-02-20
+- [ ] ttt [30 de secunde de faimă](https://byron.bandcamp.com/album/30-de-secunde-de-faim) ➕ 2026-02-20
+- [ ] ttt [Road Trip (single)](https://byron.bandcamp.com/album/road-trip-single) ➕ 2026-02-20
+- [ ] ttt [Forbidden Drama](https://byron.bandcamp.com/album/forbidden-drama) ➕ 2026-02-20
+- [ ] ttt [A Kind of Alchemy](https://byron.bandcamp.com/album/a-kind-of-alchemy) ➕ 2026-02-20
+- [ ] ttt [Perfect](https://byron.bandcamp.com/album/perfect) ➕ 2026-02-20

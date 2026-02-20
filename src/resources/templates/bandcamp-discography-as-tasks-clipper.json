@@ -1,0 +1,12 @@
+{
+	"schemaVersion": "0.1.0",
+	"name": "Bandcamp Discography as Tasks",
+	"behavior": "create",
+	"noteContentFormat": "{% set baseUrl = url|slice:0,-1 %}\n{% set albumUrls = selector:ol.music-grid li.music-grid-item a?href %}\n{% set albumLisHtml = selectorHtml:ol.music-grid li.music-grid-item %}\n- [ ] ttt [{{meta:property:og:title}}]({{url}}) ➕ {{date|date:\"YYYY-MM-DD\"}}\n{% for liHtml in albumLisHtml %}\n{% set albumName = liHtml|remove_html:\"img\"|markdown|strip_md|trim %}\n- [ ] ttt [{{albumName}}]({{baseUrl}}{{albumUrls[loop.index0]}}) ➕ {{date|date:\"YYYY-MM-DD\"}}\n{% endfor %}",
+	"properties": [],
+	"triggers": [
+		"/.*.bandcamp.com/"
+	],
+	"noteNameFormat": "{{meta:property:og:title}} - Discography",
+	"path": ""
+}
