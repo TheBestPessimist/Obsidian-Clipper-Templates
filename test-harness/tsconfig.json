@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist",
+    "sourceMap": true,
+    "declaration": true,
+    "lib": ["ES2022", "DOM"],
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "clipper/*": ["../Other Sources/obsidian-clipper/src/*"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "../Other Sources/obsidian-clipper/src/**/*"
+  ],
+  "exclude": ["node_modules", "dist"]
+}
+
