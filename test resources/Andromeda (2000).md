@@ -16,7 +16,7 @@ actors:
   - "[[Lisa Ryder]]"
   - "[[Gordon Michael Woolvett]]"
 Links:
-  - "https://www.imdb.com/title/tt0213327/"
+  - "{{TEST_URL}}"
 genre:
   - "[[Action]]"
   - "[[Adventure]]"
@@ -24,7 +24,7 @@ genre:
 rating: "8"
 image: "https://m.media-amazon.com/images/M/MV5BYmVhZmZhMDktODg1Ny00ZGNkLWFjYjItNTY5ZWFmM2RjNTYyXkEyXkFqcGc@._V1_.jpg"
 description:
-created: 2026-02-20
+created: {{DATE}}
 ---
 
 > [!NOTE] synopsis
