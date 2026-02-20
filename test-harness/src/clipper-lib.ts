@@ -13,6 +13,9 @@ import dayjs from 'dayjs';
 // Import actual clipper modules - the real implementation
 import { render, createSelectorResolver, RenderContext } from 'clipper/utils/renderer';
 import { applyFilterDirect } from 'clipper/utils/filters';
+import { generateFrontmatter } from 'clipper/utils/obsidian-note-creator';
+import { generalSettings } from 'clipper/utils/storage-utils';
+import { Property } from 'clipper/types/types';
 
 // Re-export types for convenience
 export { RenderContext } from 'clipper/utils/renderer';
@@ -318,4 +321,49 @@ export async function renderClipperTemplate(
   const content = await renderTemplate(template.noteContentFormat, pageContent, url, renderOpts);
 
   return { noteName, properties: renderedProperties, content };
+}
+
+/**
+ * The main function for testing - evaluates a template against HTML and returns full markdown.
+ *
+ * Usage:
+ *   const html = readFileSync('fixture.html', 'utf-8');
+ *   const template = JSON.parse(readFileSync('template.json', 'utf-8'));
+ *   const expected = readFileSync('expected.md', 'utf-8');
+ *   const actual = await evaluateTemplate(html, template, { url: 'https://example.com' });
+ *   expect(actual).toBe(expected);
+ */
+export async function evaluateTemplate(
+  html: string,
+  template: ClipperTemplate,
+  options: { url: string; date?: Date } = { url: 'https://example.com' }
+): Promise<string> {
+  const pageContent = extractPageContent(html, options.url);
+  const result = await renderClipperTemplate(template, pageContent, options.url, { date: options.date });
+
+  // Set up generalSettings.propertyTypes from the template's property types
+  // This is what the real clipper uses to determine how to format each property
+  generalSettings.propertyTypes = template.properties.map(p => ({
+    name: p.name,
+    type: p.type || 'text',
+  }));
+
+  // Convert to Property[] format expected by generateFrontmatter
+  const properties: Property[] = result.properties.map(p => ({
+    name: p.name,
+    value: p.value,
+  }));
+
+  // Use the real clipper's generateFrontmatter
+  const frontmatter = await generateFrontmatter(properties);
+
+  // Join frontmatter and content
+  // Content may start with \n (from template), so just add one \n after ---
+  const content = result.content.startsWith('\n')
+    ? result.content.slice(1)  // Remove leading newline if present
+    : result.content;
+
+  const markdown = frontmatter + '\n' + content + '\n';
+
+  return markdown;
 }
