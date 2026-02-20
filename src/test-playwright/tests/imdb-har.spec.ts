@@ -22,7 +22,7 @@ const IMDB_URL = 'https://www.imdb.com/title/tt1549572/';
 test.describe('IMDB Movie Template (HAR)', () => {
   test('should clip Another Earth', async ({ context, extensionId }) => {
     const actual = await runHarTest(context, extensionId, {
-      harPath: 'imdb/imdb - Another Earth.har',
+      harPath: 'imdb/Another Earth.har',
       templatePath: 'imdb-movie-clipper.json',
       expectedPath: 'imdb/Another Earth (2011).md',
       url: IMDB_URL,

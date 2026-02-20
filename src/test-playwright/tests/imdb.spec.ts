@@ -18,7 +18,7 @@ const IMDB_URL = 'https://www.imdb.com/title/tt0213327/';
 test.describe('IMDB Series Template (HAR)', () => {
   test('should clip Andromeda correctly', async ({ context, extensionId }) => {
     const actual = await runHarTest(context, extensionId, {
-      harPath: 'imdb/imdb Andromeda.har',
+      harPath: 'imdb/Andromeda.har',
       templatePath: 'imdb-series-clipper.json',
       expectedPath: 'imdb/Andromeda (2000).md',
       url: IMDB_URL,
