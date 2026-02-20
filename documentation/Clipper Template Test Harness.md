@@ -1,13 +1,10 @@
 ---
 created: 2026-02-20
-topics:
-  - "[[Obsidian Clipper]]"
-  - "[[Testing]]"
 related:
-  - "[[Adding New Template Tests]]"
-  - "[[Import Real Clipper Modules Do Not Reimplement]]"
-  - "[[Why Reimplementing Clipper Functions Breaks Tests]]"
-  - "[[Clipper generateFrontmatter Uses generalSettings Not Property Type]]"
+  - "[[Obsidian Clipper]]"
+  - "[[guide/Adding New Template Tests]]"
+  - "[[decisions/Import Real Clipper Modules Do Not Reimplement]]"
+  - "[[patterns/Single Assertion Against Expected File]]"
 ---
 
 The goal was to make [[Obsidian Clipper]] template development faster. Developing templates manually requires opening a browser, clicking the extension, checking output, and lots of context switching. This is slow and painful.
@@ -29,5 +26,5 @@ expect(actual).toBe(expected);
 
 The test harness lives in `test-harness/` and fixtures live in `test resources/`. Run tests with `cd test-harness && npm test`.
 
-The key principle is to import and use the real clipper code, not reimplement it. See [[Import Real Clipper Modules Do Not Reimplement]] for why this matters so much.
+The key principle is [[decisions/Import Real Clipper Modules Do Not Reimplement]]. Everything else flows from that.
 

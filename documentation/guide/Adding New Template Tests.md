@@ -1,21 +1,19 @@
 ---
 created: 2026-02-20
-topics:
-  - "[[Obsidian Clipper]]"
-  - "[[Testing]]"
-  - "[[How-To]]"
 related:
+  - "[[guide]]"
   - "[[Clipper Template Test Harness]]"
-  - "[[Test Fixture Requirements]]"
+  - "[[patterns/Single Assertion Against Expected File]]"
+  - "[[gotchas/Date Must Be Fixed for Reproducible Tests]]"
+  - "[[gotchas/URL Affects Domain and Link Resolution]]"
+  - "[[gotchas/Expected Files Must End With One Newline]]"
 ---
-
-To add a new test case:
 
 **Save the HTML fixture** — Open the page in your browser and save the complete HTML to `test resources/<category>/<page-name>.html`. For example: `test resources/imdb/Andromeda (TV Series 2000–2005) - IMDb.html`.
 
 **Export your template** — In [[Obsidian Clipper]] settings, export the template to `test resources/templates/<name>-clipper.json`.
 
-**Create the expected output** — Clip the page with your template normally, copy the output from the clipper preview, and save it to `test resources/<expected-name>.md`.
+**Create the expected output** — Clip the page with your template normally, copy the output from the clipper preview, and save it to `test resources/<expected-name>.md`. Make sure the file ends with exactly one newline.
 
 **Write the test** — Add to an existing test file or create a new one in `test-harness/src/`:
 

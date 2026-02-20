@@ -1,11 +1,10 @@
 ---
 created: 2026-02-20
-topics:
-  - "[[JSDOM]]"
-  - "[[Obsidian Clipper]]"
 related:
+  - "[[decisions]]"
   - "[[Clipper Template Test Harness]]"
-  - "[[How Clipper Resolves Template Variables]]"
+  - "[[JSDOM]]"
+  - "[[gotchas/JSDOM Version Must Be 24 Not 26]]"
 ---
 
 In the browser, clipper resolves `{{selector:CSS_SELECTOR}}` variables by sending messages to a content script that queries the DOM. This uses `browser.tabs.sendMessage`.
@@ -14,7 +13,6 @@ In tests, there's no browser. The clipper's `createSelectorResolver()` function 
 
 ```typescript
 const selectorResolver = createSelectorResolver((message) => {
-  // Query JSDOM instead of sending browser message
   const element = document.querySelector(message.selector);
   return element?.textContent || '';
 });

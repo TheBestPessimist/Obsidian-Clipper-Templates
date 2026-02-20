@@ -1,11 +1,10 @@
 ---
 created: 2026-02-20
-topics:
-  - "[[Vitest]]"
-  - "[[Gotchas]]"
 related:
-  - "[[Vitest Config for Clipper Test Harness]]"
+  - "[[gotchas]]"
   - "[[Clipper Template Test Harness]]"
+  - "[[patterns/Alias Clipper Source in Vitest Config]]"
+  - "[[Vitest]]"
 ---
 
 When clipper code imports dependencies like `dayjs`, Vitest looks in the test harness's `node_modules` by default. If those dependencies aren't installed there, imports fail with "Failed to resolve import".

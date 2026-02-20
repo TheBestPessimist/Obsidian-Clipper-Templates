@@ -1,8 +1,7 @@
 ---
 created: 2026-02-20
-topics:
-  - "[[Obsidian Clipper]]"
 related:
+  - "[[Obsidian Clipper]]"
   - "[[Clipper Source Code Key Files]]"
   - "[[Clipper Template Test Harness]]"
 ---

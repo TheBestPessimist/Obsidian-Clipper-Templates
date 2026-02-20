@@ -1,11 +1,9 @@
 ---
 created: 2026-02-20
-topics:
-  - "[[Obsidian Clipper]]"
-  - "[[Gotchas]]"
 related:
+  - "[[gotchas]]"
   - "[[Clipper Template Test Harness]]"
-  - "[[Import Real Clipper Modules Do Not Reimplement]]"
+  - "[[decisions/Import Real Clipper Modules Do Not Reimplement]]"
   - "[[Clipper Source Code Key Files]]"
 ---
 
@@ -17,7 +15,7 @@ Instead, `generateFrontmatter` in `obsidian-note-creator.ts` looks up the type f
 const propertyType = generalSettings.propertyTypes.find(p => p.name === property.name)?.type || 'text';
 ```
 
-This means before calling `generateFrontmatter`, you must populate `generalSettings.propertyTypes` with the property types from your template:
+Before calling `generateFrontmatter`, populate `generalSettings.propertyTypes` with the property types from your template:
 
 ```typescript
 import { generalSettings } from 'clipper/utils/storage-utils';

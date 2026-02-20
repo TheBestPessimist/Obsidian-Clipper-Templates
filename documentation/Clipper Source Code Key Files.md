@@ -1,10 +1,9 @@
 ---
 created: 2026-02-20
-topics:
-  - "[[Obsidian Clipper]]"
 related:
+  - "[[Obsidian Clipper]]"
   - "[[Clipper Template Test Harness]]"
-  - "[[Clipper generateFrontmatter Uses generalSettings Not Property Type]]"
+  - "[[gotchas/Clipper generateFrontmatter Uses generalSettings Not Property Type]]"
   - "[[How Clipper Resolves Template Variables]]"
 ---
 
@@ -12,7 +11,7 @@ related:
 
 `src/utils/filters.ts` — Filter implementations for `|slice`, `|wikilink`, `|split`, `|join`, and others. The `applyFilters()` function chains them.
 
-`src/utils/obsidian-note-creator.ts` — The `generateFrontmatter()` function produces YAML from properties. Uses [[Clipper generateFrontmatter Uses generalSettings Not Property Type|generalSettings.propertyTypes]] for formatting decisions.
+`src/utils/obsidian-note-creator.ts` — The `generateFrontmatter()` function produces YAML from properties. Uses `generalSettings.propertyTypes` for formatting decisions.
 
 `src/utils/storage-utils.ts` — Exports the `generalSettings` singleton containing `propertyTypes`, vault settings, and other configuration.
 
