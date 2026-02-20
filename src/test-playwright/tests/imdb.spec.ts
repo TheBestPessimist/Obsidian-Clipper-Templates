@@ -14,20 +14,14 @@
  * but cannot easily interact with browser extension popups.
  */
 
-import { test, expect, readExpected, normalizeMarkdown, readTemplate, loadTemplateIntoExtension } from '../fixtures';
+import { test, expect, readExpected, normalizeMarkdown, readTemplateJson, importTemplateViaUI } from '../fixtures';
 
 test.describe('IMDB Series Template', () => {
   test('should clip Andromeda correctly', async ({ context, extensionId, fixtureServer }) => {
-    // 0. Load the IMDB template into extension storage BEFORE navigating
-    const imdbTemplate = readTemplate('imdb-series-clipper.json');
-
-    // Get service worker to inject template
-    let serviceWorker = context.serviceWorkers()[0];
-    if (!serviceWorker) {
-      serviceWorker = await context.waitForEvent('serviceworker');
-    }
-
-    await loadTemplateIntoExtension(serviceWorker, imdbTemplate);
+    // 0. Import the IMDB template using the extension's actual import UI
+    // This properly sets up property types via the extension's own logic
+    const templateJson = readTemplateJson('imdb-series-clipper.json');
+    await importTemplateViaUI(context, extensionId, templateJson);
 
     // 1. Navigate to the HTML fixture in a new page
     const fixturePage = await context.newPage();
@@ -38,7 +32,12 @@ test.describe('IMDB Series Template', () => {
     // 2. Wait for content script to be ready
     await fixturePage.waitForTimeout(1000);
 
-    // 3. Trigger embedded mode via the service worker
+    // 3. Get service worker and trigger embedded mode
+    let serviceWorker = context.serviceWorkers()[0];
+    if (!serviceWorker) {
+      serviceWorker = await context.waitForEvent('serviceworker');
+    }
+
     await serviceWorker.evaluate(async () => {
       const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
       if (tabs[0]?.id) {

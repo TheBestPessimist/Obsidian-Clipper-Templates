@@ -9,12 +9,11 @@
  * - Loading templates into extension storage
  */
 
-import { test as base, chromium, type BrowserContext, type Page, type Worker } from '@playwright/test';
+import { test as base, chromium, type BrowserContext } from '@playwright/test';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import http from 'http';
-import LZString from 'lz-string';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -124,53 +123,60 @@ export function normalizeMarkdown(md: string): string {
 
 /**
  * Read a template JSON file from test resources/templates.
+ * Returns the raw JSON string for pasting into import UI.
  */
-export function readTemplate(relativePath: string): Record<string, unknown> {
-  const content = fs.readFileSync(path.join(TEST_RESOURCES_PATH, 'templates', relativePath), 'utf-8');
-  return JSON.parse(content);
+export function readTemplateJson(relativePath: string): string {
+  return fs.readFileSync(path.join(TEST_RESOURCES_PATH, 'templates', relativePath), 'utf-8');
 }
 
 /**
- * Load a template into the extension's storage via the service worker.
- * This mimics what the extension does when importing a template.
- * Also stores property types so frontmatter generation uses correct types.
+ * Import a template using the extension's actual import UI.
+ * This properly sets up property types via the extension's own logic.
+ *
+ * @param context - Browser context
+ * @param extensionId - Extension ID
+ * @param templateJson - Template JSON string to import
  */
-export async function loadTemplateIntoExtension(serviceWorker: Worker, template: Record<string, unknown>): Promise<void> {
-  // Generate a unique ID for the template
-  const templateId = Date.now().toString() + Math.random().toString(36).slice(2, 9);
-  const templateWithId = { ...template, id: templateId };
+export async function importTemplateViaUI(
+  context: BrowserContext,
+  extensionId: string,
+  templateJson: string
+): Promise<void> {
+  // Open the extension's settings page
+  const settingsPage = await context.newPage();
+  await settingsPage.goto(`chrome-extension://${extensionId}/settings.html`);
+  await settingsPage.waitForLoadState('domcontentloaded');
 
-  // Extract property types from template properties
-  const properties = template.properties as Array<{ name: string; type?: string }> | undefined;
-  const propertyTypes = properties?.map(p => ({
-    name: p.name,
-    type: p.type || 'text'
-  })) || [];
+  // Wait for settings to initialize
+  await settingsPage.waitForTimeout(1000);
 
-  // Compress the template (same as extension does)
-  const compressedData = LZString.compressToUTF16(JSON.stringify(templateWithId));
+  // Click "New template" button to enter the templates section
+  const newTemplateBtn = settingsPage.locator('#new-template-btn');
+  await newTemplateBtn.click();
+  await settingsPage.waitForTimeout(500);
 
-  // Split into chunks (extension uses 8000 char chunks)
-  const CHUNK_SIZE = 8000;
-  const chunks: string[] = [];
-  for (let i = 0; i < compressedData.length; i += CHUNK_SIZE) {
-    chunks.push(compressedData.slice(i, i + CHUNK_SIZE));
-  }
+  // Click the Import button in the template section header (the button, not menu item)
+  const importBtn = settingsPage.locator('.settings-section-header button.import-template-btn');
+  await importBtn.click();
 
-  // Store in extension's sync storage
-  await serviceWorker.evaluate(async ({ templateId, chunks, propertyTypes }) => {
-    // Get existing template list
-    const data = await chrome.storage.sync.get(['template_list']);
-    const templateList = (data.template_list as string[]) || [];
+  // Wait for import modal to appear
+  const importModal = settingsPage.locator('#import-modal');
+  await importModal.waitFor({ state: 'visible', timeout: 5000 });
 
-    // Add new template ID to list (at the beginning so it takes priority)
-    templateList.unshift(templateId);
+  // Paste template JSON into textarea
+  const textarea = importModal.locator('.import-json-textarea');
+  await textarea.fill(templateJson);
 
-    // Save template, template list, and property types
-    await chrome.storage.sync.set({
-      [`template_${templateId}`]: chunks,
-      template_list: templateList,
-      property_types: propertyTypes,
-    });
-  }, { templateId, chunks, propertyTypes });
+  // Click confirm/import button
+  const confirmBtn = importModal.locator('.import-confirm-btn');
+  await confirmBtn.click();
+
+  // Wait for import to complete (modal should close)
+  await importModal.waitFor({ state: 'hidden', timeout: 5000 });
+
+  // Give it time to save
+  await settingsPage.waitForTimeout(500);
+
+  // Close settings page
+  await settingsPage.close();
 }
