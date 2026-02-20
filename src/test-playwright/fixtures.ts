@@ -180,3 +180,132 @@ export async function importTemplateViaUI(
   // Close settings page
   await settingsPage.close();
 }
+
+/**
+ * Configuration for a HAR-based test.
+ */
+export interface HarTestConfig {
+  /** Path to HAR file (relative to test resources) */
+  harPath: string;
+  /** Path to template JSON file (relative to test resources/templates) */
+  templatePath: string;
+  /** Path to expected markdown file (relative to test resources) */
+  expectedPath: string;
+  /** The URL to navigate to (will be served from HAR) */
+  url: string;
+}
+
+/**
+ * Run a HAR-based clipper test.
+ *
+ * Usage:
+ *   const actual = await runHarTest(context, extensionId, {
+ *     harPath: 'www.example.com.har',
+ *     templatePath: 'example-clipper.json',
+ *     expectedPath: 'Example Page.md',
+ *     url: 'https://www.example.com/page',
+ *   });
+ *   expectEqualsIgnoringNewlines(actual, expected);
+ *
+ * @returns The clipboard content after clipping
+ */
+export async function runHarTest(
+  context: BrowserContext,
+  extensionId: string,
+  config: HarTestConfig
+): Promise<string> {
+  const harFullPath = path.join(TEST_RESOURCES_PATH, config.harPath);
+  const templateJson = readTemplateJson(config.templatePath);
+
+  // Import the template
+  await importTemplateViaUI(context, extensionId, templateJson);
+
+  // Create page and set up HAR routing
+  const page = await context.newPage();
+  await page.routeFromHAR(harFullPath, {
+    notFound: 'fallback',
+  });
+
+  // Navigate to the URL (served from HAR)
+  await page.goto(config.url);
+  await page.waitForLoadState('domcontentloaded');
+
+  // Wait for content script to be ready
+  await page.waitForTimeout(1000);
+
+  // Get service worker and trigger embedded mode
+  let serviceWorker = context.serviceWorkers()[0];
+  if (!serviceWorker) {
+    serviceWorker = await context.waitForEvent('serviceworker');
+  }
+
+  await serviceWorker.evaluate(async () => {
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tabs[0]?.id) {
+      await chrome.tabs.sendMessage(tabs[0].id, { action: 'toggle-iframe' });
+    }
+  });
+
+  // Wait for the iframe to appear
+  await page.waitForSelector('#obsidian-clipper-container', { timeout: 10000 });
+  const clipperFrame = page.frameLocator('#obsidian-clipper-iframe');
+
+  // Wait for clipper UI to load
+  await clipperFrame.locator('#clip-btn').waitFor({ timeout: 10000 });
+  await page.waitForTimeout(3000);
+
+  // Check for errors
+  const errorMessage = clipperFrame.locator('.error-message:visible');
+  if (await errorMessage.count() > 0) {
+    const errorText = await errorMessage.textContent();
+    console.log('Clipper error:', errorText);
+  }
+
+  // Click "Copy to clipboard"
+  const moreBtn = clipperFrame.locator('#more-btn');
+  await moreBtn.click();
+  await clipperFrame.locator('.secondary-actions').waitFor({ timeout: 2000 });
+  const copyOption = clipperFrame.locator('.secondary-actions').getByText('Copy', { exact: false });
+  await copyOption.click();
+
+  // Wait for clipboard operation
+  await page.waitForTimeout(500);
+
+  // Read clipboard content
+  const clipboardContent = await page.evaluate(async () => {
+    return await navigator.clipboard.readText();
+  });
+
+  // Cleanup
+  await page.close();
+
+  return clipboardContent;
+}
+
+/**
+ * Get expected markdown content with placeholders replaced.
+ *
+ * @param expectedPath - Path to expected file (relative to test resources)
+ * @param url - URL to replace {{TEST_URL}} placeholder
+ * @param date - Date to replace {{DATE}} placeholder (defaults to today)
+ */
+export function getExpectedMarkdown(
+  expectedPath: string,
+  url: string,
+  date?: Date
+): string {
+  const dateStr = (date ?? new Date()).toISOString().split('T')[0];
+  return readExpected(expectedPath)
+    .replace('{{TEST_URL}}', url)
+    .replace('{{DATE}}', dateStr);
+}
+
+/**
+ * Assert that two markdown strings are equal, ignoring whitespace differences.
+ */
+export function expectEqualsIgnoringNewlines(
+  actual: string,
+  expected: string
+): void {
+  expect(normalizeMarkdown(actual)).toBe(normalizeMarkdown(expected));
+}
