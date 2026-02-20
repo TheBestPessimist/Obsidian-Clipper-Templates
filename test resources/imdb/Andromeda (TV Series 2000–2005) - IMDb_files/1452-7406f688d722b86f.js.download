@@ -1,0 +1,632 @@
+"use strict";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[1452],{31094:function(e,t,a){a.d(t,{Cs:function(){return f}});var l=a(52322),r=a(88169),o=a(86704),n=a(72779),i=a.n(n);a(2784);var s=a(46138),c=a(19596),d=a(48958),u=a(26965),m=a(93253);let p={container:"ui-workflow-error-screen",heading:"ui-workflow-error-screen-heading",description:"ui-workflow-error-screen-description",retryButton:"ui-workflow-error-screen-retry-button"},f=e=>{let{show:t,error:a,onRetryButtonClick:o}=e,n=(0,s.Z)(),c=(0,d.G)(),f=n.formatMessage({id:"ui_workflow_error_screen_heading",defaultMessage:"This is unexpected"}),h=n.formatMessage({id:"ui_workflow_error_screen_description",defaultMessage:"We apologize, we’re having issues on our end. Try again later."}),b=n.formatMessage({id:"common_buttons_retry",defaultMessage:"Try again"});return(0,l.jsx)(m.N,{isOpen:t,background:"solid",children:(0,l.jsxs)(x,{"data-testid":p.container,children:[(0,l.jsxs)(g,{children:[(0,l.jsx)(r.Icon,{name:"sentiment-dissatisfied"}),(0,l.jsx)(k,{"data-testid":p.heading,children:f})]}),(0,l.jsx)("div",{"data-testid":p.description,className:i()("text-center",c.color("textSecondary"),c.type("bodySmall")),children:h}),!!o&&(0,l.jsx)(r.Button,{"data-testid":p.retryButton,baseColor:"accent2",onClick:o,children:b}),(0,l.jsx)(u.N,{error:a})]})})},x=c.default.div.withConfig({componentId:"sc-b8cdc184-0"})(["display:flex;flex-direction:column;gap:",";justify-content:center;align-items:center;max-width:18rem;"],o.spacing.m),g=c.default.div.withConfig({componentId:"sc-b8cdc184-1"})(["align-items:center;display:flex;gap:",";"],o.spacing.xxs),k=c.default.div.withConfig({componentId:"sc-b8cdc184-2"})(["",""],(0,o.setTypographyType)("headline6"))},26739:function(e,t,a){a.d(t,{a:function(){return n}});var l=a(52322);a(2784);var r=a(19596),o=a(88169);let n=()=>(0,l.jsx)(i,{"data-testid":"ui-workflow-loading-screen",children:(0,l.jsx)(o.Loader,{})}),i=r.default.div.withConfig({componentId:"sc-fa07667c-0"})(["display:flex;justify-content:center;align-items:center;height:100%;width:100%;"])},93253:function(e,t,a){a.d(t,{N:function(){return d}});var l=a(52322),r=a(27722),o=a(88169),n=a(86704),i=a(2784),s=a(88360),c=a(19596);let d=e=>{let{isOpen:t,children:a,background:n="transparent"}=e,{palette:{name:c}}=(0,i.useContext)(r.Theme);return t?(0,l.jsx)(s.ZP,{disabled:!t,returnFocus:!0,children:(0,l.jsx)(u,{"aria-modal":"true",role:"dialog","data-testid":"ui-workflow-prompt",background:n,$isDark:"dark"===c,children:(0,l.jsx)(o.ListCard,{borderType:"shadow",children:a})})}):null},u=c.default.div.withConfig({componentId:"sc-f61ba8ea-0"})(["align-items:center;background:",";display:flex;inset:0;justify-content:center;position:absolute;z-index:1000;"],e=>{let{background:t,$isDark:a}=e;return"solid"===t?a?(0,n.getColorVarValue)("ipt-baseAlt-shade2-bg"):(0,n.getColorVarValue)("ipt-base-shade2-bg"):`rgba(${(0,n.getColorVarValue)("ipt-baseAlt-rgb")}, 0.5)`})},61618:function(e,t,a){a.d(t,{k:function(){return s}});var l=a(52322),r=a(88169),o=a(86704);a(2784);var n=a(19596),i=a(95441);let s=e=>{let{subjectName:t,subjectMetadataList:a,heading:o,subjectImage:n}=e;return(0,l.jsxs)(d,{"data-testid":"ui-workflow-context-header",children:[(0,l.jsx)(u,{"data-testid":"ui-workflow-context-header-poster",children:(0,l.jsx)(c,{imageType:n.imageType,imageModel:n.imageModel})}),(0,l.jsxs)(m,{children:[(0,l.jsx)(p,{"data-testid":"ui-workflow-context-header-subject-name",children:t}),(0,l.jsx)(f,{showDividers:!0,"data-testid":"ui-workflow-context-header-subject-metadata-list",children:a.map(e=>(0,l.jsx)(r.InlineListItem,{children:e},e))}),(0,l.jsx)(x,{"data-testid":"ui-workflow-context-header-heading",children:o})]})]})},c=e=>{let{imageType:t,imageModel:a}=e;return"name"===t?(0,l.jsx)(r.AvatarImage,{imageModel:a,size:55}):(0,l.jsx)(r.PosterImage,{imageType:t,imageModel:a,size:40})},d=n.default.div.withConfig({componentId:"sc-bc7603d4-0"})(["display:flex;gap:",";padding:",";background-color:",";border-bottom:1px solid ",";"],o.spacing.xs,o.spacing.s,(0,o.getColorVarValue)("ipt-baseAlt-bg"),(0,o.getColorVarValue)("ipt-baseAlt-border-color")),u=n.default.div.withConfig({componentId:"sc-bc7603d4-1"})(["margin-top:",";"],o.spacing.xxs),m=n.default.div.withConfig({componentId:"sc-bc7603d4-2"})(["display:flex;flex-direction:column;justify-content:center;min-width:0;"]),p=n.default.h1.withConfig({componentId:"sc-bc7603d4-3"})([""," "," color:",";"],(0,i.S)(2),(0,o.setTypographyType)("subtitle"),(0,o.getColorVarValue)("ipt-on-baseAlt-textSecondary-color")),f=(0,n.default)(r.InlineList).withConfig({componentId:"sc-bc7603d4-4"})([""," font-size:0.75rem;color:",";"],(0,o.setTypographyType)("bodySmall"),(0,o.getColorVarValue)("ipt-on-baseAlt-textSecondary-color")),x=n.default.h2.withConfig({componentId:"sc-bc7603d4-5"})([""," "," color:",";font-size:1.125rem;"],(0,i.S)(2),(0,o.setTypographyType)("headline6"),(0,o.getColorVarValue)("ipt-base-color"))},28092:function(e,t,a){a.d(t,{I:function(){return eU}});var l=a(52322),r=a(2784),o=a(86704),n=a(19596),i=a(63955),s=a(88169),c=a(76690),d=a(31885),u=a(26092);let m={container:"ui-workflow-feedback-display-element"},p=e=>{let t,{id:a,feedbackType:r,messages:o}=e,n=1===o.length?(0,l.jsx)(h,{children:(0,l.jsx)(s.HTMLContent,{html:o[0]})}):(0,l.jsx)(b,{children:o.map(e=>(0,l.jsx)(w,{children:(0,l.jsx)(s.HTMLContent,{html:e,display:"inline"})},`${a}-${(0,u.p)(e)}`))});switch(r){case d.Exn.Error:t=(0,l.jsx)("div",{role:"alert",children:(0,l.jsxs)(f,{bgColor:"accent3",children:[(0,l.jsx)("div",{children:(0,l.jsx)(x,{name:"info"})}),n]})});break;case d.Exn.Warning:t=(0,l.jsxs)(f,{bgColor:"accent1",children:[(0,l.jsx)("div",{children:(0,l.jsx)(k,{name:"info"})}),n]});break;default:case d.Exn.Information:t=(0,l.jsxs)(f,{bgColor:"accent2",children:[(0,l.jsx)("div",{children:(0,l.jsx)(g,{name:"info"})}),n]})}return(0,l.jsx)("div",{"data-testid":m.container,children:t})},f=(0,n.default)(s.BlockQuote).withConfig({componentId:"sc-f8ce91d4-0"})(["display:flex;gap:",";margin:",";"],o.spacing.xs,o.spacing.xs),x=(0,n.default)(s.Icon).withConfig({componentId:"sc-f8ce91d4-1"})(["color:",";"],(0,o.setPropertyToColorVar)("color","ipt-accent3-color")),g=(0,n.default)(s.Icon).withConfig({componentId:"sc-f8ce91d4-2"})(["color:",";"],(0,o.setPropertyToColorVar)("color","ipt-accent2-color")),k=(0,n.default)(s.Icon).withConfig({componentId:"sc-f8ce91d4-3"})(["color:",";"],(0,o.setPropertyToColorVar)("color","ipt-accent1-color")),h=n.default.div.withConfig({componentId:"sc-f8ce91d4-4"})(["display:flex;flex-direction:column;justify-content:center;"]),b=n.default.ul.withConfig({componentId:"sc-f8ce91d4-5"})(["list-style-type:disc;"]),w=n.default.li.withConfig({componentId:"sc-f8ce91d4-6"})(["margin-left:",";"],o.spacing.xs),I=e=>{let{id:t,feedbackElements:a}=e,r=[];return a?.forEach(e=>{if("UIWorkflowFeedbackDisplayElement"===e.__typename){let t=e.feedbackData;r.push(l.jsx(p,{id:e.id,feedbackType:t.status,messages:t.feedbackItems.map(e=>e.title.value.plaidHtml??"")},e.id))}else throw Error(`Unknown UIWorkflowFormElementFeedback with typename: ${e.__typename}`)}),(0,l.jsx)("div",{id:t,"data-testid":"ui-workflow-form-element-feedback-container",children:r})},v=e=>{let{disabled:t,name:a,label:r,feedbackElements:o}=e,{field:n}=(0,i.bc)({name:a});return(0,l.jsxs)(l.Fragment,{children:[(0,l.jsx)(s.CheckBox,{...n,"aria-describedby":(0,c.cF)(a),disabled:t,"aria-label":r,checked:n.value,"data-testid":"ui-workflow-checkbox-form-element",label:r,onChange:e=>n.onChange({target:{name:n.name,value:e}})}),(0,l.jsx)(I,{id:(0,c.cF)(a),feedbackElements:o})]})};var y=a(27722);let C=e=>{let{html:t}=e,{palette:{name:a}}=(0,r.useContext)(y.Theme);return 0===t.length?null:(0,l.jsx)("dark"===a?T:U,{html:t})},U=(0,n.default)(s.HTMLContent).withConfig({componentId:"sc-554563ac-0"})([""," "," padding:0 "," ",";"],(0,o.setPropertyToColorVar)("color","ipt-on-base-textSecondary-color"),(0,o.setTypographyType)("bodySmall"),o.spacing.xs,o.spacing.xs),T=(0,n.default)(s.HTMLContent).withConfig({componentId:"sc-554563ac-1"})([""," "," padding:0 "," ",";"],(0,o.setPropertyToColorVar)("color","ipt-on-baseAlt-textSecondary-color"),(0,o.setTypographyType)("bodySmall"),o.spacing.xs,o.spacing.xs);var W=a(76589),E=a(48958);let j=e=>{let t,{disabled:a,name:r,label:o,multiSelectCheckboxOptions:n,constraints:d,feedbackElements:u,helpLink:m}=e,{field:p}=(0,i.bc)({name:r}),f=(0,E.G)(),x=d?.maximumSelections?.value,g=d?.isRequired?.value,k=(t=Array.isArray(p.value)?p.value:p.value?[p.value]:[]).length,h=null!=x&&k>=x,b=(e,a)=>{let l;l=a?t.includes(e)?t:[...t,e]:t.filter(t=>t!==e),p.onChange(l)};return(0,l.jsxs)("fieldset",{className:"flex flex-col border-0 p-0 m-0","data-testid":"ui-workflow-multiselect-checkbox-form-element","aria-describedby":(0,c.cF)(r),children:[(0,l.jsxs)("div",{className:"flex justify-between items-start mb-xs",children:[(0,l.jsx)("div",{className:"flex-1",children:(0,l.jsx)("legend",{className:`block ${f.type("headline6")} ${f.color("textPrimary")}`,children:(0,W.cv)(o)})}),m?(0,l.jsx)("div",{className:"ml-s",children:(0,l.jsx)(s.IconButton,{name:"help-outline",linkType:"launch",label:m.label,href:m.url})}):null]}),(0,l.jsx)("div",{className:"flex flex-col",children:n.map(e=>{let o=t.includes(e.value),n=`${r}-${e.value}`;return(0,l.jsx)(s.CheckBox,{id:n,checked:o,disabled:a||h&&!o,label:e.text,"aria-required":!!g,onChange:t=>b(e.value,t)},e.value)})}),null!=x&&(0,l.jsxs)("div",{className:`mt-xs ${f.type("bodySmall")} ${f.color("textSecondary")}`,children:["You can select up to ",x," options."]}),(0,l.jsx)(I,{id:(0,c.cF)(r),feedbackElements:u})]})};var S=a(72779),L=a.n(S),_=a(46138),M=a(31776),F=a(66473);let N=(e,t)=>{let a="light"===t?"on-base":"on-baseAlt",l=e?(0,o.getColorVarValue)("ipt-accent1-color"):`rgba(var(--ipt-${a}-rgb), 0.38)`,r=e?(0,o.getColorVarValue)("ipt-accent1-color"):(0,o.getColorVarValue)("ipt-accent2-color"),n=e?"0 0 0 1px var(--ipt-accent1-color)":"0 0 0 1px var(--ipt-accent2-color)";return{control:(e,a)=>({...e,paddingTop:"var(--spacing-l)",borderRadius:"var(--ipt-cornerRadius)",backgroundColor:`var(--ipt-${"light"===t?"base":"baseAlt"}-color)`,borderColor:l,boxShadow:a.isFocused?n:e.boxShadow,"&:hover":{borderColor:r}}),menu:e=>({...e,backgroundColor:`var(--ipt-${"light"===t?"base":"baseAlt"}-color)`,zIndex:100}),option:(e,t)=>{let l="transparent";t.isSelected?l=(0,o.getColorVarValue)("ipt-accent2-color"):t.isFocused&&(l=`rgba(var(--ipt-${a}-rgb), 0.08)`);let r=t.isSelected?(0,o.getColorVarValue)("ipt-on-accent2-color"):`var(--ipt-${a}-textPrimary-color)`;return{...e,backgroundColor:l,color:r}},input:e=>({...e,color:`var(--ipt-${a}-textPrimary-color)`})}},R=e=>{let t=(0,r.useRef)(!1);return{onTouchStart:()=>{t.current=!1},onTouchMove:()=>{t.current=!0},onTouchEnd:a=>{if(!t.current&&e&&a.changedTouches.length>0){a.preventDefault();let t=a.changedTouches[0];e({...a,...t,type:"click",nativeEvent:{},screenX:t.screenX??t.clientX,screenY:t.screenY??t.clientY,pageX:t.pageX??t.clientX,pageY:t.pageY??t.clientY,button:0,buttons:1,detail:1,altKey:!1,ctrlKey:!1,metaKey:!1,shiftKey:!1,getModifierState:()=>!1,relatedTarget:null,movementX:0,movementY:0})}}}},$={REMOVE_ITEM:{id:"sdui_multiselect_remove_item_aria_label",defaultMessage:"Remove {selectedOption}"},ADD_CUSTOM_OPTION:{id:"sdui_multiselect_add_custom_option_label",defaultMessage:"Add {customOption}"},MAX_SELECTIONS_LABEL:{id:"sdui_multiselect_max_selections_label",defaultMessage:"You can select up to {maxSelections} options."}},G=(e,t)=>{if(!t.trim())return e;let a=t.trim().toLowerCase();return[...e].sort((e,t)=>{let l=e.label.toLowerCase(),r=t.label.toLowerCase(),o=l===a,n=r===a;if(o!==n)return n?1:-1;let i=0===l.indexOf(a),s=0===r.indexOf(a);return i!==s?s?1:-1:l.localeCompare(r)})},O=e=>{let t=t=>{let{data:a,removeProps:r}=t,o=(0,W.Jx)(a.label),n=R(r?.onClick);return(0,l.jsx)("div",{className:"m-(--spacing-xxs)",...n,children:(0,l.jsx)(D,{label:o,onSelect:r.onClick,onColor:"accent2",postIconProps:{name:"clear",className:"custom-clear-icon"},ariaLabel:e.formatMessage($.REMOVE_ITEM,{selectedOption:o})})})};return t.displayName="CustomMultiValueChip",t},A=e=>{let t=(0,E.G)();return(0,l.jsx)("div",{...e.innerProps,className:"px-s pb-m",children:(0,l.jsx)(s.Icon,{name:"magnify",className:L()(t.color("textSecondary"))})})},P=e=>{let{disabled:t,name:a,label:o,multiSelectOptions:n,constraints:d,feedbackElements:u,allowCustomOptions:m=!1,helpLink:p}=e,{field:f}=(0,i.bc)({name:a}),[x,g]=r.useState(!1),[k,h]=(0,r.useState)(""),b=(0,_.Z)(),w=(0,E.G)(),{palette:{name:v}}=(0,r.useContext)(y.Theme),C=r.useMemo(()=>O(b),[b]),U=r.useMemo(()=>n.map(e=>({value:e.value,label:e.text})),[n]),T=(0,r.useMemo)(()=>G(U,k),[U,k]),j=r.useMemo(()=>null!==f.value&&void 0!==f.value&&Array.isArray(f.value)?f.value.map(e=>({value:e,label:U.find(t=>t.value===e)?.label||String(e)})):[],[f.value,U]),S=j.length>0,R=(Array.isArray(f.value)?f.value:[]).length,P=d?.maximumSelections?.value,D=d?.isRequired?.value,V=!!P&&R>=P,z=`multiselect-${f.name}`,q={isMulti:!0,isClearable:!1,name:f.name,options:T,value:j,onChange:e=>{let t=e?e.map(e=>e.value):[];f.onChange(t)},onInputChange:e=>{h(e)},isSearchable:!0,closeMenuOnSelect:!1,isDisabled:t,inputId:z,placeholder:"",onFocus:()=>g(!0),onBlur:()=>g(!1),isOptionDisabled:e=>{if(!P)return!1;let t=j.some(t=>t.value===e.value);return V&&!t},components:{MultiValue:C,DropdownIndicator:A,IndicatorSeparator:()=>null},"aria-describedby":(0,c.cF)(a),"aria-required":!!D,styles:N((0,c.oc)(u),v)};return(0,l.jsxs)("div",{className:"flex flex-col","data-testid":"ui-workflow-multiselect-form-element",children:[(0,l.jsxs)("div",{className:"relative mb-xs flex justify-between items-start",children:[(0,l.jsxs)("div",{className:"flex-1",children:[(0,l.jsx)("label",{htmlFor:z,className:`absolute z-10 transition-all duration-150 ease-in-out ${S||x?`top-xxs left-m type-bodySmall ${L()(w.color(x?"accent2":"textSecondary"),w.type("headline6"))}`:`top-m left-m ${L()(w.color("textSecondary"))}`}`,children:(0,W.Jx)(o)}),(0,l.jsx)("div",{children:m?(0,l.jsx)(F.Z,{...q,formatCreateLabel:e=>{let t=(0,W.Jx)(e);return b.formatMessage($.ADD_CUSTOM_OPTION,{customOption:t})}},`multiselect-creatable-${f.name}`):(0,l.jsx)(M.ZP,{...q},`multiselect-${f.name}`)})]}),p?(0,l.jsx)("div",{className:"ml-s",children:(0,l.jsx)(s.IconButton,{name:"help-outline",linkType:"launch",label:p.label,href:p.url})}):null]}),null!==P&&(0,l.jsx)("div",{className:`mt-xxs ${L()(w.type("bodySmall"),w.color("textSecondary"))}`,children:!!P&&b.formatMessage($.MAX_SELECTIONS_LABEL,{maxSelections:P})}),(0,l.jsx)(I,{id:(0,c.cF)(a),feedbackElements:u})]})},D=(0,n.default)(s.Chip).withConfig({componentId:"sc-14f51aa6-0"})(["text-align:left;display:flex;.custom-clear-icon{flex-shrink:0;}"]);var V=a(6965),z=a(47774);let q=e=>{let{name:t,label:a,constraints:r,feedbackElements:o,disabled:n}=e,{field:s}=(0,i.bc)({name:t}),d=e=>{s.onChange((0,z.mc)(e))};return(0,l.jsxs)(l.Fragment,{children:[(0,l.jsx)(y.TextInput,{...s,value:s.value??"",onChange:e=>d(e.target.value),"aria-describedby":(0,c.cF)(t),"aria-required":!!r?.isRequired?.value,autoComplete:"off",disabled:n,type:"number",label:a,min:r?.minimumValue?.value,max:r?.maximumValue?.value,step:r?.integerOnly?.value?1:void 0,stateType:(0,c.oc)(o)?V.StateType.error:V.StateType.default}),(0,l.jsx)(I,{id:(0,c.cF)(t),feedbackElements:o})]})};var H=a(57254),Z=a(46886);let B="hasHelpLink",Y="noHelpLink",X=e=>{let{name:t,label:a,radioGroupConstraints:r,radioOptions:o,feedbackElements:n,disabled:s,helpLink:d}=e,{field:u}=(0,i.bc)({name:t}),m=d?(0,l.jsx)("div",{children:(0,l.jsx)(Z.IconButton,{name:"help-outline",linkType:"launch",label:d.label,href:d.url})}):void 0,p=d?B:Y,{ref:f,...x}=u;return(0,l.jsxs)(l.Fragment,{children:[(0,l.jsxs)(J,{className:p,children:[(0,l.jsx)(K,{children:(0,l.jsx)(H.RadioButtonGroup,{...x,disabled:s,options:o.map((e,a)=>({"aria-describedby":(0,c.cF)(t),"aria-required":!!r?.isRequired?.value,label:e.text,ref:0===a?f:void 0,value:e.value})),value:u.value,label:a})}),m]}),(0,l.jsx)(I,{id:(0,c.cF)(t),feedbackElements:n})]})},K=n.default.div.withConfig({componentId:"sc-89de3629-0"})(["padding-top:",";"],o.spacing.s),J=n.default.div.withConfig({componentId:"sc-89de3629-1"})(["display:flex;flex-direction:row;justify-content:space-between;padding-top:0;padding-bottom:",";padding-left:",";border:1px solid rgba(",",0.38);border-radius:4px;.","{padding-right:0;}.","{padding-right:",";}"],o.spacing.xxs,o.spacing.s,(0,o.getColorVarValue)("ipt-on-base-rgb"),B,Y,o.spacing.s);var Q=a(16270);let ee=e=>e.some(e=>""===e.value)?e.map(e=>""===e.value?{...e,disabled:!0}:e):[{text:"",value:"",disabled:!0},...e],et=e=>{let{name:t,label:a,constraints:r,selectOptions:o,feedbackElements:n,disabled:s}=e,{field:d}=(0,i.bc)({name:t}),u=r?.isRequired?.value??!1,m=u?ee(o):o;return(0,l.jsxs)(l.Fragment,{children:[(0,l.jsx)(Q.Select,{...d,"aria-describedby":(0,c.cF)(t),"aria-required":u,disabled:s,options:m,value:d.value??"",label:a,includeEmptyOption:!u,onChange:e=>{d.onChange(e&&""!==e?e:void 0)}}),(0,l.jsx)(I,{id:(0,c.cF)(t),feedbackElements:n})]})};var ea=a(39676),el=a(3255);let er=new(a.n(el)()),eo={minimumRequiredCharText:"ui-workflow-text-area-minimum-required-char-text",requiredAdditionalCharactersText:"ui-workflow-text-area-required-additional-characters-text",metRequiredAdditionalCharactersText:"ui-workflow-text-area-met-required-additional-characters-text"},en={MIN_LENGTH_BREAKPOINT:49,ROWS:{DEFAULT:4,LARGE:12}},ei=e=>{let{name:t,label:a,constraints:o,feedbackElements:n,disabled:d}=e,u=(0,E.G)(),{field:m}=(0,i.bc)({name:t}),p=!!o?.minimumCharacterLength,f=(0,r.useMemo)(()=>{let e=m.value,t=o?.minimumCharacterLength?.value??0;return e?Math.max(0,t-er.countGraphemes(e)):t},[m.value,o?.minimumCharacterLength?.value]);return(0,l.jsxs)(l.Fragment,{children:[(0,l.jsx)(s.TextArea,{...m,onChange:e=>{m.onChange((0,c.AJ)(e,o?.maximumCharacterLength?.value))},"aria-describedby":(0,c.cF)(t),"aria-required":!!o?.isRequired?.value,disabled:d,value:m.value,label:a,stateType:(0,c.oc)(n)?ea.StateType.error:ea.StateType.default,rows:o&&o.minimumCharacterLength&&o.minimumCharacterLength.value>en.MIN_LENGTH_BREAKPOINT?en.ROWS.LARGE:en.ROWS.DEFAULT}),!!p&&(0,l.jsxs)("div",{"data-testid":eo.minimumRequiredCharText,className:L()("ml-xs",u.color("textSecondary"),u.type("bodySmall")),children:["Minimum required char."," ",f>0?(0,l.jsx)(es,{"data-testid":eo.requiredAdditionalCharactersText,children:f}):(0,l.jsx)("span",{"data-testid":eo.metRequiredAdditionalCharactersText,children:"met"})]}),(0,l.jsx)(I,{id:(0,c.cF)(t),feedbackElements:n})]})},es=n.default.span.withConfig({componentId:"sc-e643ccb5-0"})(["font-weight:bold;"]),ec=e=>{let{name:t,label:a,constraints:r,feedbackElements:o,disabled:n}=e,{field:d}=(0,i.bc)({name:t});return(0,l.jsxs)(l.Fragment,{children:[(0,l.jsx)(s.TextInput,{...d,"aria-describedby":(0,c.cF)(t),"aria-required":!!r?.isRequired?.value,autoComplete:"off",disabled:n,value:d.value,label:a,minLength:r?.minimumCharacterLength?.value,maxLength:r?.maximumCharacterLength?.value,stateType:(0,c.oc)(o)?V.StateType.error:V.StateType.default}),(0,l.jsx)(I,{id:(0,c.cF)(t),feedbackElements:o})]})};var ed=a(7837),eu=a(82433),em=a(78270);let ep={RATING_COMPLETE:{id:"title_sdui_titleRating_ratingComplete",defaultMessage:"Rating updated successfully: {rating}/10"},RATING_STAR_SELECTED:{id:"title_sdui_titleRating_ratingStarSelected",defaultMessage:"Selected, Rate {rating}"},RATING_STAR_UNSELECTED:{id:"title_sdui_titleRating_ratingStarUnselected",defaultMessage:"Rate {rating}, Unselected"},LOADING:{id:"title_sdui_titleRating_ratingLoading",defaultMessage:"Loading rating"},YOUR_RATING:{id:"title_sdui_titleRating_yourRating",defaultMessage:"Your rating"},YOUR_RATING_IS:{id:"title_sdui_titleRating_yourRatingIs",defaultMessage:"Your rating is {rating}/10"}},ef="ctbt_tt_rt",ex=e=>{let{isLoading:t,rating:a}=e,r=a??"?",o=(0,_.Z)(),n=(0,E.G)(),i=o.formatMessage(ep.YOUR_RATING),s=t?o.formatMessage(ep.LOADING):o.formatMessage(ep.YOUR_RATING_IS,{rating:r});return(0,l.jsx)("div",{"arial-live":"polite",children:(0,l.jsxs)("div",{"data-testid":"rating-header","aria-label":s,className:L()("flex justify-between w-full",n.color("textSecondary")),children:[(0,l.jsx)("span",{"aria-hidden":"true",className:L()("font-semibold",n.color("textPrimary")),children:i}),(0,l.jsxs)("span",{"aria-hidden":"true",children:[(0,l.jsx)("span",{className:L()("font-semibold",n.color("textPrimary")),children:r}),"/10"]})]})})},eg=e=>{let{titleId:t,loading:a}=e,[o,n]=r.useState(),i=(0,_.Z)(),s=(0,E.G)(),c=(0,em.b)([{id:t}]),{rating:d,updateRating:u}=(0,ed.useRatingsContext)(t),[m,p]=r.useState(d);(0,r.useEffect)(()=>{c.fetching||!c.data||m||p(c.data?.titles?.find(e=>e?.id===t)?.userRating?.value)},[c.fetching]);let{updateTitleRating:f}=(0,eu.vY)({titleId:t,refTag:ef,currentRating:m}),x=async e=>{n(!1),0!==e&&(u(e,ef,()=>f(e,t)),n(!0))},g=a||c.fetching;return(0,l.jsxs)("div",{"data-testid":"rating-container",className:"inline-flex flex-col items-stretch w-full",children:[(0,l.jsx)(ex,{rating:d,isLoading:g}),(0,l.jsx)(ed.RatingStarBar,{initialRating:d??0,loading:g,onClick:x,starButtonAriaLabelFn:(e,t)=>e===t?i.formatMessage(ep.RATING_STAR_SELECTED,{rating:e}):i.formatMessage(ep.RATING_STAR_UNSELECTED,{rating:e})}),(0,l.jsx)("div",{"aria-live":"polite",children:!!o&&(0,l.jsxs)("div",{"data-testid":"rating-confirmation",className:L()("flex py-s px-m rounded-corner bg-accent4/5",s.color("textPrimary"),s.type("bodySmall")),children:[i.formatMessage(ep.RATING_COMPLETE,{rating:d}),(0,l.jsx)(ek,{})]})})]})},ek=()=>{let e=(0,E.G)();return(0,l.jsxs)("svg",{width:"24",height:"24",xmlns:"http://www.w3.org/2000/svg",className:L()("ml-auto",e.color("accent4")),viewBox:"0 0 24 24",fill:"currentColor",role:"presentation",children:[(0,l.jsx)("path",{d:"M0 0h24v24H0z",fill:"none"}),(0,l.jsx)("path",{d:"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"})]})},eh=e=>{let{element:t,elementWrapperClassName:a,isFormElementDisabled:r=!1}=e;switch(t.__typename){case"UIWorkflowCheckboxFormElement":return(0,l.jsx)(eb,{className:a,children:(0,l.jsx)(v,{name:t.id,label:t.label.value.plainText??"",feedbackElements:t.feedback,disabled:r})});case"UIWorkflowRadioGroupFormElement":return(0,l.jsx)(eb,{className:a,children:(0,l.jsx)(X,{name:t.id,label:t.label.value.plainText??"",radioOptions:t.radioGroupOptions?.map(e=>({text:e.text.value,value:e.value}))??[],feedbackElements:t.feedback,helpLink:t.helpLink?{url:t.helpLink.url,label:t.helpLink.label.value}:void 0,disabled:r,radioGroupConstraints:t.radioGroupConstraints})});case"UIWorkflowSelectFormElement":return(0,l.jsx)(eb,{className:a,children:(0,l.jsx)(et,{name:t.id,label:t.label.value.plainText??"",selectOptions:t.selectOptions?.map(e=>({text:e.text.value,value:e.value}))??[],feedbackElements:t.feedback,disabled:r,constraints:t.selectConstraints})});case"UIWorkflowMultiSelectFormElement":return(0,l.jsx)(eb,{className:a,children:(0,l.jsx)(P,{name:t.id,label:t.label.value.plainText??"",multiSelectOptions:t.multiSelectOptions?.map(e=>({text:e.text.value,value:e.value}))??[],constraints:t.multiSelectConstraints,feedbackElements:t.feedback,allowCustomOptions:t.allowCustomOptions??!1,helpLink:t.helpLink?{url:t.helpLink.url,label:t.helpLink.label.value}:void 0,disabled:r})});case"UIWorkflowMultiSelectCheckboxGroupFormElement":return(0,l.jsx)(eb,{className:a,children:(0,l.jsx)(j,{name:t.id,label:t.label.value.plainText??"",multiSelectCheckboxOptions:t.multiSelectCheckboxGroupOptions?.map(e=>({text:e.text?.value??"",value:e.value}))??[],constraints:t.multiSelectCheckboxGroupConstraints?{isRequired:t.multiSelectCheckboxGroupConstraints.isRequired?{value:t.multiSelectCheckboxGroupConstraints.isRequired.value}:void 0,minimumSelections:t.multiSelectCheckboxGroupConstraints.minimumSelections?{value:t.multiSelectCheckboxGroupConstraints.minimumSelections.value}:void 0,maximumSelections:t.multiSelectCheckboxGroupConstraints.maximumSelections?{value:t.multiSelectCheckboxGroupConstraints.maximumSelections.value}:void 0}:void 0,feedbackElements:t.feedback,helpLink:t.helpLink?{url:t.helpLink.url,label:t.helpLink.label.value}:void 0,disabled:r})});case"UIWorkflowTextFormElement":return(0,l.jsx)(eb,{className:a,children:(0,l.jsx)(ec,{name:t.id,label:t.label.value.plainText??"",feedbackElements:t.feedback,disabled:r,constraints:t.textConstraints})});case"UIWorkflowTextAreaFormElement":return(0,l.jsx)(eb,{className:a,children:(0,l.jsx)(ei,{name:t.id,label:t.label.value.plainText??"",feedbackElements:t.feedback,disabled:r,constraints:t.textAreaConstraints})});case"UIWorkflowNumberInputFormElement":return(0,l.jsx)(eb,{className:a,children:(0,l.jsx)(q,{name:t.id,label:t.label.value.plainText??"",feedbackElements:t.feedback,disabled:r,constraints:t.numberConstraints})});case"UIWorkflowMarkdownDisplayElement":return(0,l.jsx)(C,{html:t.markdown.value.plaidHtml??""});case"UIWorkflowFeedbackDisplayElement":return(0,l.jsx)(p,{id:t.id,feedbackType:t.feedbackData.status,messages:t.feedbackData.feedbackItems.map(e=>e.title.value.plaidHtml??"").filter(e=>!!e)});case"UIWorkflowTitleRatingElement":return(0,l.jsx)(eb,{className:a,children:(0,l.jsx)(eg,{titleId:t.title.id,loading:r})});default:throw Error(`Unknown UIWorkflowElement with typename: ${t.__typename}`)}},eb=n.default.div.withConfig({componentId:"sc-38bc59ef-0"})(["margin:0 "," ",";"],o.spacing.xs,o.spacing.s),ew=e=>{let{element:t,elementWrapperClassName:a,isFormElementDisabled:o}=e,n=t.heading?.value?.plainText;return(0,l.jsxs)(eI,{children:[!!n&&(0,l.jsx)(ev,{children:n}),!!t.helpLink?.label?.value&&(0,l.jsx)(ey,{children:(0,l.jsx)("a",{href:t.helpLink.url,target:"_blank",rel:"noopener noreferrer",children:t.helpLink.label.value})}),(0,l.jsx)(eC,{children:t.elements.map((e,t)=>{let n="id"in e?e.id:`element-${t}`;return(0,l.jsx)(r.Fragment,{children:(0,l.jsx)(eh,{elementWrapperClassName:a,element:e,isFormElementDisabled:o})},n)})})]})},eI=n.default.div.withConfig({componentId:"sc-23bb4704-0"})(["border:1px solid var(--ipt-on-base-textHint-color);border-radius:4px;padding:",";margin:"," "," "," ",";min-width:0;background-color:var(--plaid-color-background-default,#fff);"],o.spacing.xs,o.spacing.xs,o.spacing.s,o.spacing.s,o.spacing.s),ev=n.default.div.withConfig({componentId:"sc-23bb4704-1"})(["font-weight:bold;margin-bottom:",";color:var(--plaid-color-text-primary,#111827);font-size:14px;line-height:1.4;"],o.spacing.xs),ey=n.default.div.withConfig({componentId:"sc-23bb4704-2"})(["margin-bottom:",";a{color:var(--plaid-color-text-link,#0073bb);text-decoration:none;font-size:14px;&:hover{text-decoration:underline;}}"],o.spacing.xs),eC=n.default.div.withConfig({componentId:"sc-23bb4704-3"})(["display:flex;flex-direction:column;gap:",";> *{margin:0;}"],o.spacing.xs),eU=e=>{let{element:t,elementWrapperClassName:a,isFormElementDisabled:r}=e;return"UIWorkflowElementGroup"===t.__typename?(0,l.jsx)(ew,{element:t,elementWrapperClassName:a,isFormElementDisabled:r}):(0,l.jsx)(eh,{element:t,elementWrapperClassName:a,isFormElementDisabled:r})}},11323:function(e,t,a){a.d(t,{CY:function(){return E},Lw:function(){return _},bl:function(){return h},hv:function(){return w},p9:function(){return S}});var l=a(10081);let r=(0,l.ZP)`
+    fragment UIWorkflowHelpLink on HelpLink {
+        label {
+            value
+        }
+        url
+    }
+`,o=(0,l.ZP)`
+    fragment UIWorkflowLocalizedMarkdown on LocalizedMarkdown {
+        value {
+            plainText
+            plaidHtml
+        }
+    }
+`,n=(0,l.ZP)`
+    fragment UIWorkflowFeedbackDisplayElement on UIWorkflowFeedbackDisplayElement {
+        id
+        feedbackData: feedback {
+            status
+            feedbackItems {
+                title {
+                    ...UIWorkflowLocalizedMarkdown
+                }
+                message {
+                    ...UIWorkflowLocalizedMarkdown
+                }
+            }
+        }
+    }
+`,i=(0,l.ZP)`
+    fragment UIWorkflowTextFormElement on UIWorkflowTextFormElement {
+        id
+        label {
+            value {
+                plainText
+            }
+        }
+        textValue
+        textConstraints {
+            isRequired {
+                value
+            }
+            minimumCharacterLength {
+                value
+                feedback {
+                    title {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                    message {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                }
+            }
+            maximumCharacterLength {
+                value
+                feedback {
+                    title {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                    message {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                }
+            }
+        }
+        feedback {
+            __typename
+            ...UIWorkflowFeedbackDisplayElement
+        }
+    }
+    ${n}
+    ${o}
+`,s=(0,l.ZP)`
+    fragment UIWorkflowTextAreaFormElement on UIWorkflowTextAreaFormElement {
+        id
+        label {
+            value {
+                plainText
+            }
+        }
+        textAreaValue
+        textAreaConstraints {
+            minimumCharacterLength {
+                value
+                feedback {
+                    title {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                    message {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                }
+            }
+            maximumCharacterLength {
+                value
+                feedback {
+                    title {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                    message {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                }
+            }
+            isRequired {
+                value
+                feedback {
+                    title {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                    message {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                }
+            }
+        }
+        feedback {
+            __typename
+            ...UIWorkflowFeedbackDisplayElement
+        }
+    }
+    ${n}
+`,c=(0,l.ZP)`
+    fragment UIWorkflowNumberInputFormElement on UIWorkflowNumberInputFormElement {
+        id
+        label {
+            value {
+                plainText
+            }
+        }
+        numberValue
+        numberConstraints {
+            isRequired {
+                value
+            }
+            minimumValue {
+                value
+            }
+            maximumValue {
+                value
+            }
+            integerOnly {
+                value
+            }
+        }
+        feedback {
+            __typename
+            ...UIWorkflowFeedbackDisplayElement
+        }
+    }
+    ${n}
+`,d=(0,l.ZP)`
+    fragment UIWorkflowCheckboxFormElement on UIWorkflowCheckboxFormElement {
+        checkboxValue
+        checkboxConstraints {
+            isRequired {
+                value
+                feedback {
+                    title {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                    message {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                }
+            }
+        }
+        id
+        label {
+            value {
+                plainText
+            }
+        }
+        feedback {
+            ...UIWorkflowFeedbackDisplayElement
+        }
+    }
+    ${n}
+`,u=(0,l.ZP)`
+    fragment UIWorkflowTitleRatingElement on UIWorkflowTitleRatingElement {
+        id
+        title {
+            id
+        }
+    }
+`,m=(0,l.ZP)`
+    fragment UIWorkflowLocalizedStringInputOption on UIWorkflowLocalizedStringInputOption {
+        text {
+            value
+        }
+        value
+    }
+`,p=(0,l.ZP)`
+    fragment UIWorkflowRadioGroupFormElement on UIWorkflowRadioGroupFormElement {
+        radioGroupValue
+        id
+        label {
+            value {
+                plainText
+            }
+        }
+        helpLink {
+            ...UIWorkflowHelpLink
+        }
+        radioGroupOptions {
+            ...UIWorkflowLocalizedStringInputOption
+        }
+        radioGroupConstraints {
+            isRequired {
+                value
+                feedback {
+                    title {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                    message {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                }
+            }
+        }
+        feedback {
+            __typename
+            ...UIWorkflowFeedbackDisplayElement
+        }
+    }
+    ${n}
+    ${m}
+`,f=(0,l.ZP)`
+    fragment UIWorkflowSelectFormElement on UIWorkflowSelectFormElement {
+        selectValue
+        id
+        label {
+            value {
+                plainText
+            }
+        }
+        helpLink {
+            ...UIWorkflowHelpLink
+        }
+        selectOptions {
+            ...UIWorkflowLocalizedStringInputOption
+        }
+        selectConstraints {
+            isRequired {
+                value
+            }
+        }
+        feedback {
+            __typename
+            ...UIWorkflowFeedbackDisplayElement
+        }
+    }
+    ${n}
+    ${r}
+    ${m}
+`,x=(0,l.ZP)`
+    fragment UIWorkflowMultiSelectFormElement on UIWorkflowMultiSelectFormElement {
+        multiSelectValue
+        id
+        label {
+            value {
+                plainText
+            }
+        }
+        helpLink {
+            ...UIWorkflowHelpLink
+        }
+        multiSelectOptions {
+            ...UIWorkflowLocalizedStringInputOption
+        }
+        allowCustomOptions
+        multiSelectConstraints {
+            isRequired {
+                value
+                feedback {
+                    title {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                    message {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                }
+            }
+            minimumSelections {
+                value
+                feedback {
+                    title {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                    message {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                }
+            }
+            maximumSelections {
+                value
+                feedback {
+                    title {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                    message {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                }
+            }
+        }
+        feedback {
+            __typename
+            ...UIWorkflowFeedbackDisplayElement
+        }
+    }
+    ${n}
+    ${r}
+    ${m}
+`,g=(0,l.ZP)`
+    fragment UIWorkflowMultiSelectCheckboxGroupFormElement on UIWorkflowMultiSelectCheckboxGroupFormElement {
+        multiSelectCheckboxGroupValue
+        id
+        label {
+            value {
+                plainText
+            }
+        }
+        helpLink {
+            ...UIWorkflowHelpLink
+        }
+        multiSelectCheckboxGroupOptions {
+            ...UIWorkflowLocalizedStringInputOption
+        }
+        multiSelectCheckboxGroupConstraints {
+            isRequired {
+                value
+                feedback {
+                    title {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                    message {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                }
+            }
+            minimumSelections {
+                value
+                feedback {
+                    title {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                    message {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                }
+            }
+            maximumSelections {
+                value
+                feedback {
+                    title {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                    message {
+                        ...UIWorkflowLocalizedMarkdown
+                    }
+                }
+            }
+        }
+        feedback {
+            __typename
+            ...UIWorkflowFeedbackDisplayElement
+        }
+    }
+    ${n}
+    ${r}
+    ${m}
+`,k=(0,l.ZP)`
+    fragment UIWorkflowMarkdownDisplayElement on UIWorkflowMarkdownDisplayElement {
+        id
+        markdown {
+            value {
+                plaidHtml
+            }
+        }
+    }
+`,h=(0,l.ZP)`
+    fragment UIWorkflowElements on UIWorkflowElement {
+        __typename
+        ...UIWorkflowCheckboxFormElement
+        ...UIWorkflowTitleRatingElement
+        ...UIWorkflowTextFormElement
+        ...UIWorkflowTextAreaFormElement
+        ...UIWorkflowNumberInputFormElement
+        ...UIWorkflowRadioGroupFormElement
+        ...UIWorkflowSelectFormElement
+        ...UIWorkflowMultiSelectFormElement
+        ...UIWorkflowMultiSelectCheckboxGroupFormElement
+        ...UIWorkflowMarkdownDisplayElement
+        ...UIWorkflowFeedbackDisplayElement
+    }
+    ${d}
+    ${u}
+    ${i}
+    ${s}
+    ${c}
+    ${p}
+    ${f}
+    ${x}
+    ${g}
+    ${k}
+    ${n}
+`,b=(0,l.ZP)`
+    fragment UIWorkflowElementGroup on UIWorkflowElementGroup {
+        __typename
+        id
+        heading {
+            value {
+                plainText
+                plaidHtml
+            }
+        }
+        elements {
+            __typename
+            ...UIWorkflowElements
+        }
+        helpLink {
+            ...UIWorkflowHelpLink
+        }
+    }
+    ${h}
+    ${r}
+`,w=(0,l.ZP)`
+    fragment UIWorkflowContextHeader on UIWorkflowContextHeader {
+        heading {
+            value {
+                plainText
+            }
+        }
+        subject {
+            __typename
+            ... on UserProfile {
+                userId
+                username {
+                    text
+                }
+                primaryImage {
+                    image {
+                        id
+                        url
+                        height
+                        width
+                    }
+                }
+            }
+            ... on Title {
+                titleType {
+                    id
+                }
+                titleText {
+                    text
+                }
+                primaryImage {
+                    id
+                    width
+                    height
+                    url
+                    caption {
+                        plainText
+                    }
+                }
+                releaseYear {
+                    year
+                }
+                runtime {
+                    displayableProperty {
+                        value {
+                            plainText
+                        }
+                    }
+                }
+                certificate {
+                    rating
+                }
+            }
+            ... on Name {
+                id
+                nameText {
+                    text
+                }
+                primaryProfessions {
+                    category {
+                        text
+                        id
+                    }
+                }
+                currentProfessions(limit: 3) {
+                    id
+                    profession {
+                        text
+                    }
+                }
+                primaryImage {
+                    id
+                    width
+                    height
+                    url
+                    caption {
+                        plainText
+                    }
+                }
+            }
+        }
+    }
+`,I=(0,l.ZP)`
+    fragment UIWorkflowContentHeader on UIWorkflowContentHeader {
+        heading {
+            value {
+                plainText
+            }
+        }
+        helpLink {
+            ...UIWorkflowHelpLink
+        }
+    }
+`,v=(0,l.ZP)`
+    fragment UIWorkflowElementOrGroup on UIWorkflowElementOrGroup {
+        __typename
+        ...UIWorkflowElements
+        ...UIWorkflowElementGroup
+    }
+    ${h}
+    ${b}
+`,y=(0,l.ZP)`
+    fragment UIWorkflowBody on UIWorkflowBody {
+        elements {
+            ...UIWorkflowElementOrGroup
+        }
+    }
+    ${v}
+`,C=(0,l.ZP)`
+    fragment UIWorkflowActionTray on UIWorkflowActionTray {
+        actions {
+            id
+            type
+            label {
+                value
+            }
+            requiresFormData
+            navigationDirection
+        }
+    }
+`,U=(0,l.ZP)`
+    fragment UIWorkflowState on UIWorkflowExecutionState {
+        status
+    }
+`,T=(0,l.ZP)`
+    fragment UIWorkflow on UIWorkflow {
+        workflowType
+        workflowState {
+            ...UIWorkflowState
+        }
+        contextHeader {
+            ...UIWorkflowContextHeader
+        }
+        contentHeader {
+            ...UIWorkflowContentHeader
+        }
+        body {
+            ...UIWorkflowBody
+        }
+        actionTray {
+            ...UIWorkflowActionTray
+        }
+    }
+    ${U}
+    ${w}
+    ${I}
+    ${y}
+    ${C}
+`,W=(0,l.ZP)`
+    fragment StartUIWorkflowOutput on StartUIWorkflowOutput {
+        success
+        message {
+            value
+        }
+        workflow {
+            ...UIWorkflow
+        }
+    }
+    ${T}
+`,E=(0,l.ZP)`
+    mutation StartUIWorkflow($actionContext: ID!) {
+        startUIWorkflow(input: { callToActionInputToken: $actionContext }) {
+            ...StartUIWorkflowOutput
+        }
+    }
+
+    ${W}
+`,j=(0,l.ZP)`
+    fragment UpdateUIWorkflowOutput on UpdateUIWorkflowOutput {
+        success
+        message {
+            value
+        }
+        workflow {
+            ...UIWorkflow
+        }
+    }
+    ${T}
+`,S=(0,l.ZP)`
+    mutation UpdateUIWorkflow(
+        $actionContext: ID!
+        $data: [UIWorkflowFormElementValues!]
+    ) {
+        updateUIWorkflow(input: { actionId: $actionContext, data: $data }) {
+            ...UpdateUIWorkflowOutput
+        }
+    }
+
+    ${j}
+`,L=(0,l.ZP)`
+    fragment GetLatestUIWorkflowOutput on GetLatestUIWorkflowOutput {
+        workflow {
+            ...UIWorkflow
+        }
+    }
+    ${T}
+`,_=(0,l.ZP)`
+    query GetLatestUIWorkflow($executionId: ID!) {
+        getLatestUIWorkflow(input: { executionId: $executionId }) {
+            ...GetLatestUIWorkflowOutput
+        }
+    }
+
+    ${L}
+`},76690:function(e,t,a){a.d(t,{AJ:function(){return I},GK:function(){return b},RJ:function(){return g},X0:function(){return h},_h:function(){return u},cF:function(){return w},h8:function(){return x},o2:function(){return p},oc:function(){return k}});var l=a(3255),r=a.n(l),o=a(25436),n=a(31885),i=a(53996);let s=e=>{if(!e)return"";switch(e.__typename){case"Title":return e.titleText?.text??"";case"Name":return e.nameText?.text??"";case"UserProfile":return e.username?.text??e.userId;default:return""}},c=e=>{let t=[];if(!e)return t;switch(e.__typename){case"Title":e.certificate?.rating&&t.push(e.certificate.rating),e.releaseYear?.year&&t.push(e.releaseYear.year.toString()),e.runtime?.displayableProperty.value.plainText&&t.push(e.runtime.displayableProperty.value.plainText);break;case"Name":e.primaryProfessions?.forEach(e=>{e.category?.text&&t.push(e.category.text)})}return t},d=e=>{if(!e)return{imageType:"unknown"};switch(e.__typename){case"Title":return{imageType:e.titleType?.id,imageModel:{url:e.primaryImage?.url??"",maxHeight:e.primaryImage?.height??0,maxWidth:e.primaryImage?.width??0,caption:e.primaryImage?.caption?.plainText??""}};case"Name":return{imageType:"name",imageModel:{url:e.primaryImage?.url??"",maxHeight:e.primaryImage?.height??0,maxWidth:e.primaryImage?.width??0,caption:e.primaryImage?.caption?.plainText??""}};case"UserProfile":return{imageType:"name",imageModel:e.primaryImage?.image?{url:e.primaryImage.image.url??"",maxHeight:e.primaryImage.image.height??0,maxWidth:e.primaryImage.image.width??0,caption:""}:void 0};default:return{imageType:"unknown"}}},u=e=>({subjectName:s(e.subject),subjectMetadataList:c(e.subject),heading:e.heading?.value.plainText??"",subjectImage:d(e.subject)}),m=e=>({heading:e.heading?.value.plainText??"",helpLink:e.helpLink?{label:e.helpLink.label.value,url:e.helpLink.url}:void 0}),p=e=>({workflowState:e.workflowState,contextHeader:u(e.contextHeader),contentHeader:m(e.contentHeader),body:f(e.body),actionTray:e.actionTray}),f=e=>x(e.elements),x=e=>{let t,a;let l=[],r={},o=(e,a)=>{!t&&k(a)&&(t=e)},n=e=>{void 0===a&&(a=e)},i=function(e){let t=arguments.length>1&&void 0!==arguments[1]&&arguments[1];switch(e.__typename){case"UIWorkflowCheckboxFormElement":r[e.id]=e.checkboxValue,o(e.id,e.feedback),n(e.id);break;case"UIWorkflowMultiSelectCheckboxGroupFormElement":r[e.id]=e.multiSelectCheckboxGroupValue??[],o(e.id,e.feedback),n(e.id);break;case"UIWorkflowRadioGroupFormElement":r[e.id]=e.radioGroupValue??void 0,o(e.id,e.feedback),n(e.id);break;case"UIWorkflowSelectFormElement":r[e.id]=e.selectValue??void 0,o(e.id,e.feedback),n(e.id);break;case"UIWorkflowMultiSelectFormElement":r[e.id]=e.multiSelectValue??[],o(e.id,e.feedback),n(e.id);break;case"UIWorkflowTextFormElement":r[e.id]=e.textValue??"",o(e.id,e.feedback),n(e.id);break;case"UIWorkflowTextAreaFormElement":r[e.id]=e.textAreaValue??"",o(e.id,e.feedback),n(e.id);break;case"UIWorkflowNumberInputFormElement":r[e.id]=e.numberValue??void 0,o(e.id,e.feedback),n(e.id);break;case"UIWorkflowMarkdownDisplayElement":case"UIWorkflowFeedbackDisplayElement":case"UIWorkflowTitleRatingElement":break;case"UIWorkflowElementGroup":e.elements.forEach(e=>{i(e,!0)});break;default:throw Error(`Invalid element type: ${e.__typename}`)}t||l.push(e)};return e.forEach(e=>{i(e)}),{elements:l,formState:{initialFormElementValues:r,firstFormElementWithValidationErrorId:t,firstFormElementId:a}}},g=(e,t)=>{let a=e=>{let t={};return"id"in e&&"UIWorkflowElementGroup"!==e.__typename&&(t[e.id]=e.__typename),"elements"in e&&e.elements.forEach(e=>{Object.assign(t,a(e))}),t},l=t.reduce((e,t)=>({...e,...a(t)}),{});return Object.entries(e).filter(e=>{let[t]=e;return!!l[t]}).map(e=>{let[t,a]=e;return{id:t,values:(Array.isArray(a)?a:[a]).filter(e=>null!=e).map(e=>String(e))}})},k=e=>{let t=!1;return e?.forEach(e=>{"UIWorkflowFeedbackDisplayElement"===e.__typename&&e.feedbackData.status===n.Exn.Error&&(t=!0)}),t},h=e=>{"_blank"!==e.target&&(e.target="_blank",e.rel="noopener noreferrer")};function b(e,t){return async function(){for(var a=arguments.length,l=Array(a),r=0;r<a;r++)l[r]=arguments[r];let n=Date.now(),s=await e(...l),c=Date.now();return(0,i.cY)({metricName:t.metricName,unit:o.Unit.MILLISECONDS,value:c-n,pageType:t.requestContext.pageType,subPageType:t.requestContext.subPageType,time:Date.now()}),s}}let w=e=>`ui-workflow-${e}-feedback`,I=(e,t)=>{let a=new(r()),l=a.countGraphemes(e);return!t||l<=t?e:a.splitGraphemes(e).slice(0,t).join("")}},66311:function(e,t,a){var l=a(52322),r=a(2784),o=a(86958),n=a(31094),i=a(6173);class s extends r.Component{static #e=this.contextType=o.fH;constructor(e){super(e),this.state={error:void 0}}static getDerivedStateFromError(e){return{error:e}}componentDidCatch(e,t){let{context:a}=this.context;(0,i.q)(e,{requestContext:a,loggerName:this.props.loggerName,metricName:this.props.metricName,otherDetailsToLog:{errorInfo:t}})}render(){return this.state.error?this.props.render?this.props.render(this.state.error):(0,l.jsx)(n.Cs,{show:!0,error:this.state.error}):this.props.children}}t.Z=s},26965:function(e,t,a){a.d(t,{N:function(){return s}});var l=a(52322),r=a(11778),o=a(72779),n=a.n(o);a(2784);var i=a(48958);let s=e=>{let{error:t}=e,a=(0,i.G)();return t&&(0,r.isDevNodeEnv)()?(0,l.jsxs)("div",{"data-testid":"debug-error-stack",className:n()("overflow-wrap-anywhere overflow-y-auto max-h-[50vh] flex flex-col gap-xs",a.color("accent3")),children:[(0,l.jsx)("span",{children:t.toString()}),(0,l.jsx)("span",{children:t?.stack})]}):null}},6173:function(e,t,a){a.d(t,{q:function(){return i}});var l=a(16189),r=a(13382),o=a(25436),n=a(53996);let i=(e,t)=>{let a=(0,l.createLogger)(t.requestContext)(t.loggerName),i=[t.loggerName,e instanceof r.C?"graph-error":"component-error"].filter(Boolean).join(" ");a.error(i,s(e),t.otherDetailsToLog),(0,n.cY)({metricName:t.metricName,unit:o.Unit.COUNT,value:1,pageType:t.requestContext.pageType,subPageType:t.requestContext.subPageType,time:new Date().getTime()})},s=e=>{let t={name:e.name,message:e.message,stack:e.stack};return e instanceof r.C?{...t,graphQLErrors:e.graphQLErrors.map(s),networkError:e.networkError?s(e.networkError):void 0,response:e.response}:t}}}]);

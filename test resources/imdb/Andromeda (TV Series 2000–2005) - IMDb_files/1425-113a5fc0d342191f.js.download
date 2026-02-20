@@ -1,0 +1,145 @@
+"use strict";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[1425],{16420:function(e,t,i){i.d(t,{R:function(){return n},Y:function(){return a}});var r=i(10081);let a=(0,r.ZP)`
+    fragment TitlePageMetaData on Title {
+        id
+        certificate {
+            rating
+        }
+        runtime {
+            seconds
+        }
+        ratingsSummary {
+            aggregateRating
+            voteCount
+        }
+        titleGenres {
+            genres(limit: 3) {
+                genre {
+                    text
+                }
+            }
+        }
+        meta {
+            canonicalId
+            publicationStatus
+        }
+        titleType {
+            id
+            text
+            canHaveEpisodes
+            isSeries
+            isEpisode
+        }
+        titleText {
+            text
+        }
+        originalTitleText {
+            text
+        }
+        releaseYear {
+            year
+            endYear
+        }
+        plot {
+            plotText {
+                plainText
+            }
+        }
+        primaryImage {
+            url
+            height
+            width
+            caption {
+                plainText
+            }
+        }
+        series {
+            episodeNumber {
+                episodeNumber
+                seasonNumber
+            }
+            nextEpisode {
+                id
+            }
+            previousEpisode {
+                id
+            }
+            series {
+                id
+                titleText {
+                    text
+                }
+                originalTitleText {
+                    text
+                }
+                titleType {
+                    canHaveEpisodes
+                }
+                releaseYear {
+                    year
+                    endYear
+                }
+            }
+        }
+        productionStatus(useEntitlement: false) {
+            restriction {
+                restrictionReason
+                unrestrictedTotal
+            }
+            currentProductionStage {
+                id
+            }
+        }
+        countriesOfOrigin {
+            countries(limit: 1) {
+                id
+            }
+        }
+        castV2: principalCreditsV2(
+            filter: { mode: "TOP_CAST" }
+            useEntitlement: false
+        ) {
+            credits(limit: 4) {
+                name {
+                    id
+                    nameText {
+                        text
+                    }
+                }
+            }
+        }
+        crewV2: principalCreditsV2(
+            filter: { mode: "NARROWED", includeAppearances: false }
+            useEntitlement: false
+        ) {
+            grouping {
+                groupingId
+            }
+            credits {
+                name {
+                    id
+                    nameText {
+                        text
+                    }
+                }
+            }
+        }
+    }
+`,n=(0,r.ZP)`
+    fragment TitleSubNav on Title {
+        subNavCredits: credits(first: 0) {
+            total
+        }
+        subNavReviews: reviews(first: 0) {
+            total
+        }
+        subNavTrivia: trivia(first: 0) {
+            total
+        }
+        subNavFaqs: faqs(first: 0) {
+            total
+        }
+        subNavTopQuestions: alexaTopQuestions(first: 0) {
+            total
+        }
+    }
+`},21425:function(e,t,i){i.d(t,{Xd:function(){return h},Xj:function(){return x},n3:function(){return D},nu:function(){return Y},tC:function(){return C}});var r=i(52322);i(2784);var a=i(46138),n=i(70591),s=i(75824),o=i(96908),c=i(60547),d=i(82338),u=i(34231),l=i(48422),p=i(68139),m=i(63370),g=i(1833),f=i(16420),_=i(66724),T=i(87801),S=i(2791),E=i(73183);function v(e){return(0,m.K)({originalTitleText:e?.originalTitleText,titleText:e?.titleText})}function b(e){if(!e?.titleType)return;let t=e.titleType.id;return t&&t!==n.Yt.MOVIE?e.titleType.text:void 0}function D(e,t){let i=e.titleData,r=function(e){let t;if(!e?.titleType)return E.s.Website;switch(e.titleType.id){case n.Yt.MUSIC_ALBUM:case n.Yt.MUSIC_EP:t=E.s.MusicAlbum;break;case n.Yt.MUSIC_RECORDING:case n.Yt.MUSIC_SINGLE:case n.Yt.MUSIC_SONG:t=E.s.MusicSong;break;case n.Yt.TV_EPISODE:case n.Yt.TV_PILOT:case n.Yt.WEB_EPISODE:t=E.s.VideoEpisode;break;case n.Yt.MOVIE:case n.Yt.SHORT:case n.Yt.TV_MOVIE:t=E.s.VideoMovie;break;case n.Yt.VIDEO:case n.Yt.VIDEO_GAME:t=E.s.VideoOther;break;case n.Yt.TV_MINI_SERIES:case n.Yt.TV_SEASON:case n.Yt.TV_SERIES:case n.Yt.TV_SHORT:case n.Yt.TV_SPECIAL:case n.Yt.WEB_SERIES:t=E.s.VideoTvShow;break;default:t=E.s.Website}return t}(i);if(!i||!t||e.subPageTitleString)return{type:r};let a=t,s=i?.ratingsSummary?.aggregateRating;s&&(a+=` ⭐ ${String(s.toPrecision(2))}`);let o=i?.titleGenres?.genres;if(o&&o.length){for(let e of(a+=" | ",o))a+=`${e.genre.text}, `;a=a.slice(0,-2)}let d="",u=i?.runtime?.seconds;u&&(d+=(0,c.L)(u,c.A.HOURS_MINUTES_EXPLICIT_SHORT));let l=i?.certificate?.rating;return l&&(d+=` | ${l}`),{type:r,enhancedTitle:a,enhancedDescription:d}}function x(e,t,i){if(!e)return;let r=(0,m.L)(i,e.originalTitleText,e.titleText);if(!r)return;let a=(0,p.k)(i,e.series),n=a?`"${a}" ${r}`:`${r}`,s=b(e),o=(0,d.y)(e.releaseYear,e.titleType?.canHaveEpisodes),c=(0,_.H72)(i)({tconst:t,refSuffix:T.C.SEE_MORE});return y(`<a href="${c}">${n}</a>`,s,o)}function y(e,t,i){return t&&i?`${e} (${t} ${i})`:t?`${e} (${t})`:i?`${e} (${i})`:`${e}`}function C(e){let t=(0,p.X)(e?.series),i=v(e);if(e&&i)return y(t?`"${t}" ${i}`:`${i}`,b(e),(0,d.y)(e.releaseYear,e.titleType?.canHaveEpisodes))}function I(e,t){return e?.crewV2?.find(e=>t===e.grouping.groupingId)}function h(e){let t=(0,a.Z)(),i=v(e);if(!e)return;let r=e.plot?.plotText?.plainText,n=e.castV2?.[0]?.credits.map(e=>e.name.nameText?.text),s=[I(e,o.yb.DIRECTOR)?.credits.map(e=>e.name.nameText?.text)],c=[I(e,o.yb.CREATOR)?.credits.map(e=>e.name.nameText?.text)],d=e.titleType?.canHaveEpisodes?c:s,u=n?n.filter(e=>!!e).join(", "):void 0,l=d?.[0]?d[0].filter(e=>!!e).join(", "):void 0;if(!i&&!l&&!u&&!r)return;let p=i&&(l||u||r)?`${i}:`:void 0,m=e.titleType?.canHaveEpisodes?{id:"title_main_page_description_with_writer",defaultMessage:"Created by {directorsOrCreatorsString}."}:{id:"title_main_page_description_with_director",defaultMessage:"Directed by {directorsOrCreatorsString}."},g=l?t.formatMessage(m,{directorsOrCreatorsString:l}):void 0;return[p,g,u?t.formatMessage({id:"title_main_page_description_with_cast",defaultMessage:"With {castString}."},{castString:u}):void 0,r?`${r}`:void 0].filter(e=>!!e).join(" ")}function M(e){let t=!(arguments.length>1)||void 0===arguments[1]||arguments[1],i=C(e.titleData),r=h(e.titleData);return{title:(i?[i,e.subPageTitleString,t?"IMDb":""].filter(e=>!!e).join(" - "):void 0)||void 0,description:(e.subPageDescriptionString?[i,e.subPageDescriptionString].filter(e=>!!e).join(" - "):r)||void 0,canonicalPath:e.canonicalPath,canonicalQuery:e.canonicalQuery}}let R={id:"title_main_meta_keywords",defaultMessage:"Reviews, Showtimes, DVDs, Photos, User Ratings, Synopsis, Trailers, Credits"},Y=e=>{let{title:t,description:i,canonicalPath:a=l.$.TITLE_MAIN,canonicalQuery:n}=M(e),{subPageKeywords:o,structuredData:c,templateData:d}=e,p=M(e,!1).title,m=D(e,p),f=(0,s.N)(R),_=e.titleData?.meta?.canonicalId??"",T=(0,g.D9)(a,{tconst:_,...d},n),E=(0,u.z)(T);return(0,r.jsx)(S.Se,{title:t,canonicalUrl:a?T:void 0,description:i,image:e.titleData?.primaryImage,structuredData:c,openGraphData:m,keywords:o||f,hrefLangEntries:E,noIndex:e.noIndex})};t.ZP=Y,Y.fragments={titleData:f.Y}},96908:function(e,t,i){i.d(t,{CZ:function(){return s},tl:function(){return n},yb:function(){return o}});var r=i(76635),a=i.n(r);let n={actor:"Actor",actress:"Actress",animation_department:"Animation Department",art_department:"Art Department",art_director:"Art Director",assistant_director:"Second Unit Director or Assistant Director",camera_department:"Camera and Electrical Department",casting_department:"Casting Department",casting_director:"Casting Director",choreographer:"Choreographer",cinematographer:"Cinematographer",composer:"Composer",costume_department:"Costume and Wardrobe Department",costume_designer:"Costume Designer",costume_supervisor:"Costume Supervisor",director:"Director",editor:"Editor",editorial_department:"Editorial Department",electrical_department:"Electrical Department",hair_stylist:"Hair Stylist",intimacy_coordinator:"Intimacy Coordinator",location_management:"Location Management",make_up_artist:"Make-Up Artist",make_up_department:"Make-Up Department",miscellaneous:"Additional Crew",music_department:"Music Department",music_supervisor:"Music Supervisor",producer:"Producer",production_department:"Production Department",production_designer:"Production Designer",production_manager:"Production Manager",property_master:"Property Master",script_department:"Script and Continuity Department",script_supervisor:"Script Supervisor",self:"Self",set_decorator:"Set Decorator",showrunner:"Showrunner",sound_department:"Sound Department",soundtrack:"Soundtrack",special_effects:"Special Effects",stunt_coordinator:"Stunt Coordinator",stunts:"Stunts",thanks:"Thanks",transportation_department:"Transportation Department",visual_effects:"Visual Effects",writer:"Writer",accountant:"Accountant",assistant:"Assistant",executive:"Executive",legal:"Legal",manager:"Manager",music_artist:"Music Artist",podcaster:"Podcaster",publicist:"Publicist",talent_agent:"Talent Agent"},s=a().invert(n),o={CAST:"amzn1.imdb.concept.name_credit_group.7caf7d16-5db9-4f4f-8864-d4c6e711c686",CREATOR:"amzn1.imdb.concept.name_credit_group.85198717-6c2d-481e-93a5-47858774bcce",DIRECTOR:"amzn1.imdb.concept.name_credit_category.ace5cb4c-8708-4238-9542-04641e7c8171",STAR:"amzn1.imdb.concept.name_credit_group.7510356e-fde9-438e-b3ad-0099ba6bc8ce",WRITER:"amzn1.imdb.concept.name_credit_category.c84ecaff-add5-4f2e-81db-102a41881fe3"}}}]);
