@@ -2,30 +2,34 @@
 created: 2026-02-20
 related:
   - "[[bugs]]"
-  - "[[gotchas/HAR Files May Not Capture Dynamic Content]]"
+  - "[[gotchas/HAR URL Pattern Must Include All Domains]]"
   - "[[guide/Playwright Tests With HAR Files]]"
 ---
 
-When recording the IMDB page for "Another Earth (2011)", the user's personal rating was not captured in the HAR file.
+When replaying the IMDB HAR file, the user's personal rating (8) was not appearing in the clipped output even though the HAR contained the rating data.
 
 **Symptoms:**
-- The `rating:` field in clipped output is empty
-- HAR file contains `hero-rating-bar__loading` in the HTML
-- CSS selector for rating matches no element
-
-**Investigation:**
-- Searched HAR for `ratingValue` — found `ratingValue\":8` but this was inside a review object (a reviewer's rating), not the user's personal rating
-- Searched for `YOUR RATING` — found the section but it shows `aria-label=\"Loading rating\"` and `aria-disabled=\"true\"`
-- Found 88 GraphQL requests in HAR but none contained the user's rating data
+- The `rating:` field in clipped output was empty
+- HAR file definitely contained the rating data (searched and found GraphQL response with rating)
+- CSS selector for rating matched no element during replay
 
 **Root cause:**
-The user's personal rating is fetched via an authenticated GraphQL API call that either:
-1. Hadn't completed when the HAR was recorded
-2. Requires authentication cookies that weren't present during HAR playback
+The `routeFromHAR` call used a URL filter that was too narrow:
+```typescript
+await page.routeFromHAR(HAR_PATH, {
+  url: '**/www.imdb.com/**',  // Only matches www.imdb.com
+  notFound: 'fallback',
+});
+```
+
+The user rating is loaded via GraphQL from `api.graphql.imdb.com` (specifically the `PersonalizedTitlesData` query). This domain did NOT match the `**/www.imdb.com/**` pattern, so Playwright fell back to the network (which failed because no session/cookies).
 
 **Resolution:**
-Accepted the limitation. Updated expected file `Another Earth (2011).md` to have empty `rating:` field.
+Remove the URL filter to replay ALL recorded requests:
+```typescript
+await page.routeFromHAR(HAR_PATH, {
+  notFound: 'fallback',  // No url filter = match all recorded requests
+});
+```
 
-**Future fix:**
-Re-record the HAR while logged in, wait for page to fully load (rating spinner disappears), then stop recording.
-
+The test now correctly captures the user rating of "8" from the HAR replay. See [[gotchas/HAR URL Pattern Must Include All Domains]].

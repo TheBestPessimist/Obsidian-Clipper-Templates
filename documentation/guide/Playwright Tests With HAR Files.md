@@ -25,9 +25,10 @@ test('should clip page correctly', async ({ context, extensionId }) => {
   await importTemplateViaUI(context, extensionId, templateJson);
 
   const page = await context.newPage();
-  
+
+  // Route ALL requests from HAR - no URL filter!
+  // This ensures API calls to subdomains are also replayed
   await page.routeFromHAR(HAR_PATH, {
-    url: '**/www.example.com/**',
     notFound: 'fallback',
   });
 
@@ -35,6 +36,8 @@ test('should clip page correctly', async ({ context, extensionId }) => {
   // ... rest of test same as HTML fixture tests
 });
 ```
+
+See [[gotchas/HAR URL Pattern Must Include All Domains]] for why the URL filter should be omitted.
 
 **Create expected output** — The expected markdown file uses placeholders for dynamic values:
 - `{{TEST_URL}}` — replaced with the actual URL at test time
@@ -46,5 +49,6 @@ test('should clip page correctly', async ({ context, extensionId }) => {
 - Use HTML fixtures when the page is simple and static
 - See [[patterns/HAR Routing vs HTML Fixtures]]
 
-**Gotcha:** Dynamic content loaded after page load (like user ratings fetched via API) may appear in a loading state. See [[gotchas/HAR Files May Not Capture Dynamic Content]].
-
+**Gotchas:**
+- If API data isn't appearing, check that you're not filtering by URL pattern. See [[gotchas/HAR URL Pattern Must Include All Domains]].
+- If data shows as "loading", the HAR may have been recorded too early. See [[gotchas/HAR Files May Not Capture Dynamic Content]].

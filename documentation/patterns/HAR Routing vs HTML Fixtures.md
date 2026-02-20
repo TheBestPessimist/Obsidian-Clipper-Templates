@@ -33,11 +33,11 @@ await page.goto(fixtureUrl);
 HAR routing:
 ```typescript
 await page.routeFromHAR(HAR_PATH, {
-  url: '**/domain.com/**',
-  notFound: 'fallback',
+  notFound: 'fallback',  // No url filter - replay everything
 });
 await page.goto('https://domain.com/actual/page');
 ```
 
 HAR uses the real URL (important for URL-based template matching) while HTML fixtures use a local server URL that may need adjustment in expected output.
 
+Don't add a URL filter to `routeFromHAR` — it will break API calls to subdomains. See [[gotchas/HAR URL Pattern Must Include All Domains]].
