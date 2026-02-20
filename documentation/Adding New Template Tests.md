@@ -15,7 +15,7 @@ To add a new test case:
 
 **Export your template** — In [[Obsidian Clipper]] settings, export the template to `test resources/templates/<name>-clipper.json`.
 
-**Create the expected output** — Clip the page with your template normally, copy the output from the clipper preview, and save it to `test resources/<expected-name>.md`. Make sure the file ends with exactly one newline.
+**Create the expected output** — Clip the page with your template normally, copy the output from the clipper preview, and save it to `test resources/<expected-name>.md`.
 
 **Write the test** — Add to an existing test file or create a new one in `test-harness/src/`:
 
