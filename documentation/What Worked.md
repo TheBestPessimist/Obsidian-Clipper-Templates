@@ -1,8 +1,8 @@
 ---
 created: 2026-02-20
-tags:
-  - test-harness
-  - lessons-learned
+topics:
+  - "[[Test Harness]]"
+  - "[[Lessons Learned]]"
 related:
   - "[[Test Harness Overview]]"
   - "[[What Did Not Work]]"
@@ -88,4 +88,3 @@ generalSettings.propertyTypes = template.properties.map(p => ({
 
 - [[What Did Not Work]] - Approaches that failed
 - [[Gotchas]] - Common pitfalls
-

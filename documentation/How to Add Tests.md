@@ -1,9 +1,8 @@
 ---
 created: 2026-02-20
-tags:
-  - test-harness
-  - guide
-  - how-to
+topics:
+  - "[[Test Harness]]"
+  - "[[How-To]]"
 related:
   - "[[Test Harness Overview]]"
   - "[[Gotchas]]"
@@ -110,4 +109,3 @@ describe('IMDB Series Template', () => {
 
 - [[Gotchas]] - Common pitfalls
 - [[Test Harness Overview]] - Architecture overview
-

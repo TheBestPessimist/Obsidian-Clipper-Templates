@@ -1,9 +1,8 @@
 ---
 created: 2026-02-20
-tags:
-  - test-harness
-  - obsidian-clipper
-  - documentation
+topics:
+  - "[[Test Harness]]"
+  - "[[Obsidian Clipper]]"
 related:
   - "[[Architecture]]"
   - "[[What Worked]]"
@@ -85,4 +84,3 @@ test resources/
 - [[Gotchas]] - Things to watch out for
 - [[How to Add Tests]] - Guide for adding new test cases
 - [[Clipper Internals]] - Knowledge about clipper's codebase
-

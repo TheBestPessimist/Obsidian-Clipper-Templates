@@ -1,9 +1,8 @@
 ---
 created: 2026-02-20
-tags:
-  - test-harness
-  - lessons-learned
-  - failures
+topics:
+  - "[[Test Harness]]"
+  - "[[Lessons Learned]]"
 related:
   - "[[Test Harness Overview]]"
   - "[[What Worked]]"
@@ -85,4 +84,3 @@ expect(result.properties[1].value).toBe('...');
 
 - [[What Worked]] - Successful approaches
 - [[Gotchas]] - Common pitfalls
-

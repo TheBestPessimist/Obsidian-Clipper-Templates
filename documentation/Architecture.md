@@ -1,8 +1,8 @@
 ---
 created: 2026-02-20
-tags:
-  - test-harness
-  - architecture
+topics:
+  - "[[Test Harness]]"
+  - "[[Architecture]]"
 related:
   - "[[Test Harness Overview]]"
   - "[[Clipper Internals]]"
@@ -99,4 +99,3 @@ deps: {
 
 - [[Clipper Internals]] - Details about clipper's code structure
 - [[Gotchas]] - Configuration issues we encountered
-

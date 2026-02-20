@@ -1,9 +1,8 @@
 ---
 created: 2026-02-20
-tags:
-  - test-harness
-  - obsidian-clipper
-  - internals
+topics:
+  - "[[Test Harness]]"
+  - "[[Obsidian Clipper]]"
 related:
   - "[[Architecture]]"
   - "[[Gotchas]]"
@@ -106,4 +105,3 @@ interface Property {
 
 - [[Architecture]] - How the test harness uses these
 - [[Gotchas]] - Pitfalls related to internals
-

@@ -1,9 +1,8 @@
 ---
 created: 2026-02-20
-tags:
-  - test-harness
-  - gotchas
-  - warnings
+topics:
+  - "[[Test Harness]]"
+  - "[[Gotchas]]"
 related:
   - "[[Test Harness Overview]]"
   - "[[What Did Not Work]]"
@@ -91,4 +90,3 @@ The clipper source is outside your control. Treat it as read-only. If clipper ch
 
 - [[How to Add Tests]] - Step-by-step guide
 - [[Clipper Internals]] - Understanding clipper's code
-
