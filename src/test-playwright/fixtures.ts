@@ -265,8 +265,6 @@ export interface HarTestConfig {
   harPath: string;
   /** Path to template JSON file (relative to test resources/templates) */
   templatePath: string;
-  /** Path to expected markdown file (relative to test resources) */
-  expectedPath: string;
   /** The URL to navigate to (will be served from HAR) */
   url: string;
 }
@@ -278,7 +276,6 @@ export interface HarTestConfig {
  *   const actual = await runHarTest(context, extensionId, {
  *     harPath: 'www.example.com.har',
  *     templatePath: 'example-clipper.json',
- *     expectedPath: 'Example Page.md',
  *     url: 'https://www.example.com/page',
  *   });
  *   expectEqualsIgnoringNewlines(actual, expected);
@@ -357,8 +354,6 @@ export async function runHarTest(
 
   return clipboardContent;
 }
-
-
 
 /**
  * Assert that two markdown strings are equal, ignoring whitespace differences.

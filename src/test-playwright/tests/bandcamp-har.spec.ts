@@ -11,7 +11,6 @@ test.describe('Bandcamp Discography Template (HAR)', () => {
     const actual = await runHarTest(context, extensionId, {
       harPath: 'bandcamp/byron.bandcamp.com.har',
       templatePath: 'bandcamp-discography-as-tasks-clipper.json',
-      expectedPath: 'bandcamp/byron - Discography.md',
       url: BANDCAMP_URL,
     });
 

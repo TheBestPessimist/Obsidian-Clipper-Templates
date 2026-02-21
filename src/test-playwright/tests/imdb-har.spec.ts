@@ -24,7 +24,6 @@ test.describe('IMDB Movie Template (HAR)', () => {
     const actual = await runHarTest(context, extensionId, {
       harPath: 'imdb/Another Earth.har',
       templatePath: 'imdb-movie-clipper.json',
-      expectedPath: 'imdb/Another Earth (2011).md',
       url: IMDB_URL,
     });
 
@@ -36,7 +35,6 @@ test.describe('IMDB Movie Template (HAR)', () => {
   //   const actual = await runHarTest(context, extensionId, {
   //     harPath: 'imdb/Shogun.har',
   //     templatePath: 'imdb-series-clipper.json',
-  //     expectedPath: 'imdb/Shogun (1980).md',
   //     url: IMDB_URL,
   //   });
   //
