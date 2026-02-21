@@ -17,6 +17,10 @@ related:
 │   │   ├── imdb/            # IMDB-related test resources
 │   │   └── templates/       # Clipper template JSON exports
 │   └── test-playwright/     # Playwright E2E tests
+│       └── tests/
+│           ├── bandcamp.spec.ts  # Bandcamp template tests
+│           ├── imdb.spec.ts      # IMDB template tests
+│           └── filters.spec.ts   # Filter expression tests
 └── package.json             # Root package.json (delegates to test-playwright)
 ```
 

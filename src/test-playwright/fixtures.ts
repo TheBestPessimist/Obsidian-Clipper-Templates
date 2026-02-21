@@ -209,3 +209,200 @@ export async function runHarTest(
 export function expectEqualsIgnoringNewlines(actual: string, expected: string): void {
   expect(normalizeMarkdown(actual)).toBe(normalizeMarkdown(expected));
 }
+
+// Filter Testing utilities
+
+export interface FilterTestConfig {
+  harPath: string;
+  filter: string;
+}
+
+export interface FilterTestCase {
+  filter: string;
+  expected: string;
+}
+
+export interface MultiFilterTestConfig {
+  harPath: string;
+  filters: FilterTestCase[];
+}
+
+/**
+ * Create a minimal template JSON from a filter expression.
+ * The filter becomes the noteContentFormat (body), no properties.
+ */
+function createFilterTemplate(filter: string, index: number): { json: string; name: string } {
+  const name = `Filter Test ${index} ${Date.now()}`;
+  const template = {
+    schemaVersion: '0.1.0',
+    name,
+    behavior: 'create',
+    noteContentFormat: filter,
+    properties: [],
+    triggers: [],
+    noteNameFormat: 'FilterTest',
+    path: '',
+  };
+  return { json: JSON.stringify(template), name };
+}
+
+/**
+ * Import multiple templates into the extension in one settings page session.
+ */
+async function importTemplates(
+  context: BrowserContext,
+  extensionId: string,
+  templates: Array<{ json: string; name: string }>
+): Promise<void> {
+  const settingsPage = await context.newPage();
+  await settingsPage.goto(`chrome-extension://${extensionId}/settings.html`);
+  await settingsPage.waitForLoadState('domcontentloaded');
+  await settingsPage.waitForTimeout(1000);
+
+  for (const { json } of templates) {
+    await settingsPage.locator('#new-template-btn').click();
+    await settingsPage.waitForTimeout(500);
+    await settingsPage.locator('.settings-section-header button.import-template-btn').click();
+    const importModal = settingsPage.locator('#import-modal');
+    await importModal.waitFor({ state: 'visible', timeout: 5000 });
+    await importModal.locator('.import-json-textarea').fill(json);
+    await importModal.locator('.import-confirm-btn').click();
+    await importModal.waitFor({ state: 'hidden', timeout: 5000 });
+    await settingsPage.waitForTimeout(300);
+  }
+  await settingsPage.close();
+}
+
+/**
+ * Extract only the body content (after frontmatter) from clipped markdown.
+ */
+function extractBody(fileContent: string): string {
+  const lines = fileContent.split('\n');
+  let inFrontmatter = false;
+  let bodyStartIndex = 0;
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].trim() === '---') {
+      if (!inFrontmatter) {
+        inFrontmatter = true;
+      } else {
+        bodyStartIndex = i + 1;
+        break;
+      }
+    }
+  }
+  return lines.slice(bodyStartIndex).join('\n');
+}
+
+/**
+ * Run a single filter test against a HAR file.
+ */
+export async function runFilterTest(
+  context: BrowserContext,
+  extensionId: string,
+  config: FilterTestConfig
+): Promise<string> {
+  const results = await runFilterTests(context, extensionId, {
+    harPath: config.harPath,
+    filters: [{ filter: config.filter, expected: '' }],
+  });
+  return results[0].actual;
+}
+
+export interface FilterTestResult {
+  filter: string;
+  expected: string;
+  actual: string;
+}
+
+/**
+ * Run multiple filter tests against a single HAR file.
+ * Loads the page once and switches between templates for efficiency.
+ * Returns array of results for custom assertion handling.
+ */
+export async function runFilterTests(
+  context: BrowserContext,
+  extensionId: string,
+  config: MultiFilterTestConfig
+): Promise<FilterTestResult[]> {
+  // Create all templates
+  const templates = config.filters.map((f, i) => createFilterTemplate(f.filter, i));
+
+  // Import all templates in one go
+  await importTemplates(context, extensionId, templates);
+
+  const harFullPath = path.join(TEST_RESOURCES_PATH, config.harPath);
+  const url = extractUrlFromHar(harFullPath);
+
+  const page = await context.newPage();
+  await page.routeFromHAR(harFullPath, { notFound: 'fallback' });
+  await page.goto(url);
+  await page.waitForLoadState('domcontentloaded');
+  await page.waitForTimeout(1000);
+
+  const tabId = await getTabIdForPage(context, page);
+  let serviceWorker = context.serviceWorkers()[0];
+  if (!serviceWorker) serviceWorker = await context.waitForEvent('serviceworker');
+
+  await serviceWorker.evaluate(async (tid) => { await chrome.tabs.update(tid, { active: true }); }, tabId);
+  await page.waitForTimeout(100);
+  await serviceWorker.evaluate(async (tid) => { await chrome.tabs.sendMessage(tid, { action: 'toggle-iframe' }); }, tabId);
+
+  await page.waitForSelector('#obsidian-clipper-container', { timeout: 10000 });
+  const clipperFrame = page.frameLocator('#obsidian-clipper-iframe');
+  await clipperFrame.locator('#clip-btn').waitFor({ timeout: 10000 });
+  await page.waitForTimeout(2000);
+
+  const results: FilterTestResult[] = [];
+
+  for (let i = 0; i < templates.length; i++) {
+    const templateName = templates[i].name;
+    const filterCase = config.filters[i];
+
+    await clipperFrame.locator('#template-select').selectOption({ label: templateName });
+    await page.waitForTimeout(1500);
+
+    await clipperFrame.locator('#more-btn').click();
+    await clipperFrame.locator('.secondary-actions').waitFor({ state: 'visible', timeout: 2000 });
+    const saveOption = clipperFrame.locator('.secondary-actions').getByText('Save file', { exact: false });
+
+    const downloadPromise = page.waitForEvent('download', { timeout: 15000 });
+    await saveOption.click();
+    const download = await downloadPromise;
+    const downloadPath = await download.path();
+    if (!downloadPath) throw new Error(`Download failed for filter ${i}`);
+    const fileContent = fs.readFileSync(downloadPath, 'utf-8');
+
+    results.push({
+      filter: filterCase.filter,
+      expected: filterCase.expected,
+      actual: extractBody(fileContent),
+    });
+  }
+
+  await page.close();
+  return results;
+}
+
+/**
+ * Run multiple filter tests and assert all results match expected values.
+ * Throws on first mismatch with descriptive error.
+ */
+export async function runFilterTestsAndAssert(
+  context: BrowserContext,
+  extensionId: string,
+  config: MultiFilterTestConfig
+): Promise<void> {
+  const results = await runFilterTests(context, extensionId, config);
+
+  for (const result of results) {
+    const actualNorm = normalizeMarkdown(result.actual);
+    const expectedNorm = normalizeMarkdown(result.expected);
+    if (actualNorm !== expectedNorm) {
+      throw new Error(
+        `Filter test failed: ${result.filter.substring(0, 60)}...\n` +
+        `Expected:\n${expectedNorm}\n\n` +
+        `Actual:\n${actualNorm}`
+      );
+    }
+  }
+}

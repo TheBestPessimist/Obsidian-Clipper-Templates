@@ -36,3 +36,5 @@ test('should clip page correctly', async ({ extensionContext, extensionId }) => 
 **Run** — `npm test` from project root.
 
 Always use the real URL that matches how the page was originally clipped. See [[guide/Playwright Tests With HAR Files]] for details.
+
+**For quick filter iteration** — If you just want to test filter expressions without full templates, see [[patterns/Filter Testing Pattern]].
