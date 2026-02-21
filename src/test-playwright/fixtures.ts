@@ -265,8 +265,29 @@ export interface HarTestConfig {
   harPath: string;
   /** Path to template JSON file (relative to test resources/templates) */
   templatePath: string;
-  /** The URL to navigate to (will be served from HAR) */
-  url: string;
+}
+
+/**
+ * Extract the page URL from a HAR file.
+ * Finds the first HTML document request (not API calls, images, etc).
+ */
+function extractUrlFromHar(harPath: string): string {
+  const harContent = JSON.parse(fs.readFileSync(harPath, 'utf-8'));
+  const entries = harContent.log?.entries;
+  if (!entries?.length) {
+    throw new Error(`No entries found in HAR file: ${harPath}`);
+  }
+
+  // Find the first HTML document request
+  const htmlEntry = entries.find((entry: { response?: { content?: { mimeType?: string } } }) => {
+    const mimeType = entry.response?.content?.mimeType || '';
+    return mimeType.includes('text/html');
+  });
+
+  if (!htmlEntry?.request?.url) {
+    throw new Error(`Could not find HTML document in HAR file: ${harPath}`);
+  }
+  return htmlEntry.request.url;
 }
 
 /**
@@ -276,7 +297,6 @@ export interface HarTestConfig {
  *   const actual = await runHarTest(context, extensionId, {
  *     harPath: 'www.example.com.har',
  *     templatePath: 'example-clipper.json',
- *     url: 'https://www.example.com/page',
  *   });
  *   expectEqualsIgnoringNewlines(actual, expected);
  *
@@ -289,6 +309,7 @@ export async function runHarTest(
 ): Promise<string> {
   const harFullPath = path.join(TEST_RESOURCES_PATH, config.harPath);
   const templateJson = readTemplateJson(config.templatePath);
+  const url = extractUrlFromHar(harFullPath);
 
   // Import the template
   await importTemplateViaUI(context, extensionId, templateJson);
@@ -299,8 +320,8 @@ export async function runHarTest(
     notFound: 'fallback',
   });
 
-  // Navigate to the URL (served from HAR)
-  await page.goto(config.url);
+  // Navigate to the URL (extracted from HAR)
+  await page.goto(url);
   await page.waitForLoadState('domcontentloaded');
 
   // Wait for content script to be ready

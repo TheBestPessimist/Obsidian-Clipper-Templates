@@ -1,44 +1,28 @@
 /**
  * E2E tests for IMDB Movie template using HAR files.
- *
- * These tests:
- * 1. Open browser with Obsidian Clipper extension installed
- * 2. Pre-load the IMDB Movie template into extension storage
- * 3. Use HAR file to replay network responses for the IMDB page
- * 4. Navigate to the IMDB URL (served from HAR)
- * 5. Open the clipper in EMBEDDED mode (iframe injected into page)
- * 6. Trigger "Copy to clipboard" in the embedded clipper
- * 7. Read clipboard and compare with expected markdown
- *
- * This differs from the HTML fixture test by using HAR recording instead
- * of a static HTML file. This allows testing with real page state including
- * user-specific data like ratings.
  */
 
 import { test, runHarTest, readExpected, expectEqualsIgnoringNewlines } from '../fixtures';
-
-const IMDB_URL = 'https://www.imdb.com/title/tt1549572/';
 
 test.describe('IMDB Movie Template (HAR)', () => {
   test('Another Earth', async ({ context, extensionId }) => {
     const actual = await runHarTest(context, extensionId, {
       harPath: 'imdb/Another Earth.har',
       templatePath: 'imdb-movie-clipper.json',
-      url: IMDB_URL,
     });
 
     const expected = readExpected('imdb/Another Earth (2011).md');
     expectEqualsIgnoringNewlines(actual, expected);
   });
 
-  // test('Shogun', async ({ context, extensionId }) => {
-  //   const actual = await runHarTest(context, extensionId, {
-  //     harPath: 'imdb/Shogun.har',
-  //     templatePath: 'imdb-series-clipper.json',
-  //     url: IMDB_URL,
-  //   });
-  //
-  //   const expected = readExpected('imdb/Shogun (1980).md');
-  //   expectEqualsIgnoringNewlines(actual, expected);
-  // })
+  test('should clip Andromeda correctly', async ({ context, extensionId }) => {
+    const actual = await runHarTest(context, extensionId, {
+      harPath: 'imdb/Andromeda.har',
+      templatePath: 'imdb-series-clipper.json',
+    });
+
+    const expected = readExpected('imdb/Andromeda (2000).md');
+    expectEqualsIgnoringNewlines(actual, expected);
+  });
+
 });
