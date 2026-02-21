@@ -90,13 +90,10 @@ export const test = base.extend<ClipperFixtures>({
 
     const context = await chromium.launchPersistentContext('', {
       channel: 'chromium',
+      headless: true, // set to 'false' for visual debugging
       args: [
-        // Chrome's new headless mode supports extensions (unlike old headless)
-        '--headless=new',
         `--disable-extensions-except=${EXTENSION_PATH}`,
         `--load-extension=${EXTENSION_PATH}`,
-        // Allow clipboard access without user gesture
-        '--unsafely-allow-clipboard-read-write',
       ],
       // Grant clipboard permissions to avoid permission prompts
       permissions: ['clipboard-read', 'clipboard-write'],
