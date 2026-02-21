@@ -38,7 +38,4 @@ The `|merge` filter is quite flexible:
 
 - Updated `[[2026-02-21 13-39 - Fix IMDB Series Template Writers and Genres]]` with correct `|merge:` patterns
 
-- Updated `[[Clipper Set Then Iterate Breaks With Filters]]` references
-
 **Key takeaway:** The `+` operator is not supported, but `|merge:variableName` works perfectly for combining arrays. Always test assumptions before documenting them.
-

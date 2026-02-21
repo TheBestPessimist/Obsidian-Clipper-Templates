@@ -10,7 +10,7 @@ related:
   - "[[tasks/2026-02-20 13-45-51 - Extract Reusable HAR Test Helper]]"
 ---
 
-Playwright tests using HAR file routing for IMDB movies. Currently tests "Another Earth (2011)" using two different HAR recordings.
+Playwright tests using HAR file routing for IMDB movies. Currently tests "Another Earth (2011)" using a recorded HAR file.
 
 **What worked:**
 - `page.routeFromHAR()` replays network responses from the recorded HAR file
@@ -21,14 +21,13 @@ Playwright tests using HAR file routing for IMDB movies. Currently tests "Anothe
 
 **What did NOT work:**
 - User rating not captured — see [[bugs/IMDB User Rating Not Captured in HAR]]
-- Schema only contains 3 actors while page shows 4 — see [[gotchas/Schema Actor Count Differs From Page Display]]
+- Schema only contains 3 actors while page shows 4 — see [[gotchas/Schema Data May Differ From Page Display]]
 
 **Files:**
 - `src/test-playwright/tests/imdb-har.spec.ts` — the test (uses `runHarTest()` helper)
-- `test resources/templates/imdb-movie-clipper.json` — movie template
-- `test resources/Another Earth (2011).md` — expected output
-- `test resources/2www.imdb.com.har` — HAR recording 1
-- `test resources/imdb - Another Earth.har` — HAR recording 2
+- `src/resources/templates/imdb-movie-clipper.json` — movie template
+- `src/resources/imdb/Another Earth (2011).md` — expected output
+- `src/resources/imdb/imdb - Another Earth.har` — HAR recording
 
 **Key insight:**
 HAR files capture a snapshot of network state. Content loaded dynamically after page load (authenticated API calls, lazy-loaded data) may appear in loading states. Either wait longer when recording, or accept the limitation in expected output.

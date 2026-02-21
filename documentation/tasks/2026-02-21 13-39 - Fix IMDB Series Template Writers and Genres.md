@@ -6,7 +6,6 @@ related:
   - "[[IMDB]]"
   - "[[imdb-series-clipper.json]]"
   - "[[Clipper Plus Operator Not Supported]]"
-  - "[[Clipper Set Then Iterate Breaks With Filters]]"
   - "[[IMDB Creators vs Stars Selector]]"
   - "[[Schema Data May Differ From Page Display]]"
 ---
@@ -38,7 +37,7 @@ The interest chips already include all genres (schema + additional) so no need t
 
 1. **The `+` operator** - tried `{% set combined = a + b %}` but the Clipper renderer doesn't support `+`. See [[Clipper Plus Operator Not Supported]].
 
-2. **Set variable with filters, then iterate** - tried `{% set interests = selector:...|slice:0,-1 %}{% for i in interests %}` but this produced empty output. See [[Clipper Set Then Iterate Breaks With Filters]].
+2. **Specific syntax issue at the time** - tried `{% set interests = selector:...|slice:0,-1 %}{% for i in interests %}` but this produced empty output. The exact cause was unclear; may have been a typo or specific edge case rather than a general limitation.
 
 **Better approach we could have used:**
 

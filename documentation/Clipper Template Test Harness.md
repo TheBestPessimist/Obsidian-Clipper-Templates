@@ -24,7 +24,6 @@ const actual = await evaluateTemplate(html, template, {
 expect(actual).toBe(expected);
 ```
 
-The test harness lives in `test-harness/` and fixtures live in `test resources/`. Run tests with `cd test-harness && npm test`.
+The test harness lives in `src/test-playwright/` and fixtures live in `src/resources/`. Run tests with `npm test` from the project root.
 
 The key principle is [[decisions/Import Real Clipper Modules Do Not Reimplement]]. Everything else flows from that.
-
