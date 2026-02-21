@@ -16,7 +16,7 @@ actors:
   - "[[William Mapother]]"
   - "[[Matthew-Lee Erlbach]]"
 Links:
-  - "{{TEST_URL}}"
+  - "https://www.imdb.com/title/tt1549572/"
 genre:
   - "[[Drama]]"
   - "[[Romance]]"
@@ -24,7 +24,7 @@ genre:
 rating: "8"
 image: "https://m.media-amazon.com/images/M/MV5BMTAzNTIzMjkxNjJeQTJeQWpwZ15BbWU3MDEwNDQ2OTU@._V1_.jpg"
 description:
-created: {{DATE}}
+created: 2026-02-20
 ---
 
 > [!NOTE] synopsis

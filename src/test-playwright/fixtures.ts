@@ -29,6 +29,55 @@ export interface ClipperFixtures {
   fixtureServer: { url: string; close: () => void };
 }
 
+/**
+ * The mock date used for all tests.
+ * This date is injected into the extension's JavaScript to ensure consistent test results.
+ */
+export const MOCK_DATE = '2026-02-20T12:00:00Z';
+
+/**
+ * Generate JavaScript code that mocks the Date object.
+ * When injected at the start of a JS file, all calls to `new Date()` or `Date.now()`
+ * will return the mock date instead of the real current date.
+ */
+function generateDateMockCode(mockDateISO: string): string {
+  return `
+(function() {
+  if (window.__dateMocked) return;
+  window.__dateMocked = true;
+
+  const MOCK_TIMESTAMP = ${new Date(mockDateISO).getTime()};
+  const OriginalDate = Date;
+
+  function MockDate(...args) {
+    if (args.length === 0) {
+      return new OriginalDate(MOCK_TIMESTAMP);
+    }
+    if (new.target) {
+      return new OriginalDate(...args);
+    }
+    return OriginalDate(...args);
+  }
+
+  MockDate.prototype = OriginalDate.prototype;
+  MockDate.now = function() { return MOCK_TIMESTAMP; };
+  MockDate.parse = OriginalDate.parse;
+  MockDate.UTC = OriginalDate.UTC;
+
+  // Copy all static properties
+  Object.getOwnPropertyNames(OriginalDate).forEach(prop => {
+    if (!(prop in MockDate)) {
+      try {
+        MockDate[prop] = OriginalDate[prop];
+      } catch (e) {}
+    }
+  });
+
+  Date = MockDate;
+})();
+`;
+}
+
 export const test = base.extend<ClipperFixtures>({
   // Launch browser with extension loaded
   context: async ({}, use) => {
@@ -50,6 +99,33 @@ export const test = base.extend<ClipperFixtures>({
       ],
       // Grant clipboard permissions to avoid permission prompts
       permissions: ['clipboard-read', 'clipboard-write'],
+    });
+
+    // Intercept extension JavaScript files and inject Date mocking code.
+    // This allows us to control the date returned by {{date}} in templates
+    // without modifying the extension source code.
+    //
+    // Since route.fetch() doesn't support chrome-extension:// protocol,
+    // we read the files directly from disk.
+    const dateMockCode = generateDateMockCode(MOCK_DATE);
+    await context.route('chrome-extension://**/*.js', async (route) => {
+      const url = route.request().url();
+      // Extract filename from chrome-extension://extensionId/filename.js
+      const urlPath = new URL(url).pathname;
+      const filePath = path.join(EXTENSION_PATH, urlPath);
+
+      try {
+        const originalBody = fs.readFileSync(filePath, 'utf-8');
+        // Inject mock code at the beginning of each JS file
+        const modifiedBody = dateMockCode + originalBody;
+        await route.fulfill({
+          contentType: 'application/javascript',
+          body: modifiedBody,
+        });
+      } catch (error) {
+        // File not found - let it pass through
+        await route.continue();
+      }
     });
 
     await use(context);
@@ -282,23 +358,7 @@ export async function runHarTest(
   return clipboardContent;
 }
 
-/**
- * Get expected markdown content with placeholders replaced.
- *
- * @param expectedPath - Path to expected file (relative to test resources)
- * @param url - URL to replace {{TEST_URL}} placeholder
- * @param date - Date to replace {{DATE}} placeholder (defaults to today)
- */
-export function getExpectedMarkdown(
-  expectedPath: string,
-  url: string,
-  date?: Date
-): string {
-  const dateStr = (date ?? new Date()).toISOString().split('T')[0];
-  return readExpected(expectedPath)
-    .replace('{{TEST_URL}}', url)
-    .replace('{{DATE}}', dateStr);
-}
+
 
 /**
  * Assert that two markdown strings are equal, ignoring whitespace differences.

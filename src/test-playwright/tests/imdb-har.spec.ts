@@ -15,12 +15,12 @@
  * user-specific data like ratings.
  */
 
-import { test, runHarTest, getExpectedMarkdown, expectEqualsIgnoringNewlines } from '../fixtures';
+import { test, runHarTest, readExpected, expectEqualsIgnoringNewlines } from '../fixtures';
 
 const IMDB_URL = 'https://www.imdb.com/title/tt1549572/';
 
 test.describe('IMDB Movie Template (HAR)', () => {
-  test('should clip Another Earth', async ({ context, extensionId }) => {
+  test('Another Earth', async ({ context, extensionId }) => {
     const actual = await runHarTest(context, extensionId, {
       harPath: 'imdb/Another Earth.har',
       templatePath: 'imdb-movie-clipper.json',
@@ -28,7 +28,19 @@ test.describe('IMDB Movie Template (HAR)', () => {
       url: IMDB_URL,
     });
 
-    const expected = getExpectedMarkdown('imdb/Another Earth (2011).md', IMDB_URL);
+    const expected = readExpected('imdb/Another Earth (2011).md');
     expectEqualsIgnoringNewlines(actual, expected);
   });
+
+  // test('Shogun', async ({ context, extensionId }) => {
+  //   const actual = await runHarTest(context, extensionId, {
+  //     harPath: 'imdb/Shogun.har',
+  //     templatePath: 'imdb-series-clipper.json',
+  //     expectedPath: 'imdb/Shogun (1980).md',
+  //     url: IMDB_URL,
+  //   });
+  //
+  //   const expected = readExpected('imdb/Shogun (1980).md');
+  //   expectEqualsIgnoringNewlines(actual, expected);
+  // })
 });

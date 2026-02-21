@@ -2,7 +2,7 @@
  * E2E tests for Bandcamp Discography template using HAR files.
  */
 
-import { test, runHarTest, getExpectedMarkdown, expectEqualsIgnoringNewlines } from '../fixtures';
+import { test, runHarTest, readExpected, expectEqualsIgnoringNewlines } from '../fixtures';
 
 const BANDCAMP_URL = 'https://byron.bandcamp.com/';
 
@@ -15,7 +15,7 @@ test.describe('Bandcamp Discography Template (HAR)', () => {
       url: BANDCAMP_URL,
     });
 
-    const expected = getExpectedMarkdown('bandcamp/byron - Discography.md', BANDCAMP_URL);
+    const expected = readExpected('bandcamp/byron - Discography.md');
     expectEqualsIgnoringNewlines(actual, expected);
   });
 });

@@ -11,7 +11,7 @@
  * 7. Reads clipboard and compares with expected markdown
  */
 
-import { test, runHarTest, getExpectedMarkdown, expectEqualsIgnoringNewlines } from '../fixtures';
+import { test, runHarTest, readExpected, expectEqualsIgnoringNewlines } from '../fixtures';
 
 const IMDB_URL = 'https://www.imdb.com/title/tt0213327/';
 
@@ -24,7 +24,7 @@ test.describe('IMDB Series Template (HAR)', () => {
       url: IMDB_URL,
     });
 
-    const expected = getExpectedMarkdown('imdb/Andromeda (2000).md', IMDB_URL);
+    const expected = readExpected('imdb/Andromeda (2000).md');
     expectEqualsIgnoringNewlines(actual, expected);
   });
 });
