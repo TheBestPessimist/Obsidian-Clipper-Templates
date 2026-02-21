@@ -1,33 +1,38 @@
 /**
- * E2E tests for IMDB Movie template using HAR files.
- * All IMDB tests run in parallel tabs for faster execution.
+ * E2E tests for IMDB templates using HAR files.
+ * 
+ * MULTIWORKER APPROACH:
+ * Each test runs in a separate Playwright worker (separate browser instance).
+ * Tests are distributed across workers automatically by Playwright.
  */
 
-import { test, runHarTestsInParallel, expectAllParallelTestsPassed } from '../fixtures';
+import { test, runHarTest, readExpected, expectEqualsIgnoringNewlines } from '../fixtures';
 
 test.describe('IMDB Templates', () => {
-  test('All IMDB tests (parallel)', async ({ context, extensionId }) => {
-    const results = await runHarTestsInParallel(context, extensionId, [
-      {
-        name: 'Another Earth',
-        harPath: 'imdb/Another Earth.har',
-        templatePath: 'imdb-movie-clipper.json',
-        expectedPath: 'imdb/Another Earth (2011).md',
-      },
-      {
-        name: 'Andromeda',
-        harPath: 'imdb/Andromeda.har',
-        templatePath: 'imdb-series-clipper.json',
-        expectedPath: 'imdb/Andromeda (2000).md',
-      },
-      {
-        name: 'Shogun 1980',
-        harPath: 'imdb/Shogun 1980.har',
-        templatePath: 'imdb-series-clipper.json',
-        expectedPath: 'imdb/Shogun 1980.md',
-      },
-    ]);
+  test('Another Earth', async ({ context, extensionId }) => {
+    const actual = await runHarTest(context, extensionId, {
+      harPath: 'imdb/Another Earth.har',
+      templatePath: 'imdb-movie-clipper.json',
+    });
+    const expected = readExpected('imdb/Another Earth (2011).md');
+    expectEqualsIgnoringNewlines(actual, expected);
+  });
 
-    expectAllParallelTestsPassed(results);
+  test('Andromeda', async ({ context, extensionId }) => {
+    const actual = await runHarTest(context, extensionId, {
+      harPath: 'imdb/Andromeda.har',
+      templatePath: 'imdb-series-clipper.json',
+    });
+    const expected = readExpected('imdb/Andromeda (2000).md');
+    expectEqualsIgnoringNewlines(actual, expected);
+  });
+
+  test('Shogun 1980', async ({ context, extensionId }) => {
+    const actual = await runHarTest(context, extensionId, {
+      harPath: 'imdb/Shogun 1980.har',
+      templatePath: 'imdb-series-clipper.json',
+    });
+    const expected = readExpected('imdb/Shogun 1980.md');
+    expectEqualsIgnoringNewlines(actual, expected);
   });
 });
