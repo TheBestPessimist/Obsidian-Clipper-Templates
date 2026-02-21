@@ -4,7 +4,7 @@ related:
   - "[[tasks]]"
   - "[[Playwright]]"
   - "[[Clipper Active Tab Query Prevents True Parallelism]]"
-  - "[[Two Test Execution Strategies]]"
+  - "[[Multi-worker Test Execution Strategy]]"
   - "[[Running Tests]]"
 ---
 
@@ -22,31 +22,15 @@ User wanted tests to run in parallel to speed up execution. The vision was: sing
 
 5. **Mutex for critical section** — Added a mutex to serialize the clipper activation phase. Still had race conditions because the clipper's async initialization couldn't be reliably serialized.
 
-**What worked:**
+6. **Hybrid approach** — Single browser, parallel page loading (Phase 1), sequential clipper operations (Phase 2). Worked but was more complex and slightly slower than multi-worker.
 
-**Option A: Multi-worker** (`src/test-playwright-multiworker/`)
-- Each [[Playwright]] worker gets its own browser instance
-- Templates loaded once per worker (worker-scoped fixtures)
-- Tests distributed across workers automatically
-- No active-tab conflict because each browser has its own active tab
-- Config: `workers: 4` (Playwright uses up to this many, but may use fewer based on test count/CPU)
+**What worked best: Multi-worker approach**
 
-**Option B: Hybrid** (`src/test-playwright/`)
-- Single browser instance (`workers: 1`)
-- Phase 1: Load all pages in parallel (network I/O parallelized)
-- Phase 2: Run clipper operations sequentially (one tab active at a time)
-- Avoids active-tab race condition while still parallelizing the slow part
-
-**Performance comparison (4 tests):**
-- Multi-worker: 27.7s
-- Hybrid: 30.9s
-
-Both pass all tests. Multi-worker is slightly faster and provides better test isolation. Hybrid uses less memory (single browser).
+Each [[Playwright]] worker gets its own browser instance with templates pre-loaded. Tests distributed across workers automatically. No active-tab conflict because each browser has its own active tab. This became the only test approach kept. See [[Multi-worker Test Execution Strategy]].
 
 **What I liked:**
 - Discovering the root cause via reading background.ts source code
-- Clean separation of concerns with Phase 1/Phase 2 in hybrid approach
-- Both approaches now exist side-by-side for comparison
+- Multi-worker provides clean test isolation
 
 **What I disliked:**
 - Had to try many approaches before finding what works

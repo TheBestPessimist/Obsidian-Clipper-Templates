@@ -1,11 +1,11 @@
 /**
  * Playwright fixtures for testing Obsidian Clipper extension.
  *
- * MULTIWORKER APPROACH:
- * - Each worker gets its own browser instance with the extension
- * - Templates are loaded once per worker (worker-scoped)
- * - Tests run in parallel across workers (each worker has its own active tab)
- * - No active-tab race condition since workers are isolated
+ * Each worker gets its own browser instance with the extension.
+ * Templates are loaded once per worker (worker-scoped).
+ * Tests run in parallel across workers (each worker has its own active tab).
+ * No active-tab race condition since workers are isolated.
+ * See [[Clipper Active Tab Query Prevents True Parallelism]].
  */
 
 import { test as base, chromium, type BrowserContext, type Page } from '@playwright/test';
@@ -171,7 +171,7 @@ async function getTabIdForPage(context: BrowserContext, page: Page): Promise<num
 }
 
 /**
- * Run a HAR-based clipper test. In multiworker, each test runs in isolation.
+ * Run a HAR-based clipper test. Each test runs in isolation within its worker.
  */
 export async function runHarTest(
   context: BrowserContext,

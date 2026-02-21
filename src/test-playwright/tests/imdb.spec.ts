@@ -1,9 +1,6 @@
 /**
  * E2E tests for IMDB templates using HAR files.
- * 
- * MULTIWORKER APPROACH:
- * Each test runs in a separate Playwright worker (separate browser instance).
- * Tests are distributed across workers automatically by Playwright.
+ * Each test runs in a separate Playwright worker.
  */
 
 import { test, runHarTest, readExpected, expectEqualsIgnoringNewlines } from '../fixtures';

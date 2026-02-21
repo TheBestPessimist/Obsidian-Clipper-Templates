@@ -1,7 +1,7 @@
 {
-  "name": "clipper-e2e-tests-multiworker",
+  "name": "clipper-e2e-tests",
   "version": "1.0.0",
-  "description": "E2E tests for Obsidian Clipper templates using Playwright - Multi-worker parallel approach",
+  "description": "E2E tests for Obsidian Clipper templates using Playwright",
   "type": "module",
   "scripts": {
     "test": "playwright test",
@@ -17,4 +17,3 @@
     "lz-string": "^1.5.0"
   }
 }
-
