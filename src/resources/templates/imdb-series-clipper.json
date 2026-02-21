@@ -31,7 +31,7 @@
 		},
 		{
 			"name": "writers",
-			"value": "{{selector:#__next > main > div > section.ipc-page-background.ipc-page-background--base.sc-358297d7-0.CHcbB > section > div:nth-child(5) > section > section > div.sc-14a487d5-4.bzdlEY > div.sc-14a487d5-6.gilQBG > div.sc-14a487d5-12.grWKim > div.sc-af040695-2.fLTdiX > ul > li:nth-child(1) > div > ul > li|wikilink|join}}",
+			"value": "{{selector:#__next > main > div > section.ipc-page-background.ipc-page-background--base.sc-358297d7-0.CHcbB > section > div:nth-child(5) > section > section > div.sc-14a487d5-4.bzdlEY > div.sc-14a487d5-6.gilQBG > div.sc-14a487d5-12.grWKim > div.sc-af040695-2.fLTdiX > ul > li:has(> span.ipc-metadata-list-item__label) > div > ul > li|wikilink|join}}",
 			"type": "multitext"
 		},
 		{
@@ -46,7 +46,7 @@
 		},
 		{
 			"name": "genre",
-			"value": "{{schema:genre|wikilink|join}}",
+			"value": "{% for i in selector:span.ipc-chip__text %}{% if i != \"Back to top\" %}[[{{i}}]], {% endif %}{% endfor %}",
 			"type": "multitext"
 		},
 		{
