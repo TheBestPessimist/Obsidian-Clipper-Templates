@@ -6,8 +6,8 @@
 import { test, runHarTest, readExpected, expectEqualsIgnoringNewlines } from '../fixtures';
 
 test.describe('Bandcamp Templates', () => {
-  test('Byron Discography', async ({ context, extensionId }) => {
-    const actual = await runHarTest(context, extensionId, {
+  test('Byron Discography', async ({ extensionContext, extensionId }) => {
+    const actual = await runHarTest(extensionContext, extensionId, {
       harPath: 'bandcamp/byron.bandcamp.com.har',
       templatePath: 'bandcamp-discography-as-tasks-clipper.json',
     });

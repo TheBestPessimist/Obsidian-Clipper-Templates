@@ -6,6 +6,7 @@ related:
   - "[[patterns/Single Assertion Against Expected File]]"
   - "[[patterns/Date Mocking via Playwright Route Interception]]"
   - "[[gotchas/HAR First Entry Is Not Always The Page URL]]"
+  - "[[Playwright Worker Fixtures]]"
 ---
 
 Use `runHarTest()` to run a complete HAR-based Playwright test with minimal boilerplate:
@@ -13,8 +14,8 @@ Use `runHarTest()` to run a complete HAR-based Playwright test with minimal boil
 ```typescript
 import { test, runHarTest, readExpected, expectEqualsIgnoringNewlines } from '../fixtures';
 
-test('should clip page correctly', async ({ context, extensionId }) => {
-  const actual = await runHarTest(context, extensionId, {
+test('should clip page correctly', async ({ extensionContext, extensionId }) => {
+  const actual = await runHarTest(extensionContext, extensionId, {
     harPath: 'category/example.har',
     templatePath: 'example-clipper.json',
   });
@@ -27,7 +28,7 @@ test('should clip page correctly', async ({ context, extensionId }) => {
 The URL is automatically extracted from the HAR file (first HTML document request). If the HAR file contains the wrong content, you can override it:
 
 ```typescript
-const actual = await runHarTest(context, extensionId, {
+const actual = await runHarTest(extensionContext, extensionId, {
   harPath: 'category/example.har',
   templatePath: 'example-clipper.json',
   url: 'https://www.example.com/different-page',  // optional override

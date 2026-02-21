@@ -15,22 +15,20 @@ related:
 
 **Export your template** — In [[Obsidian Clipper]] settings, export the template to `src/resources/templates/<name>-clipper.json`.
 
-**Create the expected output** — Clip the page with your template normally, copy the output from the clipper preview, and save it to `src/resources/<category>/<expected-name>.md`. Use `{{TEST_URL}}` and `{{DATE}}` placeholders for dynamic values. Make sure the file ends with exactly one newline.
+**Create the expected output** — Clip the page with your template normally, copy the output from the clipper preview, and save it to `src/resources/<category>/<expected-name>.md`. Dates use a fixed mock date (`2026-02-20`) — see [[patterns/Date Mocking via Playwright Route Interception]]. Make sure the file ends with exactly one newline.
 
 **Write the test** — Use the `runHarTest()` helper in `src/test-playwright/tests/`:
 
 ```typescript
-import { test, runHarTest, getExpectedMarkdown, expectEqualsIgnoringNewlines } from '../fixtures';
+import { test, runHarTest, readExpected, expectEqualsIgnoringNewlines } from '../fixtures';
 
-test('should clip page correctly', async ({ context, extensionId }) => {
-  const actual = await runHarTest(context, extensionId, {
+test('should clip page correctly', async ({ extensionContext, extensionId }) => {
+  const actual = await runHarTest(extensionContext, extensionId, {
     harPath: 'category/example.har',
     templatePath: 'example-clipper.json',
-    expectedPath: 'category/Expected Output.md',
-    url: 'https://original-url.com/page',
   });
 
-  const expected = getExpectedMarkdown('category/Expected Output.md', 'https://original-url.com/page');
+  const expected = readExpected('category/Expected Output.md');
   expectEqualsIgnoringNewlines(actual, expected);
 });
 ```

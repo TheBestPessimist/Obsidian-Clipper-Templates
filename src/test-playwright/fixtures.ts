@@ -21,17 +21,9 @@ const TEMPLATES_PATH = path.join(TEST_RESOURCES_PATH, 'templates');
 const DOWNLOADS_BASE_PATH = path.join(__dirname, 'downloads');
 
 export interface ClipperWorkerFixtures {
-  sharedContext: BrowserContext;
-  sharedExtensionId: string;
-}
-
-export interface ClipperFixtures {
-  context: BrowserContext;
+  extensionContext: BrowserContext;
   extensionId: string;
 }
-
-let templatesLoaded = false;
-let workerId = 0;
 
 export const MOCK_DATE = '2026-02-20T12:00:00Z';
 
@@ -59,18 +51,19 @@ function generateDateMockCode(mockDateISO: string): string {
 `;
 }
 
-export const test = base.extend<ClipperFixtures, ClipperWorkerFixtures>({
-  sharedContext: [async ({}, use) => {
+export const test = base.extend<{}, ClipperWorkerFixtures>({
+  extensionContext: [async ({}, use, workerInfo) => {
     if (!fs.existsSync(EXTENSION_PATH)) {
       throw new Error(`Extension not found at ${EXTENSION_PATH}. Run 'npm run build:chrome' first.`);
     }
-    const workerDownloadsPath = path.join(DOWNLOADS_BASE_PATH, `worker-${++workerId}`);
+    const workerDownloadsPath = path.join(DOWNLOADS_BASE_PATH, `worker-${workerInfo.workerIndex}`);
     if (fs.existsSync(workerDownloadsPath)) fs.rmSync(workerDownloadsPath, { recursive: true });
     fs.mkdirSync(workerDownloadsPath, { recursive: true });
 
+    const headless = workerInfo.project.use.headless ?? true;
     const context = await chromium.launchPersistentContext('', {
       channel: 'chromium',
-      headless: false,
+      headless,
       args: [`--disable-extensions-except=${EXTENSION_PATH}`, `--load-extension=${EXTENSION_PATH}`],
       permissions: ['clipboard-read', 'clipboard-write'],
       acceptDownloads: true,
@@ -92,19 +85,13 @@ export const test = base.extend<ClipperFixtures, ClipperWorkerFixtures>({
     await context.close();
   }, { scope: 'worker' }],
 
-  sharedExtensionId: [async ({ sharedContext }, use) => {
-    let [serviceWorker] = sharedContext.serviceWorkers();
-    if (!serviceWorker) serviceWorker = await sharedContext.waitForEvent('serviceworker');
+  extensionId: [async ({ extensionContext }, use) => {
+    let [serviceWorker] = extensionContext.serviceWorkers();
+    if (!serviceWorker) serviceWorker = await extensionContext.waitForEvent('serviceworker');
     const extensionId = serviceWorker.url().split('/')[2];
-    if (!templatesLoaded) {
-      await loadAllTemplates(sharedContext, extensionId);
-      templatesLoaded = true;
-    }
+    await loadAllTemplates(extensionContext, extensionId);
     await use(extensionId);
   }, { scope: 'worker' }],
-
-  context: async ({ sharedContext }, use) => { await use(sharedContext); },
-  extensionId: async ({ sharedExtensionId }, use) => { await use(sharedExtensionId); },
 });
 
 export const expect = test.expect;

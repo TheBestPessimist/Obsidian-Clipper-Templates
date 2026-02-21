@@ -16,26 +16,22 @@ Playwright tests can use HAR files instead of static HTML fixtures. This replays
 **Create the test** — Use the `runHarTest()` helper from `fixtures.ts`:
 
 ```typescript
-import { test, runHarTest, getExpectedMarkdown, expectEqualsIgnoringNewlines } from '../fixtures';
+import { test, runHarTest, readExpected, expectEqualsIgnoringNewlines } from '../fixtures';
 
-test('should clip page correctly', async ({ context, extensionId }) => {
-  const actual = await runHarTest(context, extensionId, {
+test('should clip page correctly', async ({ extensionContext, extensionId }) => {
+  const actual = await runHarTest(extensionContext, extensionId, {
     harPath: 'category/example.har',
     templatePath: 'example-clipper.json',
-    expectedPath: 'category/Example Page.md',
-    url: 'https://www.example.com/page',
   });
 
-  const expected = getExpectedMarkdown('category/Example Page.md', 'https://www.example.com/page');
+  const expected = readExpected('category/Example Page.md');
   expectEqualsIgnoringNewlines(actual, expected);
 });
 ```
 
 See [[patterns/Reusable HAR Test Helper]] for details on what the helper does.
 
-**Create expected output** — The expected markdown file uses placeholders for dynamic values:
-- `{{TEST_URL}}` — replaced with the actual URL at test time
-- `{{DATE}}` — replaced with today's date
+**Create expected output** — The expected markdown file should match the actual clipped output exactly. Dates use a fixed mock date (`2026-02-20`) — see [[patterns/Date Mocking via Playwright Route Interception]].
 
 All resources are organized by category under `src/resources/`:
 - HAR files: `src/resources/<category>/<name>.har`
