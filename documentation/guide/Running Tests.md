@@ -17,12 +17,14 @@ cd src/test-playwright
 npm test
 ```
 
+Tests run in headless mode by default (no visible browser window). See [[Chrome Extension Headless Mode]] for how this works.
+
 Other useful commands:
-- `npm run test:headed` — run tests with browser visible
+- `npm run test:headed` — run tests with browser visible (useful for debugging)
 - `npm run test:debug` — run tests in debug mode
 - `npm run test:ui` — open [[Playwright]] UI
 
-Tests use [[Playwright]] to run the actual [[Obsidian Clipper]] extension in a Chromium browser. The output shows passed/failed tests with timing information.
+Tests use [[Playwright]] to run the actual [[Obsidian Clipper]] extension in Chromium. The output shows passed/failed tests with timing information.
 
 The clipper source at `Other Sources/obsidian-clipper` must be built first:
 ```bash
