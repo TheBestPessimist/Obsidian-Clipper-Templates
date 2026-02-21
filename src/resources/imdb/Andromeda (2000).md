@@ -21,7 +21,7 @@ genre:
   - "[[Action]]"
   - "[[Adventure]]"
   - "[[Drama]]"
-rating: 
+rating: "8"
 image: "https://m.media-amazon.com/images/M/MV5BYmVhZmZhMDktODg1Ny00ZGNkLWFjYjItNTY5ZWFmM2RjNTYyXkEyXkFqcGc@._V1_.jpg"
 description:
 created: 2026-02-20
