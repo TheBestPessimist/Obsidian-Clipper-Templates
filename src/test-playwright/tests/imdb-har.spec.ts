@@ -25,4 +25,14 @@ test.describe('IMDB Movie Template (HAR)', () => {
     expectEqualsIgnoringNewlines(actual, expected);
   });
 
+  test('should clip Shogun correctly', async ({ context, extensionId }) => {
+    const actual = await runHarTest(context, extensionId, {
+      harPath: 'imdb/Shogun 1980.har',
+      templatePath: 'imdb-series-clipper.json',
+    });
+
+    const expected = readExpected('imdb/Shogun 1980.md');
+    expectEqualsIgnoringNewlines(actual, expected);
+  });
+
 });
