@@ -5,15 +5,14 @@
  * - Loading the extension into Chromium
  * - Providing the extension ID
  * - Serving HTML fixture files
- * - Reading clipboard after clipping
- * - Loading templates into extension storage
+ * - Downloading clipped notes (parallel-safe, no clipboard)
+ * - Loading ALL templates once at startup
  */
 
-import { test as base, chromium, type BrowserContext } from '@playwright/test';
+import { test as base, chromium, type BrowserContext, type Page } from '@playwright/test';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
-import http from 'http';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -23,11 +22,26 @@ const EXTENSION_PATH = path.join(__dirname, '../../Other Sources/obsidian-clippe
 // Path to test resources
 const TEST_RESOURCES_PATH = path.join(__dirname, '../resources');
 
+// Path to templates directory
+const TEMPLATES_PATH = path.join(TEST_RESOURCES_PATH, 'templates');
+
+// Base path for downloads directory (for capturing downloads from extension iframes)
+const DOWNLOADS_BASE_PATH = path.join(__dirname, 'downloads');
+
+// Worker-scoped fixtures (shared across all tests in a worker)
+export interface ClipperWorkerFixtures {
+  sharedContext: BrowserContext;
+  sharedExtensionId: string;
+}
+
+// Test-scoped fixtures (per-test)
 export interface ClipperFixtures {
   context: BrowserContext;
   extensionId: string;
-  fixtureServer: { url: string; close: () => void };
 }
+
+/** Track whether templates have been loaded for this worker */
+let templatesLoaded = false;
 
 /**
  * The mock date used for all tests.
@@ -78,9 +92,9 @@ function generateDateMockCode(mockDateISO: string): string {
 `;
 }
 
-export const test = base.extend<ClipperFixtures>({
-  // Launch browser with extension loaded
-  context: async ({}, use) => {
+export const test = base.extend<ClipperFixtures, ClipperWorkerFixtures>({
+  // Worker-scoped: Launch browser with extension loaded (shared across all tests)
+  sharedContext: [async ({}, use) => {
     if (!fs.existsSync(EXTENSION_PATH)) {
       throw new Error(
         `Extension not found at ${EXTENSION_PATH}. ` +
@@ -88,15 +102,24 @@ export const test = base.extend<ClipperFixtures>({
       );
     }
 
+    // Ensure downloads directory exists and is empty
+    if (fs.existsSync(DOWNLOADS_BASE_PATH)) {
+      fs.rmSync(DOWNLOADS_BASE_PATH, { recursive: true });
+    }
+    fs.mkdirSync(DOWNLOADS_BASE_PATH, { recursive: true });
+
     const context = await chromium.launchPersistentContext('', {
       channel: 'chromium',
-      headless: true, // set to 'false' for visual debugging
+      headless: false, // set to 'false' for visual debugging
       args: [
         `--disable-extensions-except=${EXTENSION_PATH}`,
         `--load-extension=${EXTENSION_PATH}`,
       ],
       // Grant clipboard permissions to avoid permission prompts
       permissions: ['clipboard-read', 'clipboard-write'],
+      // Set downloads path for capturing extension iframe downloads
+      acceptDownloads: true,
+      downloadsPath: DOWNLOADS_BASE_PATH,
     });
 
     // Intercept extension JavaScript files and inject Date mocking code.
@@ -128,46 +151,34 @@ export const test = base.extend<ClipperFixtures>({
 
     await use(context);
     await context.close();
-  },
+  }, { scope: 'worker' }],
 
-  // Get extension ID from service worker
-  extensionId: async ({ context }, use) => {
+  // Worker-scoped: Get extension ID and load all templates once
+  sharedExtensionId: [async ({ sharedContext }, use) => {
     // Wait for service worker (Manifest V3)
-    let [serviceWorker] = context.serviceWorkers();
+    let [serviceWorker] = sharedContext.serviceWorkers();
     if (!serviceWorker) {
-      serviceWorker = await context.waitForEvent('serviceworker');
+      serviceWorker = await sharedContext.waitForEvent('serviceworker');
     }
     const extensionId = serviceWorker.url().split('/')[2];
+
+    // Load all templates once per worker
+    if (!templatesLoaded) {
+      await loadAllTemplates(sharedContext, extensionId);
+      templatesLoaded = true;
+    }
+
     await use(extensionId);
+  }, { scope: 'worker' }],
+
+  // Test-scoped: Expose shared context as 'context' for each test
+  context: async ({ sharedContext }, use) => {
+    await use(sharedContext);
   },
 
-  // Serve HTML fixtures via local HTTP server
-  fixtureServer: async ({}, use) => {
-    const server = http.createServer((req, res) => {
-      const urlPath = decodeURIComponent(req.url || '/');
-      const filePath = path.join(TEST_RESOURCES_PATH, urlPath);
-
-      if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-        const content = fs.readFileSync(filePath, 'utf-8');
-        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-        res.end(content);
-      } else {
-        res.writeHead(404);
-        res.end('Not found');
-      }
-    });
-
-    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
-    const address = server.address();
-    const port = typeof address === 'object' && address ? address.port : 0;
-    const url = `http://127.0.0.1:${port}`;
-
-    await use({
-      url,
-      close: () => server.close(),
-    });
-
-    server.close();
+  // Test-scoped: Expose shared extension ID as 'extensionId' for each test
+  extensionId: async ({ sharedExtensionId }, use) => {
+    await use(sharedExtensionId);
   },
 });
 
@@ -256,6 +267,73 @@ export async function importTemplateViaUI(
 }
 
 /**
+ * Load ALL templates from the templates directory at startup.
+ * This is called once per browser context to avoid loading templates per-test.
+ */
+async function loadAllTemplates(
+  context: BrowserContext,
+  extensionId: string
+): Promise<void> {
+  const templateFiles = fs.readdirSync(TEMPLATES_PATH).filter(f => f.endsWith('.json'));
+
+  if (templateFiles.length === 0) {
+    console.warn('No template files found in', TEMPLATES_PATH);
+    return;
+  }
+
+  console.log(`Loading ${templateFiles.length} templates...`);
+
+  // Open settings page once
+  const settingsPage = await context.newPage();
+  await settingsPage.goto(`chrome-extension://${extensionId}/settings.html`);
+  await settingsPage.waitForLoadState('domcontentloaded');
+  await settingsPage.waitForTimeout(1000);
+
+  for (const templateFile of templateFiles) {
+    const templateJson = fs.readFileSync(path.join(TEMPLATES_PATH, templateFile), 'utf-8');
+    const templateData = JSON.parse(templateJson);
+    console.log(`  Importing template: ${templateData.name}`);
+
+    // Click "New template" button to enter the templates section
+    const newTemplateBtn = settingsPage.locator('#new-template-btn');
+    await newTemplateBtn.click();
+    await settingsPage.waitForTimeout(500);
+
+    // Click the Import button
+    const importBtn = settingsPage.locator('.settings-section-header button.import-template-btn');
+    await importBtn.click();
+
+    // Wait for import modal
+    const importModal = settingsPage.locator('#import-modal');
+    await importModal.waitFor({ state: 'visible', timeout: 5000 });
+
+    // Paste template JSON
+    const textarea = importModal.locator('.import-json-textarea');
+    await textarea.fill(templateJson);
+
+    // Click confirm
+    const confirmBtn = importModal.locator('.import-confirm-btn');
+    await confirmBtn.click();
+
+    // Wait for import to complete
+    await importModal.waitFor({ state: 'hidden', timeout: 5000 });
+    await settingsPage.waitForTimeout(300);
+  }
+
+  console.log('All templates loaded.');
+  await settingsPage.close();
+}
+
+/**
+ * Get template name from a template JSON file.
+ */
+function getTemplateNameFromPath(templatePath: string): string {
+  const templateJson = fs.readFileSync(path.join(TEMPLATES_PATH, templatePath), 'utf-8');
+  const templateData = JSON.parse(templateJson);
+  return templateData.name;
+}
+
+/**
  * Configuration for a HAR-based test.
  */
 export interface HarTestConfig {
@@ -289,6 +367,50 @@ function extractUrlFromHar(harPath: string): string {
 }
 
 /**
+ * Get the tab ID for a page by evaluating in the service worker.
+ */
+async function getTabIdForPage(context: BrowserContext, page: Page): Promise<number> {
+  const serviceWorker = context.serviceWorkers()[0];
+  if (!serviceWorker) {
+    throw new Error('No service worker found');
+  }
+
+  const pageUrl = page.url();
+  const tabId = await serviceWorker.evaluate(async (url) => {
+    const tabs = await chrome.tabs.query({});
+    const tab = tabs.find(t => t.url === url);
+    return tab?.id;
+  }, pageUrl);
+
+  if (!tabId) {
+    throw new Error(`Could not find tab ID for page: ${pageUrl}`);
+  }
+  return tabId;
+}
+
+/**
+ * Run a HAR-based clipper test with a pre-created page.
+ * Used internally by runHarTestsInParallel for parallel execution.
+ */
+async function runHarTestWithPage(
+  context: BrowserContext,
+  extensionId: string,
+  config: HarTestConfig,
+  page: Page
+): Promise<string> {
+  const harFullPath = path.join(TEST_RESOURCES_PATH, config.harPath);
+  const url = extractUrlFromHar(harFullPath);
+  const templateName = getTemplateNameFromPath(config.templatePath);
+
+  // Navigate to the URL (HAR routing already set up)
+  await page.goto(url);
+  await page.waitForLoadState('domcontentloaded');
+
+  // Continue with the rest of the test (shared code below)
+  return runClipperOnPage(context, page, templateName);
+}
+
+/**
  * Run a HAR-based clipper test.
  *
  * Usage:
@@ -298,7 +420,10 @@ function extractUrlFromHar(harPath: string): string {
  *   });
  *   expectEqualsIgnoringNewlines(actual, expected);
  *
- * @returns The clipboard content after clipping
+ * Templates are pre-loaded at startup, so this only selects the right template.
+ * Uses download instead of clipboard for parallel-safe execution.
+ *
+ * @returns The downloaded file content after clipping
  */
 export async function runHarTest(
   context: BrowserContext,
@@ -306,11 +431,8 @@ export async function runHarTest(
   config: HarTestConfig
 ): Promise<string> {
   const harFullPath = path.join(TEST_RESOURCES_PATH, config.harPath);
-  const templateJson = readTemplateJson(config.templatePath);
   const url = extractUrlFromHar(harFullPath);
-
-  // Import the template
-  await importTemplateViaUI(context, extensionId, templateJson);
+  const templateName = getTemplateNameFromPath(config.templatePath);
 
   // Create page and set up HAR routing
   const page = await context.newPage();
@@ -322,29 +444,55 @@ export async function runHarTest(
   await page.goto(url);
   await page.waitForLoadState('domcontentloaded');
 
+  return runClipperOnPage(context, page, templateName);
+}
+
+/**
+ * Shared logic: activate tab, trigger clipper, select template, download result.
+ */
+async function runClipperOnPage(
+  context: BrowserContext,
+  page: Page,
+  templateName: string
+): Promise<string> {
+
   // Wait for content script to be ready
   await page.waitForTimeout(1000);
 
-  // Get service worker and trigger embedded mode
+  // Get the tab ID for this specific page
+  const tabId = await getTabIdForPage(context, page);
+
+  // Get service worker and trigger embedded mode on the specific tab
   let serviceWorker = context.serviceWorkers()[0];
   if (!serviceWorker) {
     serviceWorker = await context.waitForEvent('serviceworker');
   }
 
-  await serviceWorker.evaluate(async () => {
-    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tabs[0]?.id) {
-      await chrome.tabs.sendMessage(tabs[0].id, { action: 'toggle-iframe' });
-    }
-  });
+  // Activate this tab before triggering the clipper
+  // The clipper queries chrome.tabs.query({active: true}) to determine which tab to clip
+  await serviceWorker.evaluate(async (tid) => {
+    await chrome.tabs.update(tid, { active: true });
+  }, tabId);
+  await page.waitForTimeout(100);
 
-  // Wait for the iframe to appear
+  // Trigger the clipper iframe
+  await serviceWorker.evaluate(async (tid) => {
+    await chrome.tabs.sendMessage(tid, { action: 'toggle-iframe' });
+  }, tabId);
+
+  // Wait for the iframe and clipper UI to load
   await page.waitForSelector('#obsidian-clipper-container', { timeout: 10000 });
   const clipperFrame = page.frameLocator('#obsidian-clipper-iframe');
-
-  // Wait for clipper UI to load
   await clipperFrame.locator('#clip-btn').waitFor({ timeout: 10000 });
-  await page.waitForTimeout(3000);
+
+  // Wait for clipper to fully initialize and capture the page content
+  await page.waitForTimeout(2000);
+
+  // Select the correct template from dropdown
+  const templateDropdown = clipperFrame.locator('#template-select');
+  await templateDropdown.selectOption({ label: templateName });
+  // Wait for template to apply
+  await page.waitForTimeout(1500);
 
   // Check for errors
   const errorMessage = clipperFrame.locator('.error-message:visible');
@@ -353,25 +501,28 @@ export async function runHarTest(
     console.log('Clipper error:', errorText);
   }
 
-  // Click "Copy to clipboard"
+  // Click "Save file..." option
   const moreBtn = clipperFrame.locator('#more-btn');
   await moreBtn.click();
-  await clipperFrame.locator('.secondary-actions').waitFor({ timeout: 2000 });
-  const copyOption = clipperFrame.locator('.secondary-actions').getByText('Copy', { exact: false });
-  await copyOption.click();
+  await clipperFrame.locator('.secondary-actions').waitFor({ state: 'visible', timeout: 2000 });
+  const saveOption = clipperFrame.locator('.secondary-actions').getByText('Save file', { exact: false });
 
-  // Wait for clipboard operation
-  await page.waitForTimeout(500);
+  // Set up download listener before clicking
+  const downloadPromise = page.waitForEvent('download', { timeout: 15000 });
+  await saveOption.click();
 
-  // Read clipboard content
-  const clipboardContent = await page.evaluate(async () => {
-    return await navigator.clipboard.readText();
-  });
+  // Wait for download and read content
+  const download = await downloadPromise;
+  const downloadPath = await download.path();
+  if (!downloadPath) {
+    throw new Error('Download failed - no file path');
+  }
+  const fileContent = fs.readFileSync(downloadPath, 'utf-8');
 
-  // Cleanup
+  // Cleanup page
   await page.close();
 
-  return clipboardContent;
+  return fileContent;
 }
 
 /**
@@ -382,4 +533,127 @@ export function expectEqualsIgnoringNewlines(
   expected: string
 ): void {
   expect(normalizeMarkdown(actual)).toBe(normalizeMarkdown(expected));
+}
+
+/**
+ * Configuration for a single HAR test with expected result.
+ */
+export interface HarTestWithExpected extends HarTestConfig {
+  /** Name for identifying this test in results */
+  name: string;
+  /** Path to expected markdown file (relative to test resources) */
+  expectedPath: string;
+}
+
+/**
+ * Result of a parallel HAR test run.
+ */
+export interface ParallelTestResult {
+  name: string;
+  actual: string;
+  expected: string;
+  passed: boolean;
+  error?: string;
+}
+
+/**
+ * Run multiple HAR-based clipper tests.
+ *
+ * Due to the Clipper's architecture (it queries chrome.tabs.query({active: true, currentWindow: true})
+ * to determine which tab to clip), true parallel execution within a single browser isn't possible.
+ * The clipper always clips from the "active" tab, causing race conditions.
+ *
+ * This function optimizes by:
+ * 1. Pre-loading all pages in parallel (navigation is parallelized)
+ * 2. Running clipper operations sequentially (one tab active at a time)
+ *
+ * @param context Browser context
+ * @param extensionId Extension ID
+ * @param tests Array of test configurations
+ * @returns Array of test results
+ */
+export async function runHarTestsInParallel(
+  context: BrowserContext,
+  extensionId: string,
+  tests: HarTestWithExpected[]
+): Promise<ParallelTestResult[]> {
+  console.log(`Running ${tests.length} tests: ${tests.map(t => t.name).join(', ')}`);
+
+  // PHASE 1: Create all pages and start navigation in parallel
+  // This is the expensive network part that benefits from parallelism
+  const sourcePage = context.pages()[0];
+  const testSetups: Array<{ config: HarTestWithExpected; page: Page; url: string }> = [];
+
+  // Create pages sequentially (window.open can't be parallelized safely)
+  for (const testConfig of tests) {
+    const harFullPath = path.join(TEST_RESOURCES_PATH, testConfig.harPath);
+    const url = extractUrlFromHar(harFullPath);
+
+    // Open new tab (simpler than window, and we'll activate it when needed)
+    const page = await context.newPage();
+    await page.routeFromHAR(harFullPath, {
+      notFound: 'fallback',
+    });
+
+    testSetups.push({ config: testConfig, page, url });
+  }
+
+  // Navigate all pages in parallel (the slow part - network I/O)
+  console.log(`  Loading ${testSetups.length} pages in parallel...`);
+  await Promise.all(testSetups.map(async ({ page, url, config }) => {
+    await page.goto(url);
+    await page.waitForLoadState('domcontentloaded');
+    console.log(`  Loaded: ${config.name}`);
+  }));
+
+  // PHASE 2: Run clipper on each page SEQUENTIALLY
+  // The clipper uses chrome.tabs.query({active: true}) so we must serialize this
+  console.log(`  Running clipper on each page sequentially...`);
+  const results: ParallelTestResult[] = [];
+
+  for (const { config, page } of testSetups) {
+    try {
+      const templateName = getTemplateNameFromPath(config.templatePath);
+      const actual = await runClipperOnPage(context, page, templateName);
+      const expected = readExpected(config.expectedPath);
+      const passed = normalizeMarkdown(actual) === normalizeMarkdown(expected);
+
+      results.push({
+        name: config.name,
+        actual,
+        expected,
+        passed,
+      });
+      console.log(`  Clipped: ${config.name} - ${passed ? 'PASS' : 'FAIL'}`);
+    } catch (error) {
+      results.push({
+        name: config.name,
+        actual: '',
+        expected: '',
+        passed: false,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      console.log(`  Clipped: ${config.name} - ERROR: ${error}`);
+    }
+  }
+
+  return results;
+}
+
+/**
+ * Assert all parallel test results passed.
+ */
+export function expectAllParallelTestsPassed(results: ParallelTestResult[]): void {
+  const failures = results.filter(r => !r.passed);
+
+  if (failures.length > 0) {
+    const failureMessages = failures.map(f => {
+      if (f.error) {
+        return `${f.name}: ${f.error}`;
+      }
+      return `${f.name}: Content mismatch\nExpected:\n${f.expected.slice(0, 500)}...\nActual:\n${f.actual.slice(0, 500)}...`;
+    });
+
+    throw new Error(`${failures.length} test(s) failed:\n\n${failureMessages.join('\n\n')}`);
+  }
 }

@@ -35,13 +35,16 @@ const actual = await runHarTest(context, extensionId, {
 ```
 
 The helper handles:
-- Loading and importing the template via UI
+- Templates are pre-loaded at startup (no per-test import)
 - Setting up HAR routing (no URL filter — see [[gotchas/HAR URL Pattern Must Include All Domains]])
 - Navigating to the URL
 - Triggering embedded clipper mode
-- Clicking "Copy to clipboard"
-- Reading clipboard content
+- Selecting the template from the dropdown
+- Clicking "Save file..." to download the clipped content
+- Reading the downloaded file content
 - Closing the page
+
+Uses downloads instead of clipboard for parallel-safe execution. See [[Clipper Active Tab Query Prevents True Parallelism]] for why clipboard doesn't work with parallel tests.
 
 All paths are relative to `src/resources/` (HAR and expected) or `src/resources/templates/` (template JSON).
 

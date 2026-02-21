@@ -4,6 +4,7 @@ related:
   - "[[Obsidian Clipper]]"
   - "[[Clipper Template Test Harness]]"
   - "[[gotchas/Clipper generateFrontmatter Uses generalSettings Not Property Type]]"
+  - "[[gotchas/Clipper Active Tab Query Prevents True Parallelism]]"
   - "[[How Clipper Resolves Template Variables]]"
 ---
 
@@ -21,3 +22,6 @@ related:
 
 `src/utils/__mocks__/webextension-polyfill.ts` — Clipper's own mock for browser extension APIs. The test harness reuses this via an alias.
 
+`src/background/background.ts` — Service worker for the extension. Handles tab activation queries via `chrome.tabs.query({active: true, currentWindow: true})`. This is why parallel tests in a single browser can't work without sequential clipping. See [[Clipper Active Tab Query Prevents True Parallelism]].
+
+`src/content.ts` — Content script injected into web pages. Contains `toggleIframe()` which creates the clipper iframe overlay. Responds to `toggle-iframe` messages from the background script.

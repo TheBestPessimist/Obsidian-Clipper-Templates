@@ -1,0 +1,20 @@
+{
+  "name": "clipper-e2e-tests-multiworker",
+  "version": "1.0.0",
+  "description": "E2E tests for Obsidian Clipper templates using Playwright - Multi-worker parallel approach",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "build:extension": "cd \"../../Other Sources/obsidian-clipper\" && npm run build:chrome"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.0",
+    "@types/lz-string": "^1.3.34",
+    "@types/node": "^22.5.4",
+    "lz-string": "^1.5.0"
+  }
+}
+

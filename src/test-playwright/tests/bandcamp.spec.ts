@@ -1,17 +1,21 @@
 /**
  * E2E tests for Bandcamp Discography template using HAR files.
+ * All Bandcamp tests run in parallel tabs for faster execution.
  */
 
-import { test, runHarTest, readExpected, expectEqualsIgnoringNewlines } from '../fixtures';
+import { test, runHarTestsInParallel, expectAllParallelTestsPassed } from '../fixtures';
 
-test.describe('Bandcamp Discography Template (HAR)', () => {
-  test('byron discography', async ({ context, extensionId }) => {
-    const actual = await runHarTest(context, extensionId, {
-      harPath: 'bandcamp/byron.bandcamp.com.har',
-      templatePath: 'bandcamp-discography-as-tasks-clipper.json',
-    });
+test.describe('Bandcamp Templates', () => {
+  test('All Bandcamp tests (parallel)', async ({ context, extensionId }) => {
+    const results = await runHarTestsInParallel(context, extensionId, [
+      {
+        name: 'byron discography',
+        harPath: 'bandcamp/byron.bandcamp.com.har',
+        templatePath: 'bandcamp-discography-as-tasks-clipper.json',
+        expectedPath: 'bandcamp/byron - Discography.md',
+      },
+    ]);
 
-    const expected = readExpected('bandcamp/byron - Discography.md');
-    expectEqualsIgnoringNewlines(actual, expected);
+    expectAllParallelTestsPassed(results);
   });
 });

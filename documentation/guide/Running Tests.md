@@ -4,6 +4,7 @@ related:
   - "[[guide]]"
   - "[[Clipper Template Test Harness]]"
   - "[[Playwright]]"
+  - "[[Two Test Execution Strategies]]"
 ---
 
 From the project root:
@@ -11,11 +12,21 @@ From the project root:
 npm test
 ```
 
-Or from the test directory:
+Two test folders exist with different execution strategies (see [[Two Test Execution Strategies]]):
+
+**Hybrid approach** (default, `src/test-playwright/`):
 ```bash
 cd src/test-playwright
 npm test
 ```
+Single browser, parallel page loading, sequential clipping. Better for debugging.
+
+**Multi-worker approach** (`src/test-playwright-multiworker/`):
+```bash
+cd src/test-playwright-multiworker
+npm test
+```
+Multiple browsers, true parallel execution. Faster for CI/large test suites.
 
 Tests run in headless mode by default (no visible browser window). See [[Chrome Extension Headless Mode]] for how this works.
 
