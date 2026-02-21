@@ -6,19 +6,6 @@ related:
   - "[[Running Tests]]"
 ---
 
-Chrome's old headless mode didn't support extensions. Chrome's new headless mode (`--headless=new`) does.
+Modern [[Playwright]] with Chromium supports extensions in headless mode directly:
 
-To run [[Playwright]] tests with Chrome extensions in headless mode, add `--headless=new` to the args:
-
-```typescript
-const context = await chromium.launchPersistentContext('', {
-  channel: 'chromium',
-  args: [
-    '--headless=new', // Chrome's new headless mode (supports extensions)
-    `--disable-extensions-except=${EXTENSION_PATH}`,
-    `--load-extension=${EXTENSION_PATH}`,
-  ],
-});
-```
-
-The `--headless=new` Chrome arg runs the browser completely in the background with no visible window, while still loading and executing extensions normally. No need to set `headless: false` in Playwright options — the Chrome arg is sufficient.
+Set `headless: false` when you need to see what's happening in the browser for debugging.
