@@ -4,7 +4,7 @@
 
 import { test, runHarTest, readExpected, expectEqualsIgnoringNewlines } from '../fixtures';
 
-test.describe('IMDB Movie Template (HAR)', () => {
+test.describe('IMDB Templates', () => {
   test('Another Earth', async ({ context, extensionId }) => {
     const actual = await runHarTest(context, extensionId, {
       harPath: 'imdb/Another Earth.har',
@@ -15,7 +15,7 @@ test.describe('IMDB Movie Template (HAR)', () => {
     expectEqualsIgnoringNewlines(actual, expected);
   });
 
-  test('should clip Andromeda correctly', async ({ context, extensionId }) => {
+  test('Andromeda', async ({ context, extensionId }) => {
     const actual = await runHarTest(context, extensionId, {
       harPath: 'imdb/Andromeda.har',
       templatePath: 'imdb-series-clipper.json',
@@ -25,7 +25,7 @@ test.describe('IMDB Movie Template (HAR)', () => {
     expectEqualsIgnoringNewlines(actual, expected);
   });
 
-  test('should clip Shogun correctly', async ({ context, extensionId }) => {
+  test('Shogun 1980', async ({ context, extensionId }) => {
     const actual = await runHarTest(context, extensionId, {
       harPath: 'imdb/Shogun 1980.har',
       templatePath: 'imdb-series-clipper.json',
