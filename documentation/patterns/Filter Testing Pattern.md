@@ -37,10 +37,9 @@ test('my filters', async ({ extensionContext, extensionId }) => {
 
 **Efficiency:** Testing 3 filters takes ~18s vs ~33s if run separately (page loads once instead of three times).
 
-**Filter tests live in:** `src/test-playwright/tests/filters.spec.ts`
+**Filter tests live in:** `src/test-playwright/tests/standalone filters.spec.ts`
 
 **Related functions:**
 - `runFilterTest()` - single filter, returns body string
 - `runFilterTests()` - multiple filters, returns `FilterTestResult[]` for custom assertions
 - `runFilterTestsAndAssert()` - multiple filters with automatic assertion
-
