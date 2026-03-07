@@ -1,22 +1,22 @@
-- [ ] ttt [Sol Messiah](https://solmessiah.bandcamp.com/music) ➕ 2026-03-07
-- [ ] ttt [ASTRAL CHRONICLE — SA-ROC](https://solmessiah.bandcamp.com/musi/album/astral-chronicle) ➕ 2026-03-07
-- [ ] ttt [STARDUST — SA-ROC](https://solmessiah.bandcamp.com/musi/album/stardust) ➕ 2026-03-07
-- [ ] ttt [The Legend of Black Moses — SA-ROC](https://solmessiah.bandcamp.com/musi/album/the-legend-of-black-moses) ➕ 2026-03-07
-- [ ] ttt [PREEM ROC — SA-ROC](https://solmessiah.bandcamp.com/musi/album/preem-roc) ➕ 2026-03-07
-- [ ] ttt [Nebuchadnezzar — SA-ROC](https://solmessiah.bandcamp.com/musi/album/nebuchadnezzar) ➕ 2026-03-07
-- [ ] ttt [Journey of the Starseed — Sa-Roc](https://solmessiah.bandcamp.com/musi/album/journey-of-the-starseed) ➕ 2026-03-07
-- [ ] ttt [Extra-Terrestrial — Sa-Roc](https://solmessiah.bandcamp.com/musi/album/extra-terrestrial) ➕ 2026-03-07
-- [ ] ttt [The Book of Light — SA-ROC](https://solmessiah.bandcamp.com/musi/album/the-book-of-light) ➕ 2026-03-07
-- [ ] ttt [BABYLON — SA-ROC](https://solmessiah.bandcamp.com/musi/album/babylon) ➕ 2026-03-07
-- [ ] ttt [BABYLON REMIXES — SA-ROC](https://solmessiah.bandcamp.com/musi/album/babylon-remixes) ➕ 2026-03-07
-- [ ] ttt [ETHER WARZ — SA-ROC](https://solmessiah.bandcamp.com/musi/album/ether-warz) ➕ 2026-03-07
-- [ ] ttt [SUPERNOVA — SA-ROC](https://solmessiah.bandcamp.com/musi/album/supernova) ➕ 2026-03-07
-- [ ] ttt [WAR OF THE GODS — SOL MESSIAH](https://solmessiah.bandcamp.com/musi/album/war-of-the-gods) ➕ 2026-03-07
-- [ ] ttt [Allegory of Man](https://solmessiah.bandcamp.com/musi/album/allegory-of-man) ➕ 2026-03-07
-- [ ] ttt [DART VADER — Sol Messiah and Eloh Kush](https://solmessiah.bandcamp.com/musi/album/dart-vader) ➕ 2026-03-07
-- [ ] ttt [AMAZING LASER TALK — SOL MESSIAH, JOHN ROBINSON, INVIZIBLE HANDS](https://solmessiah.bandcamp.com/musi/album/amazing-laser-talk) ➕ 2026-03-07
-- [ ] ttt [DROP THAT (90 MINUTE CD MIXTAPE) — DJ SOL MESSIAH](https://solmessiah.bandcamp.com/musi/album/drop-that-90-minute-cd-mixtape) ➕ 2026-03-07
-- [ ] ttt [DROP THAT (90 MINUTE CASSETTE MIXTAPE) — DJ SOL MESSIAH](https://solmessiah.bandcamp.com/musi/album/drop-that-90-minute-cassette-mixtape) ➕ 2026-03-07
-- [ ] ttt [D.O.G. — SCIENZ MESSIAH](https://solmessiah.bandcamp.com/musi/album/d-o-g) ➕ 2026-03-07
-- [ ] ttt [GOD CMPLX (Instrumentals)](https://solmessiah.bandcamp.com/musi/album/god-cmplx-instrumentals) ➕ 2026-03-07
-- [ ] ttt [GOD CMPLX](https://solmessiah.bandcamp.com/musi/album/god-cmplx) ➕ 2026-03-07
+- [ ] ttt [Sol Messiah](https://solmessiah.bandcamp.com/music) ➕ 2026-02-20
+- [ ] ttt [ASTRAL CHRONICLE — SA-ROC](https://solmessiah.bandcamp.com/musi/album/astral-chronicle) ➕ 2026-02-20
+- [ ] ttt [STARDUST — SA-ROC](https://solmessiah.bandcamp.com/musi/album/stardust) ➕ 2026-02-20
+- [ ] ttt [The Legend of Black Moses — SA-ROC](https://solmessiah.bandcamp.com/musi/album/the-legend-of-black-moses) ➕ 2026-02-20
+- [ ] ttt [PREEM ROC — SA-ROC](https://solmessiah.bandcamp.com/musi/album/preem-roc) ➕ 2026-02-20
+- [ ] ttt [Nebuchadnezzar — SA-ROC](https://solmessiah.bandcamp.com/musi/album/nebuchadnezzar) ➕ 2026-02-20
+- [ ] ttt [Journey of the Starseed — Sa-Roc](https://solmessiah.bandcamp.com/musi/album/journey-of-the-starseed) ➕ 2026-02-20
+- [ ] ttt [Extra-Terrestrial — Sa-Roc](https://solmessiah.bandcamp.com/musi/album/extra-terrestrial) ➕ 2026-02-20
+- [ ] ttt [The Book of Light — SA-ROC](https://solmessiah.bandcamp.com/musi/album/the-book-of-light) ➕ 2026-02-20
+- [ ] ttt [BABYLON — SA-ROC](https://solmessiah.bandcamp.com/musi/album/babylon) ➕ 2026-02-20
+- [ ] ttt [BABYLON REMIXES — SA-ROC](https://solmessiah.bandcamp.com/musi/album/babylon-remixes) ➕ 2026-02-20
+- [ ] ttt [ETHER WARZ — SA-ROC](https://solmessiah.bandcamp.com/musi/album/ether-warz) ➕ 2026-02-20
+- [ ] ttt [SUPERNOVA — SA-ROC](https://solmessiah.bandcamp.com/musi/album/supernova) ➕ 2026-02-20
+- [ ] ttt [WAR OF THE GODS — SOL MESSIAH](https://solmessiah.bandcamp.com/musi/album/war-of-the-gods) ➕ 2026-02-20
+- [ ] ttt [Allegory of Man](https://solmessiah.bandcamp.com/musi/album/allegory-of-man) ➕ 2026-02-20
+- [ ] ttt [DART VADER — Sol Messiah and Eloh Kush](https://solmessiah.bandcamp.com/musi/album/dart-vader) ➕ 2026-02-20
+- [ ] ttt [AMAZING LASER TALK — SOL MESSIAH, JOHN ROBINSON, INVIZIBLE HANDS](https://solmessiah.bandcamp.com/musi/album/amazing-laser-talk) ➕ 2026-02-20
+- [ ] ttt [DROP THAT (90 MINUTE CD MIXTAPE) — DJ SOL MESSIAH](https://solmessiah.bandcamp.com/musi/album/drop-that-90-minute-cd-mixtape) ➕ 2026-02-20
+- [ ] ttt [DROP THAT (90 MINUTE CASSETTE MIXTAPE) — DJ SOL MESSIAH](https://solmessiah.bandcamp.com/musi/album/drop-that-90-minute-cassette-mixtape) ➕ 2026-02-20
+- [ ] ttt [D.O.G. — SCIENZ MESSIAH](https://solmessiah.bandcamp.com/musi/album/d-o-g) ➕ 2026-02-20
+- [ ] ttt [GOD CMPLX (Instrumentals)](https://solmessiah.bandcamp.com/musi/album/god-cmplx-instrumentals) ➕ 2026-02-20
+- [ ] ttt [GOD CMPLX](https://solmessiah.bandcamp.com/musi/album/god-cmplx) ➕ 2026-02-20
