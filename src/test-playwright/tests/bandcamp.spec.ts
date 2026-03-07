@@ -14,4 +14,13 @@ test.describe('Bandcamp Templates', () => {
     const expected = readExpected('bandcamp/byron - Discography.md');
     expectEqualsIgnoringNewlines(actual, expected);
   });
+
+  test('Sol Messiah Discography', async ({ extensionContext, extensionId }) => {
+    const actual = await runHarTest(extensionContext, extensionId, {
+      harPath: 'bandcamp/solmessiah.bandcamp.com.har',
+      templatePath: 'bandcamp-discography-as-tasks-clipper.json',
+    });
+    const expected = readExpected('bandcamp/Sol Messiah - Discography.md');
+    expectEqualsIgnoringNewlines(actual, expected);
+  });
 });
