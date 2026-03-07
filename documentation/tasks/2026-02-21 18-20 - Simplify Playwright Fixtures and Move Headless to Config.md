@@ -7,6 +7,9 @@ related:
   - "[[Playwright Built-in Fixture Names]]"
   - "[[Chrome Extension Headless Mode]]"
   - "[[Multi-worker Test Execution Strategy]]"
+  - "[[documentation]]"
+  - "[[Obsidian Clipper Templates]]"
+aliases: []
 ---
 
 User requested two improvements:
