@@ -46,7 +46,7 @@
 		},
 		{
 			"name": "genre",
-			"value": "{% for i in selector:span.ipc-chip__text %}{% if i != \"Back to top\" %}[[{{i}}]], {% endif %}{% endfor %}",
+			"value": "{{selector:a[href*=\"/interest/\"] span.ipc-chip__text|wikilink|join}}",
 			"type": "multitext"
 		},
 		{
