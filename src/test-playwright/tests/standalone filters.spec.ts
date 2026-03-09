@@ -30,5 +30,24 @@ test.describe('IMDB Filter Tests', () => {
       ],
     });
   });
-});
 
+  test('Brooklyn Nine-Nine genre extraction', async ({ extensionContext, extensionId }) => {
+    await runFilterTestsAndAssert(extensionContext, extensionId, {
+      harPath: 'imdb/Brooklyn Nine-Nine.har',
+      filters: [
+        {
+          filter: `{{schema:@TVSeries:genre}}`,
+          expected: `["Comedy","Crime"]`,
+        },
+        {
+          filter: `{{selector:a[href*="/interest/"] span.ipc-chip__text}}`,
+          expected: `["Police Procedural","Sitcom","Comedy","Crime"]`,
+        },
+        {
+          filter: `{{selector:a[href*="/interest/"] span.ipc-chip__text|wikilink|join}}`,
+          expected: `[[Police Procedural]],[[Sitcom]],[[Comedy]],[[Crime]]`,
+        },
+      ],
+    });
+  });
+});

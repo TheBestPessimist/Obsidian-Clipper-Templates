@@ -32,4 +32,13 @@ test.describe('IMDB Templates', () => {
     const expected = readExpected('imdb/Shogun 1980.md');
     expectEqualsIgnoringNewlines(actual, expected);
   });
+
+  test('Brooklyn Nine-Nine', async ({ extensionContext, extensionId }) => {
+    const actual = await runHarTest(extensionContext, extensionId, {
+      harPath: 'imdb/Brooklyn Nine-Nine.har',
+      templatePath: 'imdb-series-clipper.json',
+    });
+    const expected = readExpected('imdb/Brooklyn Nine-Nine.md');
+    expectEqualsIgnoringNewlines(actual, expected);
+  });
 });
