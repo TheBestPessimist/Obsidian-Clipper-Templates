@@ -46,12 +46,12 @@
 		},
 		{
 			"name": "genre",
-			"value": "{{selector:a[href*=\"/interest/\"] span.ipc-chip__text|wikilink|join}}",
+			"value": "{{schema:@TVSeries:genre|merge:selector:a[href*=\"/interest/\"] span.ipc-chip__text|unique|sort|wikilink|join}}",
 			"type": "multitext"
 		},
 		{
 			"name": "rating",
-			"value": "{{selector:#__next > main > div > section.ipc-page-background.ipc-page-background--base.sc-358297d7-0.CHcbB > section > div:nth-child(5) > section > section > div.sc-14a487d5-4.bzdlEY > div.sc-14a487d5-6.gilQBG > div.sc-14a487d5-12.grWKim > div.sc-8e956c5c-0.cfWEab.sc-af040695-5.dsisJb > div > div:nth-child(2) > button > span > div > div.sc-c3f6308f-0.dCyHVv > div > span}}",
+			"value": "{{selector:[data-testid=\"hero-rating-bar__user-rating__score\"] span|first}}",
 			"type": "text"
 		},
 		{

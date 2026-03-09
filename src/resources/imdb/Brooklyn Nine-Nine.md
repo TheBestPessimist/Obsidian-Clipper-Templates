@@ -18,11 +18,11 @@ actors:
 Links:
   - "https://www.imdb.com/title/tt2467372/"
 genre:
-  - "[[Police Procedural]]"
-  - "[[Sitcom]]"
   - "[[Comedy]]"
   - "[[Crime]]"
-rating: 10
+  - "[[Police Procedural]]"
+  - "[[Sitcom]]"
+rating: "10"
 image: "https://m.media-amazon.com/images/M/MV5BNzBiODQxZTUtNjc0MC00Yzc1LThmYTMtN2YwYTU3NjgxMmI4XkEyXkFqcGc@._V1_.jpg"
 description:
 created: 2026-02-20

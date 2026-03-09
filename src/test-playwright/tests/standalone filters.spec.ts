@@ -36,16 +36,8 @@ test.describe('IMDB Filter Tests', () => {
       harPath: 'imdb/Brooklyn Nine-Nine.har',
       filters: [
         {
-          filter: `{{schema:@TVSeries:genre}}`,
-          expected: `["Comedy","Crime"]`,
-        },
-        {
-          filter: `{{selector:a[href*="/interest/"] span.ipc-chip__text}}`,
-          expected: `["Police Procedural","Sitcom","Comedy","Crime"]`,
-        },
-        {
-          filter: `{{selector:a[href*="/interest/"] span.ipc-chip__text|wikilink|join}}`,
-          expected: `[[Police Procedural]],[[Sitcom]],[[Comedy]],[[Crime]]`,
+          filter: `{{schema:@TVSeries:genre|merge:selector:a[href*="/interest/"] span.ipc-chip__text|unique|sort|wikilink|join}}`,
+          expected: `[[Comedy]],[[Crime]],[[Police Procedural]],[[Sitcom]]`,
         },
       ],
     });

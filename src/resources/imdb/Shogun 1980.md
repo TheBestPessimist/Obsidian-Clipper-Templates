@@ -16,11 +16,11 @@ actors:
 Links:
   - "https://www.imdb.com/title/tt0080274/"
 genre:
-  - "[[Period Drama]]"
-  - "[[War Epic]]"
   - "[[Adventure]]"
   - "[[Drama]]"
   - "[[History]]"
+  - "[[Period Drama]]"
+  - "[[War Epic]]"
   - "[[War]]"
 rating: "8"
 image: "https://m.media-amazon.com/images/M/MV5BMzQ1MTVkMDItZDJmNS00YzVmLWJjYzYtNGE4NjFjNjZkYzY2XkEyXkFqcGc@._V1_.jpg"
