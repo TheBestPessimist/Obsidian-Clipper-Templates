@@ -4,7 +4,8 @@ import { defineConfig } from '@playwright/test';
 const OPEN_HTML_REPORT = false;
 
 // Set to false to see the browser window during tests
-const HEADLESS = true;
+// const HEADLESS = true;
+const HEADLESS = false;
 
 export default defineConfig({
   testDir: './tests',
