@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.1.0",
-  "name": "IMDB Movie",
+  "name": "IMDB",
   "behavior": "create",
   "noteContentFormat": "\n> [!NOTE] synopsis\n> {{schema:description}}\n\n## Thoughts\n\nREVIEW HERE",
   "properties": [
@@ -16,7 +16,7 @@
     },
     {
       "name": "related",
-			"value": "{% set related = '[\"Film\",\"imdb\",\"Clippings\"]' %}{% if schema:@TVSeries:name %}{% set series = \"Series\" %}{% set related = related|merge:series %}{% endif %}{% set related = related|wikilink|join %}{{related}}",
+      "value": "{% set related = '[\"Film\",\"imdb\",\"Clippings\"]' %}{% if schema:@TVSeries:name %}{% set series = \"Series\" %}{% set related = related|merge:series %}{% endif %}{% set related = related|wikilink|join %}{{related}}",
       "type": "multitext"
     },
     {
