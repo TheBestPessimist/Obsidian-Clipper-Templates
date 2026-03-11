@@ -6,7 +6,7 @@
 	"properties": [
 		{
 			"name": "title",
-			"value": "{{schema:@Movie:name}} ({{schema:datePublished|slice:0,4}})",
+			"value": "{% if schema:@TVSeries:name %}{{schema:@TVSeries:name}}{% else %}{{schema:@Movie:name}}{% endif %} ({{schema:datePublished|slice:0,4}})",
 			"type": "text"
 		},
 		{
@@ -16,7 +16,7 @@
 		},
 		{
 			"name": "related",
-			"value": "[[Film]], [[imdb]],[[Clippings]]",
+			"value": "{% if schema:@TVSeries:name %}[[Film]], [[Series]], [[imdb]],[[Clippings]]{% else %}[[Film]], [[imdb]],[[Clippings]]{% endif %}",
 			"type": "multitext"
 		},
 		{
@@ -26,12 +26,12 @@
 		},
 		{
 			"name": "directors",
-			"value": "{{schema:director[*].name|wikilink|join}}",
+			"value": "{% if schema:@TVSeries:name %}{% else %}{{schema:director[*].name|wikilink|join}}{% endif %}",
 			"type": "multitext"
 		},
 		{
 			"name": "writers",
-			"value": "{{selector:#__next > main > div > section.ipc-page-background.ipc-page-background--base.sc-358297d7-0.CHcbB > section > div:nth-child(5) > section > section > div.sc-14a487d5-4.bzdlEY > div.sc-14a487d5-6.gilQBG > div.sc-14a487d5-12.grWKim > div.sc-af040695-2.fLTdiX > ul > li:nth-child(2) > div > ul > li|wikilink|join}}",
+			"value": "{% if schema:@TVSeries:name %}{{selector:#__next > main > div > section.ipc-page-background.ipc-page-background--base.sc-358297d7-0.CHcbB > section > div:nth-child(5) > section > section > div.sc-14a487d5-4.bzdlEY > div.sc-14a487d5-6.gilQBG > div.sc-14a487d5-12.grWKim > div.sc-af040695-2.fLTdiX > ul > li:has(> span.ipc-metadata-list-item__label) > div > ul > li|wikilink|join}}{% else %}{{selector:#__next > main > div > section.ipc-page-background.ipc-page-background--base.sc-358297d7-0.CHcbB > section > div:nth-child(5) > section > section > div.sc-14a487d5-4.bzdlEY > div.sc-14a487d5-6.gilQBG > div.sc-14a487d5-12.grWKim > div.sc-af040695-2.fLTdiX > ul > li:nth-child(2) > div > ul > li|wikilink|join}}{% endif %}",
 			"type": "multitext"
 		},
 		{
@@ -46,12 +46,12 @@
 		},
 		{
 			"name": "genre",
-			"value": "{{schema:genre|wikilink|join}}",
+			"value": "{% if schema:@TVSeries:name %}{{schema:@TVSeries:genre|merge:selector:a[href*=\"/interest/\"] span.ipc-chip__text|unique|sort|wikilink|join}}{% else %}{{schema:genre|wikilink|join}}{% endif %}",
 			"type": "multitext"
 		},
 		{
 			"name": "rating",
-			"value": "{{selector:#__next > main > div > section.ipc-page-background.ipc-page-background--base.sc-358297d7-0.CHcbB > section > div:nth-child(5) > section > section > div.sc-14a487d5-4.bzdlEY > div.sc-14a487d5-6.gilQBG > div.sc-14a487d5-12.grWKim > div.sc-8e956c5c-0.cfWEab.sc-af040695-5.dsisJb > div > div:nth-child(2) > button > span > div > div.sc-c3f6308f-0.dCyHVv > div > span}}",
+			"value": "{{selector:[data-testid=\"hero-rating-bar__user-rating__score\"] span|first}}",
 			"type": "text"
 		},
 		{
@@ -71,9 +71,9 @@
 		}
 	],
 	"triggers": [
+		"schema:@TVSeries",
 		"schema:@Movie"
 	],
-	"noteNameFormat": "{{schema:@Movie:name}} ({{schema:datePublished|slice:0,4}})",
+	"noteNameFormat": "{% if schema:@TVSeries:name %}{{schema:@TVSeries:name}}{% else %}{{schema:@Movie:name}}{% endif %} ({{schema:datePublished|slice:0,4}})",
 	"path": "Film"
-}
-
+	}
