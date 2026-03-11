@@ -20,10 +20,10 @@ genre:
   - "[[Animation]]"
   - "[[Adventure]]"
   - "[[Comedy]]"
-rating: 10
+rating: "10"
 image: "https://m.media-amazon.com/images/M/MV5BZDkzMzQ5ZmQtOTA3MC00MjhiLTk5M2UtNzk0MjEzZmVjN2UxXkEyXkFqcGc@._V1_.jpg"
 description:
-created: 2026-03-11
+created: 2026-02-20
 ---
 
 > [!NOTE] synopsis
