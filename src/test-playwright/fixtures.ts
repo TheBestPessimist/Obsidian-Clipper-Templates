@@ -113,20 +113,32 @@ async function loadAllTemplates(context: BrowserContext, extensionId: string): P
   await settingsPage.waitForLoadState('domcontentloaded');
   await settingsPage.waitForTimeout(1000);
 
-  for (const templateFile of templateFiles) {
-    const templateJson = fs.readFileSync(path.join(TEMPLATES_PATH, templateFile), 'utf-8');
-    const templateData = JSON.parse(templateJson);
-    console.log(`  Importing: ${templateData.name}`);
-    await settingsPage.locator('#new-template-btn').click();
-    await settingsPage.waitForTimeout(500);
-    await settingsPage.locator('.settings-section-header button.import-template-btn').click();
-    const importModal = settingsPage.locator('#import-modal');
-    await importModal.waitFor({ state: 'visible', timeout: 5000 });
-    await importModal.locator('.import-json-textarea').fill(templateJson);
-    await importModal.locator('.import-confirm-btn').click();
-    await importModal.waitFor({ state: 'hidden', timeout: 5000 });
-    await settingsPage.waitForTimeout(300);
-  }
+  // Select the first template (Default) in the template list
+  const firstTemplate = settingsPage.locator('#template-list li').first();
+  await firstTemplate.click();
+  await settingsPage.waitForTimeout(500);
+
+  // Click the import button once
+  await settingsPage.locator('.settings-section-header button.import-template-btn').click();
+  const importModal = settingsPage.locator('#import-modal');
+  await importModal.waitFor({ state: 'visible', timeout: 5000 });
+
+  // Use file chooser to upload all templates at once
+  const fileChooserPromise = settingsPage.waitForEvent('filechooser');
+  await importModal.locator('.import-drop-zone').click();
+  const fileChooser = await fileChooserPromise;
+
+  const templatePaths = templateFiles.map(f => path.join(TEMPLATES_PATH, f));
+  console.log(`  Importing templates: ${templateFiles.join(', ')}`);
+  await fileChooser.setFiles(templatePaths);
+
+  // Wait for import to complete (modal should close)
+  await importModal.waitFor({ state: 'hidden', timeout: 10000 });
+
+  // Wait for all templates to be fully imported and saved
+  // The import process is asynchronous, so we need to wait for it to complete
+  await settingsPage.waitForTimeout(2000);
+
   console.log('[Worker] Templates loaded.');
   await settingsPage.close();
 }
@@ -259,17 +271,62 @@ async function importTemplates(
   await settingsPage.waitForLoadState('domcontentloaded');
   await settingsPage.waitForTimeout(1000);
 
-  for (const { json } of templates) {
-    await settingsPage.locator('#new-template-btn').click();
-    await settingsPage.waitForTimeout(500);
-    await settingsPage.locator('.settings-section-header button.import-template-btn').click();
-    const importModal = settingsPage.locator('#import-modal');
-    await importModal.waitFor({ state: 'visible', timeout: 5000 });
-    await importModal.locator('.import-json-textarea').fill(json);
-    await importModal.locator('.import-confirm-btn').click();
-    await importModal.waitFor({ state: 'hidden', timeout: 5000 });
-    await settingsPage.waitForTimeout(300);
+  // Select the first template (Default) in the template list
+  const firstTemplate = settingsPage.locator('#template-list li').first();
+  await firstTemplate.click();
+  await settingsPage.waitForTimeout(500);
+
+  // Get initial template count before importing
+  const initialCount = await settingsPage.locator('#template-list li').count();
+
+  // Click the import button once
+  await settingsPage.locator('.settings-section-header button.import-template-btn').click();
+  const importModal = settingsPage.locator('#import-modal');
+  await importModal.waitFor({ state: 'visible', timeout: 5000 });
+
+  // Create temporary files for each template JSON
+  const tempDir = path.join(__dirname, 'temp-templates');
+  if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir, { recursive: true });
   }
+
+  const tempFiles: string[] = [];
+  try {
+    for (let i = 0; i < templates.length; i++) {
+      const tempFile = path.join(tempDir, `temp-template-${i}.json`);
+      fs.writeFileSync(tempFile, templates[i].json, 'utf-8');
+      tempFiles.push(tempFile);
+    }
+
+    // Use file chooser to upload all templates at once
+    const fileChooserPromise = settingsPage.waitForEvent('filechooser');
+    await importModal.locator('.import-drop-zone').click();
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles(tempFiles);
+
+    // Wait for import to complete (modal should close)
+    await importModal.waitFor({ state: 'hidden', timeout: 10000 });
+
+    // Wait for all templates to be fully imported and saved
+    // The import process is asynchronous, so we need to wait for the template list to update
+    const expectedCount = initialCount + tempFiles.length;
+
+    // Wait for the template list to have the expected number of items (with timeout)
+    await settingsPage.waitForFunction(
+      (expected) => document.querySelectorAll('#template-list li').length >= expected,
+      expectedCount,
+      { timeout: 10000 }
+    );
+
+    const finalCount = await settingsPage.locator('#template-list li').count();
+    console.log(`  Template list now has ${finalCount} items (was ${initialCount}, added ${tempFiles.length})`);
+  } finally {
+    // Clean up temporary directory and files
+    if (fs.existsSync(tempDir)) {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    }
+  }
+
   await settingsPage.close();
 }
 
@@ -329,6 +386,10 @@ export async function runFilterTests(
 
   // Import all templates in one go
   await importTemplates(context, extensionId, templates);
+
+  // Wait a bit for the extension to fully process the new templates
+  // This ensures the clipper iframe will have the updated template list
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
   const harFullPath = path.join(TEST_RESOURCES_PATH, config.harPath);
   const url = extractUrlFromHar(harFullPath);

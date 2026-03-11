@@ -4,14 +4,16 @@ import { defineConfig } from '@playwright/test';
 const OPEN_HTML_REPORT = false;
 
 // Set to false to see the browser window during tests
-// const HEADLESS = true;
-const HEADLESS = false;
+const HEADLESS = true;
+// const HEADLESS = false;
+const workers = 2;
 
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  workers: 10,
+  workers: workers,
+  timeout: 60000,
   // Use 'list' for console output, 'html' for full report
   reporter: OPEN_HTML_REPORT ? 'html' : 'list',
   use: {
