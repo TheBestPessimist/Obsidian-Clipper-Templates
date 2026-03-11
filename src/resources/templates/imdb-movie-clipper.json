@@ -16,7 +16,7 @@
 		},
 		{
 			"name": "related",
-			"value": "{% if schema:@TVSeries:name %}[[Film]], [[Series]], [[imdb]],[[Clippings]]{% else %}[[Film]], [[imdb]],[[Clippings]]{% endif %}",
+				"value": "{% if schema:@TVSeries:name %}{% set related = \"Film,Series,imdb,Clippings\"|split:\",\"|wikilink|join %}{% else %}{% set related = \"Film,imdb,Clippings\"|split:\",\"|wikilink|join %}{% endif %}{{related}}",
 			"type": "multitext"
 		},
 		{
@@ -76,4 +76,4 @@
 	],
 	"noteNameFormat": "{% if schema:@TVSeries:name %}{{schema:@TVSeries:name}}{% else %}{{schema:@Movie:name}}{% endif %} ({{schema:datePublished|slice:0,4}})",
 	"path": "Film"
-	}
+}
