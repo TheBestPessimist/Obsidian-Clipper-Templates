@@ -16,7 +16,7 @@
     },
     {
       "name": "related",
-      "value": "{% if schema:@TVSeries:name %}{% set related = \"Film,Series,imdb,Clippings\"|split:\",\"|wikilink|join %}{% else %}{% set related = \"Film,imdb,Clippings\"|split:\",\"|wikilink|join %}{% endif %}{{related}}",
+			"value": "{% set related = '[\"Film\",\"imdb\",\"Clippings\"]' %}{% if schema:@TVSeries:name %}{% set series = \"Series\" %}{% set related = related|merge:series %}{% endif %}{% set related = related|wikilink|join %}{{related}}",
       "type": "multitext"
     },
     {
