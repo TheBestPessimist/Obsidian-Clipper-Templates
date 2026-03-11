@@ -3,9 +3,9 @@ title: "Andromeda (2000)"
 aliases:
 related:
   - "[[Film]]"
-  - "[[Series]]"
   - "[[imdb]]"
   - "[[Clippings]]"
+  - "[[Series]]"
 year: 2000
 directors:
 writers:

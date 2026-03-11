@@ -3,9 +3,9 @@ title: "Shogun (1980)"
 aliases:
 related:
   - "[[Film]]"
-  - "[[Series]]"
   - "[[imdb]]"
   - "[[Clippings]]"
+  - "[[Series]]"
 year: 1980
 directors:
 writers:

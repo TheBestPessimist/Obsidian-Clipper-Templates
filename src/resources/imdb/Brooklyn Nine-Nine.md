@@ -3,9 +3,9 @@ title: "Brooklyn Nine-Nine (2013)"
 aliases:
 related:
   - "[[Film]]"
-  - "[[Series]]"
   - "[[imdb]]"
   - "[[Clippings]]"
+  - "[[Series]]"
 year: 2013
 directors:
 writers:
