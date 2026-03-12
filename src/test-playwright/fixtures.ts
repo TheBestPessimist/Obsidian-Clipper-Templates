@@ -104,69 +104,159 @@ export function normalizeMarkdown(md: string): string {
   return md.replace(/\r\n/g, '\n').split('\n').map(line => line.trimEnd()).join('\n').trim();
 }
 
-async function loadAllTemplates(context: BrowserContext, extensionId: string): Promise<void> {
-  const templateFiles = fs.readdirSync(TEMPLATES_PATH).filter(f => f.endsWith('.json'));
-  if (templateFiles.length === 0) return;
-  console.log(`[Worker] Loading ${templateFiles.length} templates...`);
+/**
+ * Import template files via the settings page import modal.
+ * Handles both file paths and JSON strings.
+ */
+async function importTemplatesViaUI(
+  context: BrowserContext,
+  extensionId: string,
+  templates: Array<string | { json: string; name: string }>
+): Promise<void> {
   const settingsPage = await context.newPage();
   await settingsPage.goto(`chrome-extension://${extensionId}/settings.html`);
   await settingsPage.waitForLoadState('domcontentloaded');
   await settingsPage.waitForTimeout(1000);
 
-  // Select the first template (Default) in the template list
-  const firstTemplate = settingsPage.locator('#template-list li').first();
-  await firstTemplate.click();
+  // Select first template and open import modal
+  await settingsPage.locator('#template-list li').first().click();
   await settingsPage.waitForTimeout(500);
-
-  // Click the import button once
   await settingsPage.locator('.settings-section-header button.import-template-btn').click();
   const importModal = settingsPage.locator('#import-modal');
   await importModal.waitFor({ state: 'visible', timeout: 5000 });
 
-  // Use file chooser to upload all templates at once
-  const fileChooserPromise = settingsPage.waitForEvent('filechooser');
-  await importModal.locator('.import-drop-zone').click();
-  const fileChooser = await fileChooserPromise;
+  const initialCount = await settingsPage.locator('#template-list li').count();
 
-  const templatePaths = templateFiles.map(f => path.join(TEMPLATES_PATH, f));
-  console.log(`  Importing templates: ${templateFiles.join(', ')}`);
-  await fileChooser.setFiles(templatePaths);
+  // Prepare file paths (create temp files if needed)
+  const isFilePaths = typeof templates[0] === 'string';
+  const filePaths = isFilePaths
+    ? templates as string[]
+    : await createTempTemplateFiles(templates as Array<{ json: string; name: string }>);
 
-  // Wait for import to complete (modal should close)
-  await importModal.waitFor({ state: 'hidden', timeout: 10000 });
+  try {
+    // Upload all templates at once via file chooser
+    const fileChooserPromise = settingsPage.waitForEvent('filechooser');
+    await importModal.locator('.import-drop-zone').click();
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles(filePaths);
 
-  // Wait for all templates to be fully imported and saved
-  // The import process is asynchronous, so we need to wait for it to complete
-  await settingsPage.waitForTimeout(2000);
+    // Wait for import to complete
+    await importModal.waitFor({ state: 'hidden', timeout: 10000 });
+    await settingsPage.waitForFunction(
+      (expected) => document.querySelectorAll('#template-list li').length >= expected,
+      initialCount + templates.length,
+      { timeout: 10000 }
+    );
+  } finally {
+    if (!isFilePaths) {
+      await cleanupTempTemplateFiles(filePaths);
+    }
+  }
 
-  console.log('[Worker] Templates loaded.');
   await settingsPage.close();
 }
 
+async function createTempTemplateFiles(templates: Array<{ json: string; name: string }>): Promise<string[]> {
+  const tempDir = path.join(__dirname, 'temp-templates');
+  fs.mkdirSync(tempDir, { recursive: true });
+  return templates.map((t, i) => {
+    const tempFile = path.join(tempDir, `temp-${i}-${Date.now()}.json`);
+    fs.writeFileSync(tempFile, t.json, 'utf-8');
+    return tempFile;
+  });
+}
+
+async function cleanupTempTemplateFiles(filePaths: string[]): Promise<void> {
+  const tempDir = path.join(__dirname, 'temp-templates');
+  if (fs.existsSync(tempDir)) {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+}
+
+async function loadAllTemplates(context: BrowserContext, extensionId: string): Promise<void> {
+  const templateFiles = fs.readdirSync(TEMPLATES_PATH).filter(f => f.endsWith('.json'));
+  if (templateFiles.length === 0) return;
+
+  const templatePaths = templateFiles.map(f => path.join(TEMPLATES_PATH, f));
+  await importTemplatesViaUI(context, extensionId, templatePaths);
+}
+
 function getTemplateNameFromPath(templatePath: string): string {
-  const templateJson = fs.readFileSync(path.join(TEMPLATES_PATH, templatePath), 'utf-8');
-  return JSON.parse(templateJson).name;
+  return JSON.parse(fs.readFileSync(path.join(TEMPLATES_PATH, templatePath), 'utf-8')).name;
 }
 
 function extractUrlFromHar(harPath: string): string {
-  const harContent = JSON.parse(fs.readFileSync(harPath, 'utf-8'));
-  const entries = harContent.log?.entries;
-  if (!entries?.length) throw new Error(`No entries in HAR: ${harPath}`);
-  const htmlEntry = entries.find((e: any) => e.response?.content?.mimeType?.includes('text/html'));
-  if (!htmlEntry?.request?.url) throw new Error(`No HTML in HAR: ${harPath}`);
+  const har = JSON.parse(fs.readFileSync(harPath, 'utf-8'));
+  const htmlEntry = har.log?.entries?.find((e: any) =>
+    e.response?.content?.mimeType?.includes('text/html')
+  );
+  if (!htmlEntry?.request?.url) throw new Error(`No HTML entry in HAR: ${harPath}`);
   return htmlEntry.request.url;
 }
 
 async function getTabIdForPage(context: BrowserContext, page: Page): Promise<number> {
   const serviceWorker = context.serviceWorkers()[0];
   if (!serviceWorker) throw new Error('No service worker');
-  const pageUrl = page.url();
   const tabId = await serviceWorker.evaluate(async (url) => {
     const tabs = await chrome.tabs.query({});
     return tabs.find(t => t.url === url)?.id;
-  }, pageUrl);
-  if (!tabId) throw new Error(`No tab ID for: ${pageUrl}`);
+  }, page.url());
+  if (!tabId) throw new Error(`No tab ID for: ${page.url()}`);
   return tabId;
+}
+
+/**
+ * Open a page with HAR replay and activate the clipper iframe.
+ * Returns the page and clipper frame locator.
+ */
+async function setupClipperPage(
+  context: BrowserContext,
+  harPath: string
+): Promise<{ page: Page; clipperFrame: ReturnType<Page['frameLocator']> }> {
+  const harFullPath = path.join(TEST_RESOURCES_PATH, harPath);
+  const url = extractUrlFromHar(harFullPath);
+
+  const page = await context.newPage();
+  await page.routeFromHAR(harFullPath, { notFound: 'fallback' });
+  await page.goto(url);
+  await page.waitForLoadState('domcontentloaded');
+  await page.waitForTimeout(1000);
+
+  // Activate tab and toggle clipper iframe
+  const tabId = await getTabIdForPage(context, page);
+  let serviceWorker = context.serviceWorkers()[0];
+  if (!serviceWorker) serviceWorker = await context.waitForEvent('serviceworker');
+
+  await serviceWorker.evaluate(async (tid) => { await chrome.tabs.update(tid, { active: true }); }, tabId);
+  await page.waitForTimeout(100);
+  await serviceWorker.evaluate(async (tid) => { await chrome.tabs.sendMessage(tid, { action: 'toggle-iframe' }); }, tabId);
+
+  // Wait for clipper to be ready
+  await page.waitForSelector('#obsidian-clipper-container', { timeout: 10000 });
+  const clipperFrame = page.frameLocator('#obsidian-clipper-iframe');
+  await clipperFrame.locator('#clip-btn').waitFor({ timeout: 10000 });
+  await page.waitForTimeout(2000);
+
+  return { page, clipperFrame };
+}
+
+/**
+ * Clip content using the "Save file" option and return the file content.
+ */
+async function clipAndDownload(
+  page: Page,
+  clipperFrame: ReturnType<Page['frameLocator']>
+): Promise<string> {
+  await clipperFrame.locator('#more-btn').click();
+  await clipperFrame.locator('.secondary-actions').waitFor({ state: 'visible', timeout: 2000 });
+  const saveOption = clipperFrame.locator('.secondary-actions').getByText('Save file', { exact: false });
+
+  const downloadPromise = page.waitForEvent('download', { timeout: 15000 });
+  await saveOption.click();
+  const download = await downloadPromise;
+  const downloadPath = await download.path();
+  if (!downloadPath) throw new Error('Download failed');
+  return fs.readFileSync(downloadPath, 'utf-8');
 }
 
 /**
@@ -177,43 +267,13 @@ export async function runHarTest(
   extensionId: string,
   config: HarTestConfig
 ): Promise<string> {
-  const harFullPath = path.join(TEST_RESOURCES_PATH, config.harPath);
-  const url = extractUrlFromHar(harFullPath);
   const templateName = getTemplateNameFromPath(config.templatePath);
-
-  const page = await context.newPage();
-  await page.routeFromHAR(harFullPath, { notFound: 'fallback' });
-  await page.goto(url);
-  await page.waitForLoadState('domcontentloaded');
-  await page.waitForTimeout(1000);
-
-  const tabId = await getTabIdForPage(context, page);
-  let serviceWorker = context.serviceWorkers()[0];
-  if (!serviceWorker) serviceWorker = await context.waitForEvent('serviceworker');
-
-  await serviceWorker.evaluate(async (tid) => { await chrome.tabs.update(tid, { active: true }); }, tabId);
-  await page.waitForTimeout(100);
-  await serviceWorker.evaluate(async (tid) => { await chrome.tabs.sendMessage(tid, { action: 'toggle-iframe' }); }, tabId);
-
-  await page.waitForSelector('#obsidian-clipper-container', { timeout: 10000 });
-  const clipperFrame = page.frameLocator('#obsidian-clipper-iframe');
-  await clipperFrame.locator('#clip-btn').waitFor({ timeout: 10000 });
-  await page.waitForTimeout(2000);
+  const { page, clipperFrame } = await setupClipperPage(context, config.harPath);
 
   await clipperFrame.locator('#template-select').selectOption({ label: templateName });
   await page.waitForTimeout(1500);
 
-  await clipperFrame.locator('#more-btn').click();
-  await clipperFrame.locator('.secondary-actions').waitFor({ state: 'visible', timeout: 2000 });
-  const saveOption = clipperFrame.locator('.secondary-actions').getByText('Save file', { exact: false });
-
-  const downloadPromise = page.waitForEvent('download', { timeout: 15000 });
-  await saveOption.click();
-  const download = await downloadPromise;
-  const downloadPath = await download.path();
-  if (!downloadPath) throw new Error('Download failed');
-  const fileContent = fs.readFileSync(downloadPath, 'utf-8');
-
+  const fileContent = await clipAndDownload(page, clipperFrame);
   await page.close();
   return fileContent;
 }
@@ -223,11 +283,6 @@ export function expectEqualsIgnoringNewlines(actual: string, expected: string): 
 }
 
 // Filter Testing utilities
-
-export interface FilterTestConfig {
-  harPath: string;
-  filter: string;
-}
 
 export interface FilterTestCase {
   filter: string;
@@ -258,111 +313,15 @@ function createFilterTemplate(filter: string, index: number): { json: string; na
   return { json: JSON.stringify(template), name };
 }
 
-/**
- * Import multiple templates into the extension in one settings page session.
- */
-async function importTemplates(
-  context: BrowserContext,
-  extensionId: string,
-  templates: Array<{ json: string; name: string }>
-): Promise<void> {
-  const settingsPage = await context.newPage();
-  await settingsPage.goto(`chrome-extension://${extensionId}/settings.html`);
-  await settingsPage.waitForLoadState('domcontentloaded');
-  await settingsPage.waitForTimeout(1000);
 
-  // Select the first template (Default) in the template list
-  const firstTemplate = settingsPage.locator('#template-list li').first();
-  await firstTemplate.click();
-  await settingsPage.waitForTimeout(500);
-
-  // Get initial template count before importing
-  const initialCount = await settingsPage.locator('#template-list li').count();
-
-  // Click the import button once
-  await settingsPage.locator('.settings-section-header button.import-template-btn').click();
-  const importModal = settingsPage.locator('#import-modal');
-  await importModal.waitFor({ state: 'visible', timeout: 5000 });
-
-  // Create temporary files for each template JSON
-  const tempDir = path.join(__dirname, 'temp-templates');
-  if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir, { recursive: true });
-  }
-
-  const tempFiles: string[] = [];
-  try {
-    for (let i = 0; i < templates.length; i++) {
-      const tempFile = path.join(tempDir, `temp-template-${i}.json`);
-      fs.writeFileSync(tempFile, templates[i].json, 'utf-8');
-      tempFiles.push(tempFile);
-    }
-
-    // Use file chooser to upload all templates at once
-    const fileChooserPromise = settingsPage.waitForEvent('filechooser');
-    await importModal.locator('.import-drop-zone').click();
-    const fileChooser = await fileChooserPromise;
-    await fileChooser.setFiles(tempFiles);
-
-    // Wait for import to complete (modal should close)
-    await importModal.waitFor({ state: 'hidden', timeout: 10000 });
-
-    // Wait for all templates to be fully imported and saved
-    // The import process is asynchronous, so we need to wait for the template list to update
-    const expectedCount = initialCount + tempFiles.length;
-
-    // Wait for the template list to have the expected number of items (with timeout)
-    await settingsPage.waitForFunction(
-      (expected) => document.querySelectorAll('#template-list li').length >= expected,
-      expectedCount,
-      { timeout: 10000 }
-    );
-
-    const finalCount = await settingsPage.locator('#template-list li').count();
-    console.log(`  Template list now has ${finalCount} items (was ${initialCount}, added ${tempFiles.length})`);
-  } finally {
-    // Clean up temporary directory and files
-    if (fs.existsSync(tempDir)) {
-      fs.rmSync(tempDir, { recursive: true, force: true });
-    }
-  }
-
-  await settingsPage.close();
-}
 
 /**
- * Extract only the body content (after frontmatter) from clipped markdown.
+ * Extract body content (after frontmatter) from clipped markdown.
  */
-function extractBody(fileContent: string): string {
-  const lines = fileContent.split('\n');
-  let inFrontmatter = false;
-  let bodyStartIndex = 0;
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].trim() === '---') {
-      if (!inFrontmatter) {
-        inFrontmatter = true;
-      } else {
-        bodyStartIndex = i + 1;
-        break;
-      }
-    }
-  }
-  return lines.slice(bodyStartIndex).join('\n');
-}
-
-/**
- * Run a single filter test against a HAR file.
- */
-export async function runFilterTest(
-  context: BrowserContext,
-  extensionId: string,
-  config: FilterTestConfig
-): Promise<string> {
-  const results = await runFilterTests(context, extensionId, {
-    harPath: config.harPath,
-    filters: [{ filter: config.filter, expected: '' }],
-  });
-  return results[0].actual;
+function extractBody(content: string): string {
+  const lines = content.split('\n');
+  const secondDashIndex = lines.findIndex((line, i) => i > 0 && line.trim() === '---');
+  return secondDashIndex > 0 ? lines.slice(secondDashIndex + 1).join('\n') : content;
 }
 
 export interface FilterTestResult {
@@ -381,61 +340,26 @@ export async function runFilterTests(
   extensionId: string,
   config: MultiFilterTestConfig
 ): Promise<FilterTestResult[]> {
-  // Create all templates
+  // Create and import all filter templates
   const templates = config.filters.map((f, i) => createFilterTemplate(f.filter, i));
+  await importTemplatesViaUI(context, extensionId, templates);
 
-  // Import all templates in one go
-  await importTemplates(context, extensionId, templates);
-
-  // Wait a bit for the extension to fully process the new templates
-  // This ensures the clipper iframe will have the updated template list
+  // Wait for extension to process new templates
   await new Promise(resolve => setTimeout(resolve, 1000));
 
-  const harFullPath = path.join(TEST_RESOURCES_PATH, config.harPath);
-  const url = extractUrlFromHar(harFullPath);
+  // Setup clipper page
+  const { page, clipperFrame } = await setupClipperPage(context, config.harPath);
 
-  const page = await context.newPage();
-  await page.routeFromHAR(harFullPath, { notFound: 'fallback' });
-  await page.goto(url);
-  await page.waitForLoadState('domcontentloaded');
-  await page.waitForTimeout(1000);
-
-  const tabId = await getTabIdForPage(context, page);
-  let serviceWorker = context.serviceWorkers()[0];
-  if (!serviceWorker) serviceWorker = await context.waitForEvent('serviceworker');
-
-  await serviceWorker.evaluate(async (tid) => { await chrome.tabs.update(tid, { active: true }); }, tabId);
-  await page.waitForTimeout(100);
-  await serviceWorker.evaluate(async (tid) => { await chrome.tabs.sendMessage(tid, { action: 'toggle-iframe' }); }, tabId);
-
-  await page.waitForSelector('#obsidian-clipper-container', { timeout: 10000 });
-  const clipperFrame = page.frameLocator('#obsidian-clipper-iframe');
-  await clipperFrame.locator('#clip-btn').waitFor({ timeout: 10000 });
-  await page.waitForTimeout(2000);
-
+  // Test each filter template
   const results: FilterTestResult[] = [];
-
   for (let i = 0; i < templates.length; i++) {
-    const templateName = templates[i].name;
-    const filterCase = config.filters[i];
-
-    await clipperFrame.locator('#template-select').selectOption({ label: templateName });
+    await clipperFrame.locator('#template-select').selectOption({ label: templates[i].name });
     await page.waitForTimeout(1500);
 
-    await clipperFrame.locator('#more-btn').click();
-    await clipperFrame.locator('.secondary-actions').waitFor({ state: 'visible', timeout: 2000 });
-    const saveOption = clipperFrame.locator('.secondary-actions').getByText('Save file', { exact: false });
-
-    const downloadPromise = page.waitForEvent('download', { timeout: 15000 });
-    await saveOption.click();
-    const download = await downloadPromise;
-    const downloadPath = await download.path();
-    if (!downloadPath) throw new Error(`Download failed for filter ${i}`);
-    const fileContent = fs.readFileSync(downloadPath, 'utf-8');
-
+    const fileContent = await clipAndDownload(page, clipperFrame);
     results.push({
-      filter: filterCase.filter,
-      expected: filterCase.expected,
+      filter: config.filters[i].filter,
+      expected: config.filters[i].expected,
       actual: extractBody(fileContent),
     });
   }
