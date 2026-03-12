@@ -20,6 +20,17 @@ const TEST_RESOURCES_PATH = path.join(__dirname, '../resources');
 const TEMPLATES_PATH = path.join(TEST_RESOURCES_PATH, 'templates');
 const DOWNLOADS_BASE_PATH = path.join(__dirname, 'downloads');
 
+// Timeout constants
+const TIMEOUT_MODAL = 5000;
+const TIMEOUT_IMPORT = 10000;
+const TIMEOUT_CLIPPER_READY = 10000;
+const TIMEOUT_DOWNLOAD = 15000;
+const TIMEOUT_TEMPLATE_SWITCH = 1500;
+const TIMEOUT_PAGE_LOAD = 1000;
+const TIMEOUT_EXTENSION_PROCESS = 1000;
+const TIMEOUT_SECONDARY_ACTIONS = 2000;
+const TIMEOUT_TAB_ACTIVATE = 100;
+
 export interface ClipperWorkerFixtures {
   extensionContext: BrowserContext;
   extensionId: string;
@@ -28,11 +39,12 @@ export interface ClipperWorkerFixtures {
 export const MOCK_DATE = '2026-02-20T12:00:00Z';
 
 function generateDateMockCode(mockDateISO: string): string {
+  const timestamp = new Date(mockDateISO).getTime();
   return `
 (function() {
   if (window.__dateMocked) return;
   window.__dateMocked = true;
-  const MOCK_TIMESTAMP = ${new Date(mockDateISO).getTime()};
+  const MOCK_TIMESTAMP = ${timestamp};
   const OriginalDate = Date;
   function MockDate(...args) {
     if (args.length === 0) return new OriginalDate(MOCK_TIMESTAMP);
@@ -40,15 +52,23 @@ function generateDateMockCode(mockDateISO: string): string {
     return OriginalDate(...args);
   }
   MockDate.prototype = OriginalDate.prototype;
-  MockDate.now = function() { return MOCK_TIMESTAMP; };
+  MockDate.now = () => MOCK_TIMESTAMP;
   MockDate.parse = OriginalDate.parse;
   MockDate.UTC = OriginalDate.UTC;
   Object.getOwnPropertyNames(OriginalDate).forEach(prop => {
-    if (!(prop in MockDate)) { try { MockDate[prop] = OriginalDate[prop]; } catch (e) {} }
+    if (!(prop in MockDate)) { try { MockDate[prop] = OriginalDate[prop]; } catch {} }
   });
   Date = MockDate;
 })();
 `;
+}
+
+/**
+ * Get the extension's service worker, waiting if necessary.
+ */
+async function getServiceWorker(context: BrowserContext) {
+  const [serviceWorker] = context.serviceWorkers();
+  return serviceWorker || await context.waitForEvent('serviceworker');
 }
 
 export const test = base.extend<{}, ClipperWorkerFixtures>({
@@ -60,10 +80,9 @@ export const test = base.extend<{}, ClipperWorkerFixtures>({
     if (fs.existsSync(workerDownloadsPath)) fs.rmSync(workerDownloadsPath, { recursive: true });
     fs.mkdirSync(workerDownloadsPath, { recursive: true });
 
-    const headless = workerInfo.project.use.headless ?? true;
     const context = await chromium.launchPersistentContext('', {
       channel: 'chromium',
-      headless,
+      headless: workerInfo.project.use.headless ?? true,
       args: [`--disable-extensions-except=${EXTENSION_PATH}`, `--load-extension=${EXTENSION_PATH}`],
       permissions: ['clipboard-read', 'clipboard-write'],
       acceptDownloads: true,
@@ -72,13 +91,12 @@ export const test = base.extend<{}, ClipperWorkerFixtures>({
 
     const dateMockCode = generateDateMockCode(MOCK_DATE);
     await context.route('chrome-extension://**/*.js', async (route) => {
-      const url = route.request().url();
-      const urlPath = new URL(url).pathname;
+      const urlPath = new URL(route.request().url()).pathname;
       const filePath = path.join(EXTENSION_PATH, urlPath);
       try {
         const originalBody = fs.readFileSync(filePath, 'utf-8');
         await route.fulfill({ contentType: 'application/javascript', body: dateMockCode + originalBody });
-      } catch (error) { await route.continue(); }
+      } catch { await route.continue(); }
     });
 
     await use(context);
@@ -86,8 +104,7 @@ export const test = base.extend<{}, ClipperWorkerFixtures>({
   }, { scope: 'worker' }],
 
   extensionId: [async ({ extensionContext }, use) => {
-    let [serviceWorker] = extensionContext.serviceWorkers();
-    if (!serviceWorker) serviceWorker = await extensionContext.waitForEvent('serviceworker');
+    const serviceWorker = await getServiceWorker(extensionContext);
     const extensionId = serviceWorker.url().split('/')[2];
     await loadAllTemplates(extensionContext, extensionId);
     await use(extensionId);
@@ -116,22 +133,22 @@ async function importTemplatesViaUI(
   const settingsPage = await context.newPage();
   await settingsPage.goto(`chrome-extension://${extensionId}/settings.html`);
   await settingsPage.waitForLoadState('domcontentloaded');
-  await settingsPage.waitForTimeout(1000);
+  await settingsPage.waitForTimeout(TIMEOUT_PAGE_LOAD);
 
   // Select first template and open import modal
   await settingsPage.locator('#template-list li').first().click();
   await settingsPage.waitForTimeout(500);
   await settingsPage.locator('.settings-section-header button.import-template-btn').click();
   const importModal = settingsPage.locator('#import-modal');
-  await importModal.waitFor({ state: 'visible', timeout: 5000 });
+  await importModal.waitFor({ state: 'visible', timeout: TIMEOUT_MODAL });
 
   const initialCount = await settingsPage.locator('#template-list li').count();
 
-  // Prepare file paths (create temp files if needed)
-  const isFilePaths = typeof templates[0] === 'string';
-  const filePaths = isFilePaths
-    ? templates as string[]
-    : await createTempTemplateFiles(templates as Array<{ json: string; name: string }>);
+  // Prepare file paths (create temp files for JSON strings)
+  const isJsonTemplates = typeof templates[0] !== 'string';
+  const filePaths = isJsonTemplates
+    ? createTempTemplateFiles(templates as Array<{ json: string; name: string }>)
+    : templates as string[];
 
   try {
     // Upload all templates at once via file chooser
@@ -141,22 +158,22 @@ async function importTemplatesViaUI(
     await fileChooser.setFiles(filePaths);
 
     // Wait for import to complete
-    await importModal.waitFor({ state: 'hidden', timeout: 10000 });
+    await importModal.waitFor({ state: 'hidden', timeout: TIMEOUT_IMPORT });
     await settingsPage.waitForFunction(
       (expected) => document.querySelectorAll('#template-list li').length >= expected,
       initialCount + templates.length,
-      { timeout: 10000 }
+      { timeout: TIMEOUT_IMPORT }
     );
   } finally {
-    if (!isFilePaths) {
-      await cleanupTempTemplateFiles(filePaths);
+    if (isJsonTemplates) {
+      cleanupTempTemplateFiles(filePaths);
     }
   }
 
   await settingsPage.close();
 }
 
-async function createTempTemplateFiles(templates: Array<{ json: string; name: string }>): Promise<string[]> {
+function createTempTemplateFiles(templates: Array<{ json: string; name: string }>): string[] {
   const tempDir = path.join(__dirname, 'temp-templates');
   fs.mkdirSync(tempDir, { recursive: true });
   return templates.map((t, i) => {
@@ -166,19 +183,23 @@ async function createTempTemplateFiles(templates: Array<{ json: string; name: st
   });
 }
 
-async function cleanupTempTemplateFiles(filePaths: string[]): Promise<void> {
-  const tempDir = path.join(__dirname, 'temp-templates');
-  if (fs.existsSync(tempDir)) {
-    fs.rmSync(tempDir, { recursive: true, force: true });
+function cleanupTempTemplateFiles(filePaths: string[]): void {
+  // Delete individual files to avoid conflicts with parallel test execution
+  for (const filePath of filePaths) {
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
   }
 }
 
 async function loadAllTemplates(context: BrowserContext, extensionId: string): Promise<void> {
-  const templateFiles = fs.readdirSync(TEMPLATES_PATH).filter(f => f.endsWith('.json'));
-  if (templateFiles.length === 0) return;
+  const templateFiles = fs.readdirSync(TEMPLATES_PATH)
+    .filter(f => f.endsWith('.json'))
+    .map(f => path.join(TEMPLATES_PATH, f));
 
-  const templatePaths = templateFiles.map(f => path.join(TEMPLATES_PATH, f));
-  await importTemplatesViaUI(context, extensionId, templatePaths);
+  if (templateFiles.length > 0) {
+    await importTemplatesViaUI(context, extensionId, templateFiles);
+  }
 }
 
 function getTemplateNameFromPath(templatePath: string): string {
@@ -195,8 +216,7 @@ function extractUrlFromHar(harPath: string): string {
 }
 
 async function getTabIdForPage(context: BrowserContext, page: Page): Promise<number> {
-  const serviceWorker = context.serviceWorkers()[0];
-  if (!serviceWorker) throw new Error('No service worker');
+  const serviceWorker = await getServiceWorker(context);
   const tabId = await serviceWorker.evaluate(async (url) => {
     const tabs = await chrome.tabs.query({});
     return tabs.find(t => t.url === url)?.id;
@@ -220,22 +240,21 @@ async function setupClipperPage(
   await page.routeFromHAR(harFullPath, { notFound: 'fallback' });
   await page.goto(url);
   await page.waitForLoadState('domcontentloaded');
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(TIMEOUT_PAGE_LOAD);
 
   // Activate tab and toggle clipper iframe
   const tabId = await getTabIdForPage(context, page);
-  let serviceWorker = context.serviceWorkers()[0];
-  if (!serviceWorker) serviceWorker = await context.waitForEvent('serviceworker');
+  const serviceWorker = await getServiceWorker(context);
 
   await serviceWorker.evaluate(async (tid) => { await chrome.tabs.update(tid, { active: true }); }, tabId);
-  await page.waitForTimeout(100);
+  await page.waitForTimeout(TIMEOUT_TAB_ACTIVATE);
   await serviceWorker.evaluate(async (tid) => { await chrome.tabs.sendMessage(tid, { action: 'toggle-iframe' }); }, tabId);
 
   // Wait for clipper to be ready
-  await page.waitForSelector('#obsidian-clipper-container', { timeout: 10000 });
+  await page.waitForSelector('#obsidian-clipper-container', { timeout: TIMEOUT_CLIPPER_READY });
   const clipperFrame = page.frameLocator('#obsidian-clipper-iframe');
-  await clipperFrame.locator('#clip-btn').waitFor({ timeout: 10000 });
-  await page.waitForTimeout(2000);
+  await clipperFrame.locator('#clip-btn').waitFor({ timeout: TIMEOUT_CLIPPER_READY });
+  await page.waitForTimeout(TIMEOUT_SECONDARY_ACTIONS);
 
   return { page, clipperFrame };
 }
@@ -248,11 +267,11 @@ async function clipAndDownload(
   clipperFrame: ReturnType<Page['frameLocator']>
 ): Promise<string> {
   await clipperFrame.locator('#more-btn').click();
-  await clipperFrame.locator('.secondary-actions').waitFor({ state: 'visible', timeout: 2000 });
-  const saveOption = clipperFrame.locator('.secondary-actions').getByText('Save file', { exact: false });
+  await clipperFrame.locator('.secondary-actions').waitFor({ state: 'visible', timeout: TIMEOUT_SECONDARY_ACTIONS });
 
-  const downloadPromise = page.waitForEvent('download', { timeout: 15000 });
-  await saveOption.click();
+  const downloadPromise = page.waitForEvent('download', { timeout: TIMEOUT_DOWNLOAD });
+  await clipperFrame.locator('.secondary-actions').getByText('Save file', { exact: false }).click();
+
   const download = await downloadPromise;
   const downloadPath = await download.path();
   if (!downloadPath) throw new Error('Download failed');
@@ -271,7 +290,7 @@ export async function runHarTest(
   const { page, clipperFrame } = await setupClipperPage(context, config.harPath);
 
   await clipperFrame.locator('#template-select').selectOption({ label: templateName });
-  await page.waitForTimeout(1500);
+  await page.waitForTimeout(TIMEOUT_TEMPLATE_SWITCH);
 
   const fileContent = await clipAndDownload(page, clipperFrame);
   await page.close();
@@ -280,6 +299,13 @@ export async function runHarTest(
 
 export function expectEqualsIgnoringNewlines(actual: string, expected: string): void {
   expect(normalizeMarkdown(actual)).toBe(normalizeMarkdown(expected));
+}
+
+// Test configuration interfaces
+
+export interface HarTestConfig {
+  harPath: string;
+  templatePath: string;
 }
 
 // Filter Testing utilities
@@ -300,17 +326,19 @@ export interface MultiFilterTestConfig {
  */
 function createFilterTemplate(filter: string, index: number): { json: string; name: string } {
   const name = `Filter Test ${index} ${Date.now()}`;
-  const template = {
-    schemaVersion: '0.1.0',
-    name,
-    behavior: 'create',
-    noteContentFormat: filter,
-    properties: [],
-    triggers: [],
-    noteNameFormat: 'FilterTest',
-    path: '',
+  return {
+    json: JSON.stringify({
+      schemaVersion: '0.1.0',
+      name,
+      behavior: 'create',
+      noteContentFormat: filter,
+      properties: [],
+      triggers: [],
+      noteNameFormat: 'FilterTest',
+      path: '',
+    }),
+    name
   };
-  return { json: JSON.stringify(template), name };
 }
 
 
@@ -343,9 +371,7 @@ export async function runFilterTests(
   // Create and import all filter templates
   const templates = config.filters.map((f, i) => createFilterTemplate(f.filter, i));
   await importTemplatesViaUI(context, extensionId, templates);
-
-  // Wait for extension to process new templates
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise(resolve => setTimeout(resolve, TIMEOUT_EXTENSION_PROCESS));
 
   // Setup clipper page
   const { page, clipperFrame } = await setupClipperPage(context, config.harPath);
@@ -354,7 +380,7 @@ export async function runFilterTests(
   const results: FilterTestResult[] = [];
   for (let i = 0; i < templates.length; i++) {
     await clipperFrame.locator('#template-select').selectOption({ label: templates[i].name });
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(TIMEOUT_TEMPLATE_SWITCH);
 
     const fileContent = await clipAndDownload(page, clipperFrame);
     results.push({
