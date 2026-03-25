@@ -15,14 +15,23 @@ test.describe('IMDB Templates', () => {
     expectEqualsIgnoringNewlines(actual, expected);
   });
 
-	  test('Ponyo', async ({ extensionContext, extensionId }) => {
-	    const actual = await runHarTest(extensionContext, extensionId, {
-	      harPath: 'imdb/Ponyo.har',
-	      templatePath: 'imdb-clipper.json',
-	    });
-	    const expected = readExpected('imdb/Ponyo.md');
-	    expectEqualsIgnoringNewlines(actual, expected);
-	  });
+		  test('Ponyo', async ({ extensionContext, extensionId }) => {
+		    const actual = await runHarTest(extensionContext, extensionId, {
+		      harPath: 'imdb/Ponyo.har',
+		      templatePath: 'imdb-clipper.json',
+		    });
+		    const expected = readExpected('imdb/Ponyo.md');
+		    expectEqualsIgnoringNewlines(actual, expected);
+		  });
+
+		  test('Kokuhô', async ({ extensionContext, extensionId }) => {
+		    const actual = await runHarTest(extensionContext, extensionId, {
+		      harPath: 'imdb/kokuho.har',
+		      templatePath: 'imdb-clipper.json',
+		    });
+		    const expected = readExpected('imdb/Kokuhô.md');
+		    expectEqualsIgnoringNewlines(actual, expected);
+		  });
 
   test('Andromeda', async ({ extensionContext, extensionId }) => {
     const actual = await runHarTest(extensionContext, extensionId, {

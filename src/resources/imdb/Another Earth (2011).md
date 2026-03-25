@@ -21,6 +21,7 @@ genre:
   - "[[Drama]]"
   - "[[Romance]]"
   - "[[Sci-Fi]]"
+  - "[[Tragedy]]"
 rating: "8"
 image: "https://m.media-amazon.com/images/M/MV5BMTAzNTIzMjkxNjJeQTJeQWpwZ15BbWU3MDEwNDQ2OTU@._V1_.jpg"
 description:
