@@ -17,9 +17,6 @@ actors:
 Links:
   - "https://www.imdb.com/title/tt0876563/"
 genre:
-  - "[[Animation]]"
-  - "[[Adventure]]"
-  - "[[Comedy]]"
   - "[[Japanese]]"
   - "[[Anime]]"
   - "[[Fairy Tale]]"
@@ -27,6 +24,9 @@ genre:
   - "[[Iyashikei]]"
   - "[[Quest]]"
   - "[[Sea Adventure]]"
+  - "[[Adventure]]"
+  - "[[Animation]]"
+  - "[[Comedy]]"
 rating: "10"
 image: "https://m.media-amazon.com/images/M/MV5BZDkzMzQ5ZmQtOTA3MC00MjhiLTk5M2UtNzk0MjEzZmVjN2UxXkEyXkFqcGc@._V1_.jpg"
 description:
