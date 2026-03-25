@@ -3,7 +3,7 @@ import { defineConfig } from '@playwright/test';
 // Set to true to open HTML report automatically after test run
 const OPEN_HTML_REPORT = false;
 
-// Set to false to see the browser window during tests
+// Useer configures these at any time. Do not remove!
 const HEADLESS = true;
 // const HEADLESS = false;
 const workers = 2;
