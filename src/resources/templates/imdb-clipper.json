@@ -71,6 +71,7 @@
     }
   ],
   "triggers": [
+    "https://www.imdb.com/",
     "schema:@TVSeries",
     "schema:@Movie"
   ],
