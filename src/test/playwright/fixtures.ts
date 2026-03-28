@@ -19,9 +19,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // "Other Sources To Aid With debugging/obsidian-clipper" rather than the
 // user's primary obsidian-clipper clone. We intentionally point Playwright
 // at that debug copy so tests remain self-contained.
-const EXTENSION_PATH = path.join(__dirname, '../../Other Sources To Aid With debugging/obsidian-clipper/dist');
+const EXTENSION_PATH = path.join(__dirname, '../../../Other Sources To Aid With debugging/obsidian-clipper/dist');
 const TEST_RESOURCES_PATH = path.join(__dirname, '../resources');
-const TEMPLATES_PATH = path.join(TEST_RESOURCES_PATH, 'templates');
+const TEMPLATES_PATH = path.join(__dirname, '../../../templates');
 const DOWNLOADS_BASE_PATH = path.join(__dirname, 'downloads');
 
 // Timeout constants
