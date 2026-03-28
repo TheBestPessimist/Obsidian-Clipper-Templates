@@ -33,10 +33,10 @@ image: "https://m.media-amazon.com/images/M/MV5BYmVhZmZhMDktODg1Ny00ZGNkLWFjYjIt
 description:
 created: 2026-02-20
 "watch-status":
-  - "[[Plan to Watch]]"
-  - "[[Completed]]"
-  - "[[Dropped]]"
-  - "[[Can not find]]"
+  - "[[⏳ Plan to Watch]]"
+  - "[[✅ Completed]]"
+  - "[[❌ Dropped]]"
+  - "[[🔍 Can not find]]"
 ---
 
 > [!NOTE] synopsis
