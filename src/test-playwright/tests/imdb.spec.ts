@@ -11,7 +11,7 @@ test.describe('IMDB Templates', () => {
             harPath: 'imdb/Another Earth.har',
             templatePath: 'imdb-clipper.json',
         });
-        const expected = readExpected('imdb/Another Earth (2011).md');
+        const expected = readExpected('imdb/Another Earth.md');
         expectEqualsIgnoringNewlines(actual, expected);
     });
 
@@ -38,7 +38,7 @@ test.describe('IMDB Templates', () => {
             harPath: 'imdb/Andromeda.har',
             templatePath: 'imdb-clipper.json',
         });
-        const expected = readExpected('imdb/Andromeda (2000).md');
+        const expected = readExpected('imdb/Andromeda.md');
         expectEqualsIgnoringNewlines(actual, expected);
     });
 

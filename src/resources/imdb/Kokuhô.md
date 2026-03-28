@@ -1,5 +1,5 @@
 ---
-title: "Kokuhô (2025)"
+title: "Kokuhô"
 aliases:
   - "Kokuhô"
 related:

@@ -1,5 +1,5 @@
 ---
-title: "Another Earth (2011)"
+title: "Another Earth"
 aliases:
   - "Another Earth"
 related:

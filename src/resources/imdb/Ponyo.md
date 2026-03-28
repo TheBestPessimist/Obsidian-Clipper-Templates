@@ -1,5 +1,5 @@
 ---
-title: "Gake no ue no Ponyo (2009)"
+title: "Gake no ue no Ponyo"
 aliases:
   - "Gake no ue no Ponyo"
 related:

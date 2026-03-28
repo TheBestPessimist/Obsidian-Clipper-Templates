@@ -1,5 +1,5 @@
 ---
-title: "Brooklyn Nine-Nine (2013)"
+title: "Brooklyn Nine-Nine"
 aliases:
   - "Brooklyn Nine-Nine"
 related:

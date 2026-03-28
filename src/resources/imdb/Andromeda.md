@@ -1,5 +1,5 @@
 ---
-title: "Andromeda (2000)"
+title: "Andromeda"
 aliases:
   - "Andromeda"
 related:

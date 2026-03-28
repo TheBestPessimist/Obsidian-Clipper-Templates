@@ -1,5 +1,5 @@
 ---
-title: "Shogun (1980)"
+title: "Shogun"
 aliases:
   - "Shogun"
 related:
