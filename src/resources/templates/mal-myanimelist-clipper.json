@@ -66,7 +66,7 @@
     },
     {
       "name": "watch-status",
-      "value": "[[⏳Plan to Watch]], [[✅Completed]], [[❌Dropped]], [[🔍Can not find]]",
+      "value": "[[⏳ Plan to Watch]], [[✅ Completed]], [[❌ Dropped]], [[🔍 Can not find]]",
       "type": "multitext"
     }
   ],
