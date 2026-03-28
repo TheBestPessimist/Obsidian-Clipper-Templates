@@ -31,7 +31,7 @@
     },
     {
       "name": "writers",
-      "value": "{% set schemaWriters = schema:creator[*].name %}{% if schema:@TVSeries:name %}{% set cssWriters = selector:#__next > main > div > section.ipc-page-background.ipc-page-background--base.sc-358297d7-0.CHcbB > section > div:nth-child(5) > section > section > div.sc-14a487d5-4.bzdlEY > div.sc-14a487d5-6.gilQBG > div.sc-14a487d5-12.grWKim > div.sc-af040695-2.fLTdiX > ul > li:has(> span.ipc-metadata-list-item__label) > div > ul > li %}{% else %}{% set cssWriters = selector:#__next > main > div > section.ipc-page-background.ipc-page-background--base.sc-358297d7-0.CHcbB > section > div:nth-child(5) > section > section > div.sc-14a487d5-4.bzdlEY > div.sc-14a487d5-6.gilQBG > div.sc-14a487d5-12.grWKim > div.sc-af040695-2.fLTdiX > ul > li:nth-child(2) > div > ul > li %}{% endif %}{% set allWriters = schemaWriters|merge:cssWriters|unique %}{{allWriters|wikilink|join}}",
+      "value": "{% set schemaWriters = schema:creator[*].name %}\n{% set cssWriters1 = selector:#__next > main > div > section.ipc-page-background.ipc-page-background--base.sc-358297d7-0.CHcbB > section > div:nth-child(5) > section > section > div.sc-14a487d5-4.bzdlEY > div.sc-14a487d5-6.gilQBG > div.sc-14a487d5-12.grWKim > div.sc-af040695-2.fLTdiX > ul > li:has(> span.ipc-metadata-list-item__label) > div > ul > li %}\n{% set allWriters = schemaWriters|merge:cssWriters1|unique %}\n{{allWriters|wikilink|join}}\n",
       "type": "multitext"
     },
     {
@@ -75,6 +75,6 @@
     "schema:@TVSeries",
     "schema:@Movie"
   ],
-  "noteNameFormat": "{% if schema:@TVSeries:name %}{{schema:@TVSeries:name}}{% else %}{{schema:@Movie:name}}{% endif %} ({{schema:datePublished|slice:0,4}})",
+  "noteNameFormat": "{% set title_v = schema:@TVSeries:name ?? schema:@Movie:name %}{{title_v}} ({{schema:datePublished|slice:0,4}})",
   "path": "Film"
 }
