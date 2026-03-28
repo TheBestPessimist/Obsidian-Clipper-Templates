@@ -6,7 +6,7 @@
   "properties": [
     {
       "name": "title",
-      "value": "{% if schema:@TVSeries:name %}{{schema:@TVSeries:name}}{% else %}{{schema:@Movie:name}}{% endif %} ({{schema:datePublished|slice:0,4}})",
+      "value": "{% set title_v = schema:@TVSeries:name ?? schema:@Movie:name %}{{title_v}} ({{schema:datePublished|slice:0,4}})",
       "type": "text"
     },
     {
