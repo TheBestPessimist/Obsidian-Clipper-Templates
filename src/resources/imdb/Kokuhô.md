@@ -21,6 +21,10 @@ Links:
 genre:
   - "[[Japanese]]"
   - "[[Drama]]"
+Producers:
+  - "[[Amuse]]"
+  - "[[Aniplex]]"
+  - "[[Asahi Shimbun Publications]]"
 rating: "2"
 image: "https://m.media-amazon.com/images/M/MV5BMzIzNzZlMGItMzg3OC00MmI0LWE4NGEtNzQwZDczOGI0NGIwXkEyXkFqcGc@._V1_.jpg"
 description:

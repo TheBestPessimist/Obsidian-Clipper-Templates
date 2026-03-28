@@ -24,6 +24,10 @@ genre:
   - "[[Drama]]"
   - "[[Space Sci-Fi]]"
   - "[[Sci-Fi]]"
+Producers:
+  - "[[Fireworks Entertainment]]"
+  - "[[Tribune Entertainment]]"
+  - "[[Alliance Films]]"
 rating: "8"
 image: "https://m.media-amazon.com/images/M/MV5BYmVhZmZhMDktODg1Ny00ZGNkLWFjYjItNTY5ZWFmM2RjNTYyXkEyXkFqcGc@._V1_.jpg"
 description:

@@ -23,6 +23,10 @@ genre:
   - "[[Period Drama]]"
   - "[[War Epic]]"
   - "[[War]]"
+Producers:
+  - "[[Asahi National Broadcasting Company]]"
+  - "[[Jardine Matheson Co. Ltd.]]"
+  - "[[National Broadcasting Company (NBC)]]"
 rating: "8"
 image: "https://m.media-amazon.com/images/M/MV5BMzQ1MTVkMDItZDJmNS00YzVmLWJjYzYtNGE4NjFjNjZkYzY2XkEyXkFqcGc@._V1_.jpg"
 description:

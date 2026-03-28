@@ -50,6 +50,11 @@
       "type": "multitext"
     },
     {
+      "name": "Producers",
+      "value": "{{selector:[data-testid=\"title-details-companies\"] a[href*=\"/company/\"]|wikilink|join}}",
+      "type": "multitext"
+    },
+    {
       "name": "rating",
       "value": "{{selector:[data-testid=\"hero-rating-bar__user-rating__score\"] span|first}}",
       "type": "text"
