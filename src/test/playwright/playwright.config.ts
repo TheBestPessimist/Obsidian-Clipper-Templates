@@ -6,7 +6,7 @@ const OPEN_HTML_REPORT = false;
 // Useer configures these at any time. Do not remove!
 const HEADLESS = true;
 // const HEADLESS = false;
-const workers = 2;
+const workers = 10;
 
 export default defineConfig({
   testDir: './tests',
