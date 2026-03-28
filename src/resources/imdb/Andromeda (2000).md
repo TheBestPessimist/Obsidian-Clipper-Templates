@@ -1,6 +1,7 @@
 ---
 title: "Andromeda (2000)"
 aliases:
+  - "Andromeda"
 related:
   - "[[Film]]"
   - "[[imdb]]"

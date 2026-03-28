@@ -11,7 +11,7 @@
     },
     {
       "name": "aliases",
-      "value": "",
+      "value": "{% set title_v = schema:@TVSeries:name ?? schema:@Movie:name %}{{title_v}}",
       "type": "multitext"
     },
     {

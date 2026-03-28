@@ -1,6 +1,7 @@
 ---
 title: "Gake no ue no Ponyo (2009)"
 aliases:
+  - "Gake no ue no Ponyo"
 related:
   - "[[Film]]"
   - "[[imdb]]"

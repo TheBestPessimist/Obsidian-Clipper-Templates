@@ -1,6 +1,7 @@
 ---
 title: "Brooklyn Nine-Nine (2013)"
 aliases:
+  - "Brooklyn Nine-Nine"
 related:
   - "[[Film]]"
   - "[[imdb]]"

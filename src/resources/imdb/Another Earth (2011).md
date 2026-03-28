@@ -1,6 +1,7 @@
 ---
 title: "Another Earth (2011)"
 aliases:
+  - "Another Earth"
 related:
   - "[[Film]]"
   - "[[imdb]]"

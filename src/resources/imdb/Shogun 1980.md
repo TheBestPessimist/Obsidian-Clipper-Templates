@@ -1,6 +1,7 @@
 ---
 title: "Shogun (1980)"
 aliases:
+  - "Shogun"
 related:
   - "[[Film]]"
   - "[[imdb]]"

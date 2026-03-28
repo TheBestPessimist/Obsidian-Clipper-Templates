@@ -1,6 +1,7 @@
 ---
 title: "Kokuhô (2025)"
 aliases:
+  - "Kokuhô"
 related:
   - "[[Film]]"
   - "[[imdb]]"
