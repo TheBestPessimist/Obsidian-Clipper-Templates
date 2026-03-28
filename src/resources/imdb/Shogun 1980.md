@@ -31,6 +31,11 @@ rating: "8"
 image: "https://m.media-amazon.com/images/M/MV5BMzQ1MTVkMDItZDJmNS00YzVmLWJjYzYtNGE4NjFjNjZkYzY2XkEyXkFqcGc@._V1_.jpg"
 description:
 created: 2026-02-20
+"watch-status":
+  - "[[Plan to Watch]]"
+  - "[[Completed]]"
+  - "[[Dropped]]"
+  - "[[Can not find]]"
 ---
 
 > [!NOTE] synopsis

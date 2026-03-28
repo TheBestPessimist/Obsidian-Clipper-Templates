@@ -73,6 +73,11 @@
       "name": "created",
       "value": "{{date}}",
       "type": "date"
+    },
+    {
+      "name": "watch-status",
+      "value": "[[Plan to Watch]], [[Completed]], [[Dropped]], [[Can not find]]",
+      "type": "multitext"
     }
   ],
   "triggers": [
