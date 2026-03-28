@@ -1,78 +1,78 @@
 {
-	"schemaVersion": "0.1.0",
-	"name": "MAL | MyAnimeList",
-	"behavior": "create",
-	"noteContentFormat": "\n{{selector:#content > table > tbody > tr > td:nth-child(2) > div.rightside.js-scrollfix-bottom-rel > table > tbody > tr:nth-child(1) > td > p}}\n\n",
-	"properties": [
-		{
-			"name": "title",
-			"value": "{{title}}",
-			"type": "text"
-		},
-		{
-			"name": "aliases",
-			"value": "{{selector:#contentWrapper > div:nth-child(1) > div > div.h1-title > div > p}}, {{title}}",
-			"type": "multitext"
-		},
-		{
-			"name": "related",
-			"value": "[[Anime]], [[MyAnimeList]], [[Clippings]]",
-			"type": "multitext"
-		},
-		{
-			"name": "year",
-			"value": "{{selectorHtml:.leftside|split:\\\"Aired:\\\"|last|split:\\\"</div>\\\"|first|strip_tags|split:\\\" to\\\"|first|split:\\\" \\\"|last}}",
-			"type": "number"
-		},
-		{
-			"name": "Studios",
-			"value": "{{selectorHtml:.leftside|split:\\\"Studios:\\\"|last|split:\\\"</div>\\\"|first|strip_tags|replace:\\\"/\\s+/g\\\":\\\" \\\"|trim|split:\\\", \\\"|wikilink}}",
-			"type": "multitext"
-		},
-		{
-			"name": "Producers",
-			"value": "{{selectorHtml:.leftside|split:\\\"Producers:\\\"|last|split:\\\"</div>\\\"|first|strip_tags|replace:(\\\"/\\s+/g\\\":\\\" \\\", \\\", \\\":\\\",\\\")|trim|split:\\\",\\\"|wikilink}}",
-			"type": "multitext"
-		},
-		{
-			"name": "Links",
-			"value": "{{url}}",
-			"type": "multitext"
-		},
-		{
-			"name": "genre",
-			"value": "{{selector:span[itemprop=genre]|wikilink}}",
-			"type": "multitext"
-		},
-		{
-			"name": "rating",
-			"value": "{{selector:#myinfo_score option[selected]?value|first}}",
-			"type": "text"
-		},
-		{
-			"name": "image",
-			"value": "{{image}}",
-			"type": "text"
-		},
-		{
-			"name": "description",
-			"value": "{{meta:property:og:description}}",
-			"type": "text"
-		},
-		{
-			"name": "created",
-			"value": "{{date}}",
-			"type": "date"
-		},
-		{
-			"name": "watch-status",
-			"value": "[[Plan to Watch]], [[Completed]], [[Dropped]], [[Can not find]]",
-			"type": "multitext"
-		}
-	],
-	"triggers": [
-		"https://myanimelist.net/"
-	],
-	"noteNameFormat": "{{title}} — {{selector:#contentWrapper > div:nth-child(1) > div > div.h1-title > div > p}} ({{selectorHtml:.leftside|split:\"Aired:\"|last|split:\"</div>\"|first|strip_tags|split:\" to\"|first|split:\" \"|last}})",
-	"path": "Anime"
+  "schemaVersion": "0.1.0",
+  "name": "MAL | MyAnimeList",
+  "behavior": "create",
+  "noteContentFormat": "\n{{selector:#content > table > tbody > tr > td:nth-child(2) > div.rightside.js-scrollfix-bottom-rel > table > tbody > tr:nth-child(1) > td > p}}\n\n",
+  "properties": [
+    {
+      "name": "title",
+      "value": "{{title}}",
+      "type": "text"
+    },
+    {
+      "name": "aliases",
+      "value": "{{selector:#contentWrapper > div:nth-child(1) > div > div.h1-title > div > p}}, {{title}}",
+      "type": "multitext"
+    },
+    {
+      "name": "related",
+      "value": "[[Anime]], [[MyAnimeList]], [[Clippings]]",
+      "type": "multitext"
+    },
+    {
+      "name": "year",
+      "value": "{{selectorHtml:.leftside|split:\\\"Aired:\\\"|last|split:\\\"</div>\\\"|first|strip_tags|split:\\\" to\\\"|first|split:\\\" \\\"|last}}",
+      "type": "number"
+    },
+    {
+      "name": "Studios",
+      "value": "{{selectorHtml:.leftside|split:\\\"Studios:\\\"|last|split:\\\"</div>\\\"|first|strip_tags|replace:\\\"/\\s+/g\\\":\\\" \\\"|trim|split:\\\", \\\"|wikilink}}",
+      "type": "multitext"
+    },
+    {
+      "name": "Producers",
+      "value": "{{selectorHtml:.leftside|split:\\\"Producers:\\\"|last|split:\\\"</div>\\\"|first|strip_tags|replace:(\\\"/\\s+/g\\\":\\\" \\\", \\\", \\\":\\\",\\\")|trim|split:\\\",\\\"|wikilink}}",
+      "type": "multitext"
+    },
+    {
+      "name": "Links",
+      "value": "{{url}}",
+      "type": "multitext"
+    },
+    {
+      "name": "genre",
+      "value": "{{selector:span[itemprop=genre]|wikilink}}",
+      "type": "multitext"
+    },
+    {
+      "name": "rating",
+      "value": "{{selector:#myinfo_score option[selected]?value|first}}",
+      "type": "text"
+    },
+    {
+      "name": "image",
+      "value": "{{image}}",
+      "type": "text"
+    },
+    {
+      "name": "description",
+      "value": "{{meta:property:og:description}}",
+      "type": "text"
+    },
+    {
+      "name": "created",
+      "value": "{{date}}",
+      "type": "date"
+    },
+    {
+      "name": "watch-status",
+      "value": "[[⏳Plan to Watch]], [[✅Completed]], [[❌Dropped]], [[🔍Can not find]]",
+      "type": "multitext"
+    }
+  ],
+  "triggers": [
+    "https://myanimelist.net/"
+  ],
+  "noteNameFormat": "{{title}} — {{selector:#contentWrapper > div:nth-child(1) > div > div.h1-title > div > p}} ({{selectorHtml:.leftside|split:\"Aired:\"|last|split:\"</div>\"|first|strip_tags|split:\" to\"|first|split:\" \"|last}})",
+  "path": "Anime"
 }
