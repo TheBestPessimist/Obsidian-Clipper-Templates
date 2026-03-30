@@ -2,7 +2,7 @@
   "schemaVersion": "0.1.0",
   "name": "IMDB",
   "behavior": "create",
-  "noteContentFormat": "\n> [!NOTE] description\n> {{schema:description}}\n\n## Review\n\nREVIEW HERE",
+  "noteContentFormat": "\n{{schema:description|callout:('note', 'description')}}\n\n## Review\n\nREVIEW HERE",
   "properties": [
     {
       "name": "title",
@@ -16,7 +16,7 @@
     },
     {
       "name": "related",
-      "value": "{% set related = '[\"Film\",\"imdb\",\"Clippings\"]' %}{% if schema:@TVSeries:name %}{% set series = \"Series\" %}{% set related = related|merge:series %}{% endif %}{% set related = related|wikilink|join %}{{related}}",
+      "value": "{% set related = '['Film','imdb','Clippings']' %}{% if schema:@TVSeries:name %}{% set series = 'Series' %}{% set related = related|merge:series %}{% endif %}{% set related = related|wikilink|join %}{{related}}",
       "type": "multitext"
     },
     {
@@ -46,17 +46,17 @@
     },
     {
       "name": "genre",
-      "value": "{% set tvGenres = schema:@TVSeries:genre %}{% set movieGenres = schema:genre %}{% set chipGenres = selector:a[href*=\"/interest/\"] span.ipc-chip__text %}{% set allGenres = tvGenres|merge:movieGenres|merge:chipGenres|unique %}{{allGenres|wikilink|join}}",
+      "value": "{% set tvGenres = schema:@TVSeries:genre %}{% set movieGenres = schema:genre %}{% set chipGenres = selector:a[href*='/interest/'] span.ipc-chip__text %}{% set allGenres = tvGenres|merge:movieGenres|merge:chipGenres|unique %}{{allGenres|wikilink|join}}",
       "type": "multitext"
     },
     {
       "name": "Producers",
-      "value": "{{selector:[data-testid=\"title-details-companies\"] a[href*=\"/company/\"]|wikilink|join}}",
+      "value": "{{selector:[data-testid='title-details-companies'] a[href*='/company/']|wikilink|join}}",
       "type": "multitext"
     },
     {
       "name": "rating",
-      "value": "{{selector:[data-testid=\"hero-rating-bar__user-rating__score\"] span|first}}",
+      "value": "{{selector:[data-testid='hero-rating-bar__user-rating__score'] span|first}}",
       "type": "text"
     },
     {
