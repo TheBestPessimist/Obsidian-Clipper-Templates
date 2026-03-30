@@ -12,8 +12,13 @@ import { test as base, chromium, type BrowserContext, type Page } from '@playwri
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import os from 'os';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Project-specific root under the OS temp directory. All transient test
+// artifacts created by this helper live under here.
+const PROJECT_TEMP_ROOT = path.join(os.tmpdir(), 'obsidian-clipper-templates');
 
 // NOTE: In this repo, the Web Clipper extension used for tests lives under
 // "Other READONLY Sources To Aid With debugging/obsidian-clipper" rather than the
@@ -22,7 +27,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const EXTENSION_PATH = path.join(__dirname, '../../../Other READONLY Sources To Aid With debugging/obsidian-clipper/dist');
 const TEST_RESOURCES_PATH = path.join(__dirname, '../resources');
 const TEMPLATES_PATH = path.join(__dirname, '../../../templates');
-const DOWNLOADS_BASE_PATH = path.join(__dirname, 'downloads');
 
 // Timeout constants
 const TIMEOUT_MODAL = 5000;
@@ -80,9 +84,6 @@ export const test = base.extend<{}, ClipperWorkerFixtures>({
     if (!fs.existsSync(EXTENSION_PATH)) {
       throw new Error(`Extension not found at ${EXTENSION_PATH}. Run 'npm run build:chrome' first.`);
     }
-    const workerDownloadsPath = path.join(DOWNLOADS_BASE_PATH, `worker-${workerInfo.workerIndex}`);
-    if (fs.existsSync(workerDownloadsPath)) fs.rmSync(workerDownloadsPath, { recursive: true });
-    fs.mkdirSync(workerDownloadsPath, { recursive: true });
 
     const context = await chromium.launchPersistentContext('', {
       channel: 'chromium',
@@ -90,7 +91,6 @@ export const test = base.extend<{}, ClipperWorkerFixtures>({
       args: [`--disable-extensions-except=${EXTENSION_PATH}`, `--load-extension=${EXTENSION_PATH}`],
       permissions: ['clipboard-read', 'clipboard-write'],
       acceptDownloads: true,
-      downloadsPath: workerDownloadsPath,
     });
 
     const dateMockCode = generateDateMockCode(MOCK_DATE);
@@ -178,8 +178,9 @@ async function importTemplatesViaUI(
 }
 
 function createTempTemplateFiles(templates: Array<{ json: string; name: string }>): string[] {
-  const tempDir = path.join(__dirname, 'temp-templates');
-  fs.mkdirSync(tempDir, { recursive: true });
+  // Use a unique temp directory per invocation to avoid cross-test conflicts.
+  fs.mkdirSync(PROJECT_TEMP_ROOT, { recursive: true });
+  const tempDir = fs.mkdtempSync(path.join(PROJECT_TEMP_ROOT, 'temp-templates-'));
   return templates.map((t, i) => {
     const tempFile = path.join(tempDir, `temp-${i}-${Date.now()}.json`);
     fs.writeFileSync(tempFile, t.json, 'utf-8');
@@ -188,10 +189,18 @@ function createTempTemplateFiles(templates: Array<{ json: string; name: string }
 }
 
 function cleanupTempTemplateFiles(filePaths: string[]): void {
-  // Delete individual files to avoid conflicts with parallel test execution
+  let tempDir: string | undefined;
   for (const filePath of filePaths) {
     if (fs.existsSync(filePath)) {
+      if (!tempDir) tempDir = path.dirname(filePath);
       fs.unlinkSync(filePath);
+    }
+  }
+  if (tempDir && fs.existsSync(tempDir)) {
+    try {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    } catch {
+      // Best-effort cleanup; ignore errors.
     }
   }
 }
