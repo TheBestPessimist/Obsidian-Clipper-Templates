@@ -57,12 +57,12 @@
     {
       "name": "rating",
       "value": "{{selector:[data-testid='hero-rating-bar__user-rating__score'] span|first}}",
-      "type": "text"
+      "type": "number"
     },
     {
       "name": "image",
       "value": "{{schema:image}}",
-      "type": "text"
+      "type": "multitext"
     },
     {
       "name": "description",

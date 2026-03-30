@@ -52,7 +52,7 @@
     {
       "name": "image",
       "value": "{{image}}",
-      "type": "text"
+      "type": "multitext"
     },
     {
       "name": "description",
