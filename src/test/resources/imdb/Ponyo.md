@@ -43,7 +43,7 @@ created: 2026-02-20
   - "[[🔍 Can not find]]"
 ---
 
-> [!NOTE] synopsis
+> [!note] description
 > A five-year-old boy develops a relationship with Ponyo, a young goldfish princess who longs to become a human after falling in love with him.
 
 ## Thoughts

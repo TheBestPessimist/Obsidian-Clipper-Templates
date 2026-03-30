@@ -38,7 +38,7 @@ created: 2026-02-20
   - "[[🔍 Can not find]]"
 ---
 
-> [!NOTE] synopsis
+> [!note] description
 > Comedy series following the exploits of Det. Jake Peralta and his diverse, lovable colleagues as they police the NYPD's 99th Precinct.
 
 ## Thoughts

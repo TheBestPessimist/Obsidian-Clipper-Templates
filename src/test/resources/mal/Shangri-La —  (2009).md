@@ -20,7 +20,7 @@ genre:
   - "[[Action]]"
   - "[[Drama]]"
   - "[[Sci-Fi]]"
-rating: "3"
+rating: 3
 image: "https://myanimelist.net/images/anime/1780/121358.jpg"
 description: "In a post-apocalyptic society, much of earthquake-riddled Japan has been left to ruin, resulting in an abundance of greenery. Governments manage much of the world's emissions, resulting in a massive class divide and economic disparity. The Japanese government launches \"Project Atlas,\" a utopian city that will replace Tokyo but can only fit a certain amount of people. This limitation means that some people will have to live outside the city in jungles, as refugees. However, with any flawed plan comes those who are willing to challenge it. These include Kuniko Houjou, an heir to a renegade town; Mikuni, a mysterious and powerful child kept in a secret temple; Kunihito Kusanagi, a soldier for the high-tech and exclusive monopoly Atlas; Karin Ishida, a genius economics whiz with her hand in markets across the world; and the villainous Ryouko Naruse, leading Atlas in its domination of this future world. Can this group of rebels, forming a movement known as \"Metal-Age,\" band together to demonstrate that inclusion and teamwork prevail over cruel segregation? [Written by MAL Rewrite] "
 created: 2026-02-20
@@ -31,10 +31,15 @@ created: 2026-02-20
   - "[[🔍 Can not find]]"
 ---
 
-In a post-apocalyptic society, much of earthquake-riddled Japan has been left to ruin, resulting in an abundance of greenery. Governments manage much of the world's emissions, resulting in a massive class divide and economic disparity. The Japanese government launches "Project Atlas," a utopian city that will replace Tokyo but can only fit a certain amount of people. This limitation means that some people will have to live outside the city in jungles, as refugees.
+> [!note] description
+> In a post-apocalyptic society, much of earthquake-riddled Japan has been left to ruin, resulting in an abundance of greenery. Governments manage much of the world's emissions, resulting in a massive class divide and economic disparity. The Japanese government launches "Project Atlas," a utopian city that will replace Tokyo but can only fit a certain amount of people. This limitation means that some people will have to live outside the city in jungles, as refugees.
+>
+> However, with any flawed plan comes those who are willing to challenge it. These include Kuniko Houjou, an heir to a renegade town; Mikuni, a mysterious and powerful child kept in a secret temple; Kunihito Kusanagi, a soldier for the high-tech and exclusive monopoly Atlas; Karin Ishida, a genius economics whiz with her hand in markets across the world; and the villainous Ryouko Naruse, leading Atlas in its domination of this future world.
+>
+> Can this group of rebels, forming a movement known as "Metal-Age," band together to demonstrate that inclusion and teamwork prevail over cruel segregation?
+>
+> [Written by MAL Rewrite]
 
-However, with any flawed plan comes those who are willing to challenge it. These include Kuniko Houjou, an heir to a renegade town; Mikuni, a mysterious and powerful child kept in a secret temple; Kunihito Kusanagi, a soldier for the high-tech and exclusive monopoly Atlas; Karin Ishida, a genius economics whiz with her hand in markets across the world; and the villainous Ryouko Naruse, leading Atlas in its domination of this future world.
+## Review
 
-Can this group of rebels, forming a movement known as "Metal-Age," band together to demonstrate that inclusion and teamwork prevail over cruel segregation?
-
-[Written by MAL Rewrite]
+REVIEW HERE

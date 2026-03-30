@@ -38,7 +38,7 @@ created: 2026-02-20
   - "[[🔍 Can not find]]"
 ---
 
-> [!NOTE] synopsis
+> [!note] description
 > An English sea captain becomes a samurai in 17th-century Japan.
 
 ## Thoughts

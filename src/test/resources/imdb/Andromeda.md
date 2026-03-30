@@ -39,7 +39,7 @@ created: 2026-02-20
   - "[[🔍 Can not find]]"
 ---
 
-> [!NOTE] synopsis
+> [!note] description
 > Captain Dylan Hunt and the crew of the Andromeda Ascendant set out on a mission to rebuild the Systems Commonwealth 300 years after its fall.
 
 ## Thoughts

@@ -36,7 +36,7 @@ created: 2026-02-20
   - "[[🔍 Can not find]]"
 ---
 
-> [!NOTE] synopsis
+> [!note] description
 > Tragedy connects a young woman and a shattered music professor as an exact replica of Earth is discovered.
 
 ## Thoughts

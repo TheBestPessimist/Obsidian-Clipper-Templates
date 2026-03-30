@@ -36,7 +36,7 @@ created: 2026-02-20
   - "[[🔍 Can not find]]"
 ---
 
-> [!NOTE] synopsis
+> [!note] description
 > In post-war Japan's economic boom, gangster family-born Kikuo Tachibana finds himself adopted by a kabuki actor. Despite life's challenges, he develops into a gifted performer.
 
 ## Thoughts
