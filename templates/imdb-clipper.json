@@ -2,7 +2,7 @@
   "schemaVersion": "0.1.0",
   "name": "IMDB",
   "behavior": "create",
-  "noteContentFormat": "\n> [!NOTE] synopsis\n> {{schema:description}}\n\n## Thoughts\n\nREVIEW HERE",
+  "noteContentFormat": "\n> [!NOTE] description\n> {{schema:description}}\n\n## Review\n\nREVIEW HERE",
   "properties": [
     {
       "name": "title",

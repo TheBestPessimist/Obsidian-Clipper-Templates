@@ -2,7 +2,7 @@
   "schemaVersion": "0.1.0",
   "name": "MAL | MyAnimeList",
   "behavior": "create",
-  "noteContentFormat": "\n{{selector:#content > table > tbody > tr > td:nth-child(2) > div.rightside.js-scrollfix-bottom-rel > table > tbody > tr:nth-child(1) > td > p}}\n\n",
+  "noteContentFormat": "\n> [!NOTE] description\n> {{selector:#content > table > tbody > tr > td:nth-child(2) > div.rightside.js-scrollfix-bottom-rel > table > tbody > tr:nth-child(1) > td > p}}\n\n## Review\n\nREVIEW HERE",
   "properties": [
     {
       "name": "title",
