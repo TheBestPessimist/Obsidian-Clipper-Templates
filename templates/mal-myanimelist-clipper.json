@@ -73,6 +73,6 @@
   "triggers": [
     "https://myanimelist.net/"
   ],
-  "noteNameFormat": "{{title}} — {{selector:#contentWrapper > div:nth-child(1) > div > div.h1-title > div > p}} ({{selectorHtml:.leftside|split:\"Aired:\"|last|split:\"</div>\"|first|strip_tags|split:\" to\"|first|split:\" \"|last}})",
+  "noteNameFormat": "{{title}} - {{selector:#contentWrapper > div:nth-child(1) > div > div.h1-title > div > p}} ({{selectorHtml:.leftside|split:\"Aired:\"|last|split:\"</div>\"|first|strip_tags|split:\" to\"|first|split:\" \"|last}})",
   "path": "Anime"
 }
