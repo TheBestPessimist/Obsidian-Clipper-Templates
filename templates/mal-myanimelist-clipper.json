@@ -21,17 +21,17 @@
     },
     {
       "name": "year",
-      "value": "{{selectorHtml:.leftside|split:\\\"Aired:\\\"|last|split:\\\"</div>\\\"|first|strip_tags|split:\\\" to\\\"|first|split:\\\" \\\"|last}}",
+      "value": "{{selectorHtml:.leftside|split:\"Aired:\"|last|split:\"</div>\"|first|strip_tags|split:\" to\"|first|split:\" \"|last}}",
       "type": "number"
     },
     {
       "name": "Studios",
-      "value": "{{selectorHtml:.leftside|split:\\\"Studios:\\\"|last|split:\\\"</div>\\\"|first|strip_tags|replace:\\\"/\\s+/g\\\":\\\" \\\"|trim|split:\\\", \\\"|wikilink}}",
+      "value": "{{selectorHtml:.leftside|split:\"Studios:\"|last|split:\"</div>\"|first|strip_tags|replace:\"/\\s+/g\":\" \"|trim|split:\", \"|wikilink}}",
       "type": "multitext"
     },
     {
       "name": "Producers",
-      "value": "{{selectorHtml:.leftside|split:\\\"Producers:\\\"|last|split:\\\"</div>\\\"|first|strip_tags|replace:(\\\"/\\s+/g\\\":\\\" \\\", \\\", \\\":\\\",\\\")|trim|split:\\\",\\\"|wikilink}}",
+      "value": "{{selectorHtml:.leftside|split:\"Producers:\"|last|split:\"</div>\"|first|strip_tags|replace:\"/\\s+/g\":\" \"|trim|split:\", \"|wikilink}}",
       "type": "multitext"
     },
     {
@@ -76,3 +76,4 @@
   "noteNameFormat": "{{title}} — {{selector:#contentWrapper > div:nth-child(1) > div > div.h1-title > div > p}} ({{selectorHtml:.leftside|split:\"Aired:\"|last|split:\"</div>\"|first|strip_tags|split:\" to\"|first|split:\" \"|last}})",
   "path": "Anime"
 }
+
