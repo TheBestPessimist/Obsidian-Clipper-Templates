@@ -10,10 +10,10 @@ year: 2009
 Studios:
   - "[[Gonzo]]"
 Producers:
-  - "[[Rakuon ha]]"
-  - "[[      flying DOG]]"
-  - "[[      NTT Docomo]]"
-  - "[[      Atelier Mu a]]"
+  - "[[Rakuonsha]]"
+  - "[[flying DOG]]"
+  - "[[NTT Docomo]]"
+  - "[[Atelier Musa]]"
 Links:
   - "https://myanimelist.net/anime/5220"
 genre:
