@@ -11,8 +11,7 @@ test.describe('MAL Templates', () => {
             harPath: 'mal/Shangri-la.har',
             templatePath: 'mal-myanimelist-clipper.json',
         });
-        const expected = readExpected('mal/Shangri-La —  (2009).md');
+	        const expected = readExpected('mal/Shangri-La.md');
         expectEqualsIgnoringNewlines(actual, expected);
     });
 });
-

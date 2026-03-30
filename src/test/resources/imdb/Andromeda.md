@@ -28,8 +28,9 @@ Producers:
   - "[[Fireworks Entertainment]]"
   - "[[Tribune Entertainment]]"
   - "[[Alliance Films]]"
-rating: "8"
-image: "https://m.media-amazon.com/images/M/MV5BYmVhZmZhMDktODg1Ny00ZGNkLWFjYjItNTY5ZWFmM2RjNTYyXkEyXkFqcGc@._V1_.jpg"
+rating: 8
+image:
+  - "https://m.media-amazon.com/images/M/MV5BYmVhZmZhMDktODg1Ny00ZGNkLWFjYjItNTY5ZWFmM2RjNTYyXkEyXkFqcGc@._V1_.jpg"
 description:
 created: 2026-02-20
 "watch-status":
@@ -42,6 +43,6 @@ created: 2026-02-20
 > [!note] description
 > Captain Dylan Hunt and the crew of the Andromeda Ascendant set out on a mission to rebuild the Systems Commonwealth 300 years after its fall.
 
-## Thoughts
+## Review
 
 REVIEW HERE

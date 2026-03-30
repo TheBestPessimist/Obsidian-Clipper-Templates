@@ -25,8 +25,9 @@ genre:
   - "[[Sci-Fi]]"
 Producers:
   - "[[Artists Public Domain]]"
-rating: "8"
-image: "https://m.media-amazon.com/images/M/MV5BMTAzNTIzMjkxNjJeQTJeQWpwZ15BbWU3MDEwNDQ2OTU@._V1_.jpg"
+rating: 8
+image:
+  - "https://m.media-amazon.com/images/M/MV5BMTAzNTIzMjkxNjJeQTJeQWpwZ15BbWU3MDEwNDQ2OTU@._V1_.jpg"
 description:
 created: 2026-02-20
 "watch-status":
@@ -39,6 +40,6 @@ created: 2026-02-20
 > [!note] description
 > Tragedy connects a young woman and a shattered music professor as an exact replica of Earth is discovered.
 
-## Thoughts
+## Review
 
 REVIEW HERE
