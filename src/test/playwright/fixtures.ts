@@ -13,6 +13,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import os from 'os';
+import { writeTypesJsonFromTemplates } from './property-types-from-templates';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -110,7 +111,16 @@ export const test = base.extend<{}, ClipperWorkerFixtures>({
   extensionId: [async ({ extensionContext }, use) => {
     const serviceWorker = await getServiceWorker(extensionContext);
     const extensionId = serviceWorker.url().split('/')[2];
-    await loadAllTemplates(extensionContext, extensionId);
+
+	    // Generate property types from templates and import them via the
+	    // Properties tab before loading templates. This ensures frontmatter
+	    // formatting (e.g., numbers vs strings) matches template-defined types.
+	    fs.mkdirSync(PROJECT_TEMP_ROOT, { recursive: true });
+	    const typesPath = path.join(PROJECT_TEMP_ROOT, 'types-from-templates.json');
+	    writeTypesJsonFromTemplates(TEMPLATES_PATH, typesPath);
+	    await importPropertyTypesViaUI(extensionContext, extensionId, typesPath);
+
+	    await loadAllTemplates(extensionContext, extensionId);
     await use(extensionId);
   }, { scope: 'worker' }],
 });
@@ -129,6 +139,36 @@ export function normalizeMarkdown(md: string): string {
  * Import template files via the settings page import modal.
  * Handles both file paths and JSON strings.
  */
+	async function importPropertyTypesViaUI(
+	  context: BrowserContext,
+	  extensionId: string,
+	  typesJsonPath: string,
+	): Promise<void> {
+	  const settingsPage = await context.newPage();
+	  await settingsPage.goto(`chrome-extension://${extensionId}/settings.html`);
+	  await settingsPage.waitForLoadState('domcontentloaded');
+	  await settingsPage.waitForTimeout(TIMEOUT_PAGE_LOAD);
+
+	  // Open Properties section in the sidebar
+	  await settingsPage.locator('#sidebar li[data-section="properties"]').click();
+	  await settingsPage.waitForTimeout(500);
+
+	  // Open the generic import modal for property types
+	  await settingsPage.locator('#import-types-btn').click();
+	  const importModal = settingsPage.locator('#import-modal');
+	  await importModal.waitFor({ state: 'visible', timeout: TIMEOUT_MODAL });
+
+	  const fileChooserPromise = settingsPage.waitForEvent('filechooser');
+	  await importModal.locator('.import-drop-zone').click();
+	  const fileChooser = await fileChooserPromise;
+	  await fileChooser.setFiles([typesJsonPath]);
+
+	  // Wait for import to complete and the modal to close
+	  await importModal.waitFor({ state: 'hidden', timeout: TIMEOUT_IMPORT });
+	  await settingsPage.waitForTimeout(TIMEOUT_EXTENSION_PROCESS);
+	  await settingsPage.close();
+	}
+
 async function importTemplatesViaUI(
   context: BrowserContext,
   extensionId: string,
