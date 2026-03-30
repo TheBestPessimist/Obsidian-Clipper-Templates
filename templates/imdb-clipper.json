@@ -16,7 +16,7 @@
     },
     {
       "name": "related",
-      "value": "{% set related = '['Film','imdb','Clippings']' %}{% if schema:@TVSeries:name %}{% set series = 'Series' %}{% set related = related|merge:series %}{% endif %}{% set related = related|wikilink|join %}{{related}}",
+      "value": "{% set related = '[\"Film\",\"imdb\",\"Clippings\"]' %}\n{% if schema:@TVSeries:name %}\n{% set series = 'Series' %}\n{% set related = related|merge:series %}\n{% endif %}\n{% set related = related|wikilink|join %}\n{{related}}",
       "type": "multitext"
     },
     {
