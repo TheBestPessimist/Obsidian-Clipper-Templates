@@ -137,17 +137,25 @@ async function launchExtensionContext(userDataDir: string, headless: boolean): P
   });
 
   const dateMockCode = generateDateMockCode(MOCK_DATE);
+  // Each extension JS file is requested many times (every page + clipper iframe
+  // + settings/messenger load, across every test in the worker). Reading the
+  // file and concatenating the mock on each request is pure overhead, so cache
+  // the resulting body per path. `null` = file not on disk → continue unmodified.
+  const mockedJsCache = new Map<string, string | null>();
   await context.route('chrome-extension://**/*.js', async (route) => {
     const urlPath = new URL(route.request().url()).pathname;
     // Never rewrite the MV3 service worker script: it runs without `window`,
     // never renders templates, and rewriting it can kill the worker (which then
     // breaks chrome.tabs.* calls). Let it load unmodified.
     if (urlPath.endsWith('/background.js')) { await route.continue(); return; }
-    const filePath = path.join(EXTENSION_PATH, urlPath);
-    try {
-      const originalBody = fs.readFileSync(filePath, 'utf-8');
-      await route.fulfill({ contentType: 'application/javascript', body: dateMockCode + originalBody });
-    } catch { await route.continue(); }
+    let body = mockedJsCache.get(urlPath);
+    if (body === undefined) {
+      try { body = dateMockCode + fs.readFileSync(path.join(EXTENSION_PATH, urlPath), 'utf-8'); }
+      catch { body = null; }
+      mockedJsCache.set(urlPath, body);
+    }
+    if (body === null) { await route.continue(); return; }
+    await route.fulfill({ contentType: 'application/javascript', body });
   });
 
   return context;
@@ -491,6 +499,21 @@ async function setupClipperPage(
   // are not in the HAR. 'abort' would kill those and the clipper UI couldn't
   // load its templates; 'fallback' lets them resolve normally.
   await page.routeFromHAR(harFullPath, { notFound: 'fallback' });
+  // The clipper extracts text and {{image}} URLs from the DOM — it never reads
+  // image/media/font BYTES, which are the bulk of the heavy IMDB/MAL HARs. Drop
+  // them to speed the load and reach network-idle sooner. Registered AFTER
+  // routeFromHAR so this handler runs first; everything else falls through to
+  // the HAR replay. Scoped to http(s) so the clipper's own chrome-extension://
+  // iframe assets are untouched (which is why routeFromHAR uses 'fallback').
+  await page.route('**/*', async (route) => {
+    const request = route.request();
+    const type = request.resourceType();
+    if ((type === 'image' || type === 'media' || type === 'font') && request.url().startsWith('http')) {
+      await route.abort();
+    } else {
+      await route.fallback();
+    }
+  });
   await page.goto(url);
   // Bounded network-idle so JS-hydrated fields (e.g. the IMDB user rating fetched
   // via GraphQL) are in the DOM before we clip. We deliberately do NOT wait for
