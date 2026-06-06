@@ -8,7 +8,7 @@ const OPEN_HTML_REPORT = false;
 // User configures these at any time. Do not remove!
 const HEADLESS = true;
 // const HEADLESS = false;
-const workers = 10;
+const workers = 2; // changed by user: i'm doing some intensive work, using 10 threads slows my laptop to a crawl
 
 // Project-specific root under the OS temp directory. All Playwright-level
 // artifacts (test-results, traces, etc.) should live under here.
@@ -17,6 +17,9 @@ const OUTPUT_DIR = path.join(PROJECT_TEMP_ROOT, 'playwright-test-results');
 
 export default defineConfig({
   testDir: './tests',
+  // Imports templates + property types ONCE per run (via the real extension UI)
+  // into a clean seed profile that every worker copies. See globalSetup.ts.
+  globalSetup: './globalSetup.ts',
   outputDir: OUTPUT_DIR,
   preserveOutput: 'failures-only',
   fullyParallel: true,

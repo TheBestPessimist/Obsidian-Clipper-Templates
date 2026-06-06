@@ -1,10 +1,15 @@
 /**
  * Playwright fixtures for testing Obsidian Clipper extension.
  *
- * Each worker gets its own browser instance with the extension.
- * Templates are loaded once per worker (worker-scoped).
- * Tests run in parallel across workers (each worker has its own active tab).
- * No active-tab race condition since workers are isolated.
+ * Templates + property types are imported ONCE per `npm test` run, via the real
+ * extension import UI, into a single clean seed profile (see globalSetup.ts ->
+ * seedProfile). Each worker then launches from a COPY of that seed profile, so
+ * the slow click-through import is paid once per run instead of once per worker,
+ * while still exercising the actual extension import path and re-importing fresh
+ * on every run. The workflow is identical whether you run 1 test or 50.
+ *
+ * Tests run in parallel across workers (each worker has its own browser, hence
+ * its own active tab). No active-tab race condition since workers are isolated.
  * See [[Clipper Active Tab Query Prevents True Parallelism]].
  */
 
@@ -34,11 +39,36 @@ const TIMEOUT_MODAL = 5000;
 const TIMEOUT_IMPORT = 10000;
 const TIMEOUT_CLIPPER_READY = 10000;
 const TIMEOUT_DOWNLOAD = 15000;
-const TIMEOUT_TEMPLATE_SWITCH = 1500;
-const TIMEOUT_PAGE_LOAD = 1000;
-const TIMEOUT_EXTENSION_PROCESS = 1000;
 const TIMEOUT_SECONDARY_ACTIONS = 2000;
 const TIMEOUT_TAB_ACTIVATE = 100;
+const TIMEOUT_EXTENSION_PROCESS = 1000;
+// Per-attempt bound for a service-worker evaluate (it is retried). Generous
+// enough that a merely-slow worker under machine load still answers.
+const TIMEOUT_SW_EVALUATE = 5000;
+// Upper bound for waiting on the page to go network-idle, so JS-hydrated fields
+// (e.g. the IMDB user rating, fetched via authenticated GraphQL) are present in
+// the DOM before we clip. We proceed even if idle isn't reached, so this is a
+// ceiling, not a fixed sleep.
+const TIMEOUT_NETWORK_IDLE = 5000;
+// Render-settle polling: after switching templates we poll the rendered note
+// body until it stops changing, instead of sleeping a fixed amount.
+const TIMEOUT_RENDER = 8000;
+const RENDER_POLL_MS = 100;
+
+// Seed/worker profile locations. globalSetup imports templates once into the
+// seed profile; each worker launches from a copy of it.
+const SEED_PROFILE_DIR = path.join(PROJECT_TEMP_ROOT, 'seed-profile');
+const WORKER_PROFILES_DIR = path.join(PROJECT_TEMP_ROOT, 'worker-profiles');
+
+// Chromium profile sub-directories that are pure caches: safe to skip when
+// copying the seed profile per worker, which keeps the copy small and fast.
+const PROFILE_CACHE_DIRS = new Set([
+  'Cache', 'Code Cache', 'GPUCache', 'ShaderCache', 'GrShaderCache',
+  'DawnCache', 'DawnGraphiteCache', 'DawnWebGPUCache', 'component_crx_cache', 'Crashpad',
+]);
+function copyProfileFilter(src: string): boolean {
+  return !src.split(/[\\/]/).some((seg) => PROFILE_CACHE_DIRS.has(seg));
+}
 
 export interface ClipperWorkerFixtures {
   extensionContext: BrowserContext;
@@ -51,8 +81,8 @@ function generateDateMockCode(mockDateISO: string): string {
   const timestamp = new Date(mockDateISO).getTime();
   return `
 (function() {
-  if (window.__dateMocked) return;
-  window.__dateMocked = true;
+  if (globalThis.__dateMocked) return;
+  globalThis.__dateMocked = true;
   const MOCK_TIMESTAMP = ${timestamp};
   const OriginalDate = Date;
   function MockDate(...args) {
@@ -76,51 +106,122 @@ function generateDateMockCode(mockDateISO: string): string {
  * Get the extension's service worker, waiting if necessary.
  */
 async function getServiceWorker(context: BrowserContext) {
-  const [serviceWorker] = context.serviceWorkers();
-  return serviceWorker || await context.waitForEvent('serviceworker');
+  // The clipped pages (bandcamp/imdb/MAL) register their OWN service workers,
+  // which accumulate in the reused worker context. We must always pick the
+  // EXTENSION's worker (chrome-extension://…/background.js) — evaluating in a
+  // page's service worker has no `chrome` API and would error or hang. Among
+  // extension workers, take the most recent (older generations may be stale
+  // after an MV3 restart).
+  const extensionWorkers = () =>
+    context.serviceWorkers().filter((sw) => sw.url().startsWith('chrome-extension://'));
+  let workers = extensionWorkers();
+  while (workers.length === 0) {
+    await context.waitForEvent('serviceworker');
+    workers = extensionWorkers();
+  }
+  return workers[workers.length - 1];
+}
+
+/**
+ * Launch a persistent browser context with the Clipper extension loaded and the
+ * Date object mocked (so {{date}} is reproducible). Used for both the one-time
+ * seed profile and each per-worker profile, so the launch path is identical.
+ */
+async function launchExtensionContext(userDataDir: string, headless: boolean): Promise<BrowserContext> {
+  if (!fs.existsSync(EXTENSION_PATH)) {
+    throw new Error(`Extension not found at ${EXTENSION_PATH}. Run 'npm run build-clipper-extension' first.`);
+  }
+
+  const context = await chromium.launchPersistentContext(userDataDir, {
+    channel: 'chromium',
+    headless,
+    args: [`--disable-extensions-except=${EXTENSION_PATH}`, `--load-extension=${EXTENSION_PATH}`],
+    permissions: ['clipboard-read', 'clipboard-write'],
+    acceptDownloads: true,
+  });
+
+  const dateMockCode = generateDateMockCode(MOCK_DATE);
+  await context.route('chrome-extension://**/*.js', async (route) => {
+    const urlPath = new URL(route.request().url()).pathname;
+    // Never rewrite the MV3 service worker script: it runs without `window`,
+    // never renders templates, and rewriting it can kill the worker (which then
+    // breaks chrome.tabs.* calls). Let it load unmodified.
+    if (urlPath.endsWith('/background.js')) { await route.continue(); return; }
+    const filePath = path.join(EXTENSION_PATH, urlPath);
+    try {
+      const originalBody = fs.readFileSync(filePath, 'utf-8');
+      await route.fulfill({ contentType: 'application/javascript', body: dateMockCode + originalBody });
+    } catch { await route.continue(); }
+  });
+
+  return context;
+}
+
+/**
+ * Import property types + all templates ONCE per test run, via the real
+ * extension import UI, into a single clean seed profile. Every worker then
+ * launches from a copy of this profile (see the extensionContext fixture), so
+ * the (slow) click-through import is paid once per run rather than once per
+ * worker, while still exercising the actual extension import path. Re-cleans and
+ * re-imports on every `npm test`, so template/formula changes are always picked
+ * up. Called from globalSetup.ts.
+ */
+export async function seedProfile(headless: boolean = true): Promise<void> {
+  // Clean any prior seed so every run starts from a clean extension.
+  fs.rmSync(SEED_PROFILE_DIR, { recursive: true, force: true });
+  fs.mkdirSync(PROJECT_TEMP_ROOT, { recursive: true });
+
+  const context = await launchExtensionContext(SEED_PROFILE_DIR, headless);
+  try {
+    const serviceWorker = await getServiceWorker(context);
+    const extensionId = serviceWorker.url().split('/')[2];
+
+    // Property types must be imported before templates so frontmatter
+    // formatting (numbers vs strings) matches the template-defined types.
+    const typesPath = path.join(PROJECT_TEMP_ROOT, 'types-from-templates.json');
+    writeTypesJsonFromTemplates(TEMPLATES_PATH, typesPath);
+    await importPropertyTypesViaUI(context, extensionId, typesPath);
+    await loadAllTemplates(context, extensionId);
+  } finally {
+    // Close so chrome.storage is flushed to disk before workers copy the profile.
+    await context.close();
+  }
 }
 
 export const test = base.extend<{}, ClipperWorkerFixtures>({
   extensionContext: [async ({}, use, workerInfo) => {
-    if (!fs.existsSync(EXTENSION_PATH)) {
-      throw new Error(`Extension not found at ${EXTENSION_PATH}. Run 'npm run build:chrome' first.`);
+    if (!fs.existsSync(SEED_PROFILE_DIR)) {
+      throw new Error(
+        `Seed profile not found at ${SEED_PROFILE_DIR}. globalSetup must run first ` +
+        `(it performs the one-time template import). Run tests via 'npm test'.`,
+      );
     }
 
-    const context = await chromium.launchPersistentContext('', {
-      channel: 'chromium',
-      headless: workerInfo.project.use.headless ?? true,
-      args: [`--disable-extensions-except=${EXTENSION_PATH}`, `--load-extension=${EXTENSION_PATH}`],
-      permissions: ['clipboard-read', 'clipboard-write'],
-      acceptDownloads: true,
-    });
+    // Start every worker from a copy of the once-imported seed profile, so each
+    // worker gets a freshly-imported, clean extension without repeating the
+    // click-through import. Identical whether 1 test or 50 run in parallel.
+    const workerDir = path.join(WORKER_PROFILES_DIR, `w${workerInfo.workerIndex}`);
+    fs.rmSync(workerDir, { recursive: true, force: true });
+    fs.mkdirSync(WORKER_PROFILES_DIR, { recursive: true });
+    fs.cpSync(SEED_PROFILE_DIR, workerDir, { recursive: true, filter: copyProfileFilter });
+    // Remove single-instance locks copied from the seed so this profile can launch.
+    for (const lock of ['SingletonLock', 'SingletonCookie', 'SingletonSocket']) {
+      fs.rmSync(path.join(workerDir, lock), { force: true });
+    }
 
-    const dateMockCode = generateDateMockCode(MOCK_DATE);
-    await context.route('chrome-extension://**/*.js', async (route) => {
-      const urlPath = new URL(route.request().url()).pathname;
-      const filePath = path.join(EXTENSION_PATH, urlPath);
-      try {
-        const originalBody = fs.readFileSync(filePath, 'utf-8');
-        await route.fulfill({ contentType: 'application/javascript', body: dateMockCode + originalBody });
-      } catch { await route.continue(); }
-    });
+    const context = await launchExtensionContext(workerDir, workerInfo.project.use.headless ?? true);
 
     await use(context);
+
     await context.close();
+    try { fs.rmSync(workerDir, { recursive: true, force: true }); } catch { /* best-effort */ }
   }, { scope: 'worker' }],
 
   extensionId: [async ({ extensionContext }, use) => {
+    // Templates were already imported into the seed profile (which this worker's
+    // profile is a copy of), so we only need the extension id here.
     const serviceWorker = await getServiceWorker(extensionContext);
     const extensionId = serviceWorker.url().split('/')[2];
-
-	    // Generate property types from templates and import them via the
-	    // Properties tab before loading templates. This ensures frontmatter
-	    // formatting (e.g., numbers vs strings) matches template-defined types.
-	    fs.mkdirSync(PROJECT_TEMP_ROOT, { recursive: true });
-	    const typesPath = path.join(PROJECT_TEMP_ROOT, 'types-from-templates.json');
-	    writeTypesJsonFromTemplates(TEMPLATES_PATH, typesPath);
-	    await importPropertyTypesViaUI(extensionContext, extensionId, typesPath);
-
-	    await loadAllTemplates(extensionContext, extensionId);
     await use(extensionId);
   }, { scope: 'worker' }],
 });
@@ -136,39 +237,50 @@ export function normalizeMarkdown(md: string): string {
 }
 
 /**
+ * Import a property-types JSON file via the settings page Properties tab.
+ */
+async function importPropertyTypesViaUI(
+  context: BrowserContext,
+  extensionId: string,
+  typesJsonPath: string,
+): Promise<void> {
+  const settingsPage = await context.newPage();
+  await settingsPage.goto(`chrome-extension://${extensionId}/settings.html`);
+  await settingsPage.waitForLoadState('load');
+
+  // The settings script attaches its sidebar handlers after load, so a single
+  // early click can be a no-op. Click the Properties nav until the import button
+  // actually appears (handler attached + section switched) — condition-based,
+  // no fixed settle sleep.
+  const propertiesNav = settingsPage.locator('#sidebar li[data-section="properties"]');
+  await propertiesNav.waitFor({ state: 'visible', timeout: TIMEOUT_MODAL });
+  const importTypesBtn = settingsPage.locator('#import-types-btn');
+  await expect.poll(
+    async () => {
+      await propertiesNav.click();
+      return importTypesBtn.isVisible();
+    },
+    { timeout: TIMEOUT_IMPORT },
+  ).toBe(true);
+  await importTypesBtn.click();
+
+  const importModal = settingsPage.locator('#import-modal');
+  await importModal.waitFor({ state: 'visible', timeout: TIMEOUT_MODAL });
+
+  const fileChooserPromise = settingsPage.waitForEvent('filechooser');
+  await importModal.locator('.import-drop-zone').click();
+  const fileChooser = await fileChooserPromise;
+  await fileChooser.setFiles([typesJsonPath]);
+
+  // The modal hiding is the extension's signal that the import finished.
+  await importModal.waitFor({ state: 'hidden', timeout: TIMEOUT_IMPORT });
+  await settingsPage.close();
+}
+
+/**
  * Import template files via the settings page import modal.
  * Handles both file paths and JSON strings.
  */
-	async function importPropertyTypesViaUI(
-	  context: BrowserContext,
-	  extensionId: string,
-	  typesJsonPath: string,
-	): Promise<void> {
-	  const settingsPage = await context.newPage();
-	  await settingsPage.goto(`chrome-extension://${extensionId}/settings.html`);
-	  await settingsPage.waitForLoadState('domcontentloaded');
-	  await settingsPage.waitForTimeout(TIMEOUT_PAGE_LOAD);
-
-	  // Open Properties section in the sidebar
-	  await settingsPage.locator('#sidebar li[data-section="properties"]').click();
-	  await settingsPage.waitForTimeout(500);
-
-	  // Open the generic import modal for property types
-	  await settingsPage.locator('#import-types-btn').click();
-	  const importModal = settingsPage.locator('#import-modal');
-	  await importModal.waitFor({ state: 'visible', timeout: TIMEOUT_MODAL });
-
-	  const fileChooserPromise = settingsPage.waitForEvent('filechooser');
-	  await importModal.locator('.import-drop-zone').click();
-	  const fileChooser = await fileChooserPromise;
-	  await fileChooser.setFiles([typesJsonPath]);
-
-	  // Wait for import to complete and the modal to close
-	  await importModal.waitFor({ state: 'hidden', timeout: TIMEOUT_IMPORT });
-	  await settingsPage.waitForTimeout(TIMEOUT_EXTENSION_PROCESS);
-	  await settingsPage.close();
-	}
-
 async function importTemplatesViaUI(
   context: BrowserContext,
   extensionId: string,
@@ -176,17 +288,29 @@ async function importTemplatesViaUI(
 ): Promise<void> {
   const settingsPage = await context.newPage();
   await settingsPage.goto(`chrome-extension://${extensionId}/settings.html`);
-  await settingsPage.waitForLoadState('domcontentloaded');
-  await settingsPage.waitForTimeout(TIMEOUT_PAGE_LOAD);
+  await settingsPage.waitForLoadState('load');
 
-  // Select first template and open import modal
-  await settingsPage.locator('#template-list li').first().click();
-  await settingsPage.waitForTimeout(500);
-  await settingsPage.locator('.settings-section-header button.import-template-btn').click();
-  const importModal = settingsPage.locator('#import-modal');
-  await importModal.waitFor({ state: 'visible', timeout: TIMEOUT_MODAL });
+  // The rendered template list is our signal that the settings JS has
+  // initialized (and attached handlers).
+  const firstTemplate = settingsPage.locator('#template-list li').first();
+  await firstTemplate.waitFor({ state: 'visible', timeout: TIMEOUT_MODAL });
+  await firstTemplate.click();
 
   const initialCount = await settingsPage.locator('#template-list li').count();
+
+  // Open the import modal, retrying the click until it appears (handler-attach
+  // race) but not re-clicking once it is open.
+  const importBtn = settingsPage.locator('.settings-section-header button.import-template-btn');
+  await importBtn.waitFor({ state: 'visible', timeout: TIMEOUT_MODAL });
+  const importModal = settingsPage.locator('#import-modal');
+  await expect.poll(
+    async () => {
+      if (await importModal.isVisible()) return true;
+      await importBtn.click();
+      return importModal.isVisible();
+    },
+    { timeout: TIMEOUT_IMPORT },
+  ).toBe(true);
 
   // Prepare file paths (create temp files for JSON strings)
   const isJsonTemplates = typeof templates[0] !== 'string';
@@ -201,7 +325,7 @@ async function importTemplatesViaUI(
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles(filePaths);
 
-    // Wait for import to complete
+    // Wait for import to complete (modal closes and the list grows).
     await importModal.waitFor({ state: 'hidden', timeout: TIMEOUT_IMPORT });
     await settingsPage.waitForFunction(
       (expected) => document.querySelectorAll('#template-list li').length >= expected,
@@ -269,13 +393,30 @@ function extractUrlFromHar(harPath: string): string {
 }
 
 async function getTabIdForPage(context: BrowserContext, page: Page): Promise<number> {
-  const serviceWorker = await getServiceWorker(context);
-  const tabId = await serviceWorker.evaluate(async (url) => {
-    const tabs = await chrome.tabs.query({});
-    return tabs.find(t => t.url === url)?.id;
-  }, page.url());
-  if (!tabId) throw new Error(`No tab ID for: ${page.url()}`);
-  return tabId;
+  const url = page.url();
+  let lastError: unknown;
+  // The MV3 service worker can be momentarily unresponsive (e.g. busy handling a
+  // freshly-loaded heavy page), which makes a single evaluate hang until the test
+  // timeout. Bound each attempt and retry, re-acquiring the worker each time.
+  for (let attempt = 1; attempt <= 4; attempt++) {
+    const serviceWorker = await getServiceWorker(context);
+    try {
+      const tabId = await Promise.race([
+        serviceWorker.evaluate(async (u) => {
+          const tabs = await chrome.tabs.query({});
+          return tabs.find(t => t.url === u)?.id;
+        }, url),
+        new Promise<undefined>((_, reject) =>
+          setTimeout(() => reject(new Error('evaluate timed out')), TIMEOUT_SW_EVALUATE)),
+      ]);
+      if (tabId) return tabId;
+      lastError = new Error('matching tab not found');
+    } catch (e) {
+      lastError = e;
+    }
+    await page.waitForTimeout(300);
+  }
+  throw new Error(`No tab ID for ${url}: ${lastError instanceof Error ? lastError.message : String(lastError)}`);
 }
 
 /**
@@ -290,10 +431,19 @@ async function setupClipperPage(
   const url = extractUrlFromHar(harFullPath);
 
   const page = await context.newPage();
+  // 'fallback' (NOT 'abort'): routeFromHAR also applies to this page's child
+  // frames, including the clipper's chrome-extension:// iframe whose resources
+  // are not in the HAR. 'abort' would kill those and the clipper UI couldn't
+  // load its templates; 'fallback' lets them resolve normally.
   await page.routeFromHAR(harFullPath, { notFound: 'fallback' });
   await page.goto(url);
-  await page.waitForLoadState('domcontentloaded');
-  await page.waitForTimeout(TIMEOUT_PAGE_LOAD);
+  // Bounded network-idle so JS-hydrated fields (e.g. the IMDB user rating fetched
+  // via GraphQL) are in the DOM before we clip. We deliberately do NOT wait for
+  // the full 'load' event: heavy pages (e.g. bandcamp, 6 MB of images) can keep
+  // 'load' pending and starve the extension service worker. We proceed even if
+  // idle isn't reached within the ceiling.
+  await page.waitForLoadState('domcontentloaded').catch(() => {});
+  await page.waitForLoadState('networkidle', { timeout: TIMEOUT_NETWORK_IDLE }).catch(() => {});
 
   // Activate tab and toggle clipper iframe
   const tabId = await getTabIdForPage(context, page);
@@ -303,13 +453,37 @@ async function setupClipperPage(
   await page.waitForTimeout(TIMEOUT_TAB_ACTIVATE);
   await serviceWorker.evaluate(async (tid) => { await chrome.tabs.sendMessage(tid, { action: 'toggle-iframe' }); }, tabId);
 
-  // Wait for clipper to be ready
+  // Clipper readiness: its container + clip button being present is the signal.
   await page.waitForSelector('#obsidian-clipper-container', { timeout: TIMEOUT_CLIPPER_READY });
   const clipperFrame = page.frameLocator('#obsidian-clipper-iframe');
   await clipperFrame.locator('#clip-btn').waitFor({ timeout: TIMEOUT_CLIPPER_READY });
-  await page.waitForTimeout(TIMEOUT_SECONDARY_ACTIONS);
 
   return { page, clipperFrame };
+}
+
+/**
+ * Wait for the clipper to finish (re)rendering the note body after a template
+ * change, by polling #note-content-field until it changes from its pre-switch
+ * value and then stops changing. Replaces a fixed sleep so we wait exactly as
+ * long as the render takes (and never clip the previous template's content).
+ */
+async function waitForClipperRender(
+  clipperFrame: ReturnType<Page['frameLocator']>,
+  previousValue: string,
+): Promise<void> {
+  const field = clipperFrame.locator('#note-content-field');
+  await field.waitFor({ state: 'attached', timeout: TIMEOUT_CLIPPER_READY }).catch(() => {});
+
+  let last: string | null = null;
+  const deadline = Date.now() + TIMEOUT_RENDER;
+  while (Date.now() < deadline) {
+    const current = await field.inputValue().catch(() => '');
+    // Settled: non-empty, changed from the pre-switch value, and unchanged
+    // across two consecutive polls.
+    if (current && current !== previousValue && current === last) return;
+    last = current;
+    await new Promise((resolve) => setTimeout(resolve, RENDER_POLL_MS));
+  }
 }
 
 /**
@@ -342,8 +516,10 @@ export async function runHarTest(
   const templateName = getTemplateNameFromPath(config.templatePath);
   const { page, clipperFrame } = await setupClipperPage(context, config.harPath);
 
+  const contentField = clipperFrame.locator('#note-content-field');
+  const beforeSwitch = await contentField.inputValue().catch(() => '');
   await clipperFrame.locator('#template-select').selectOption({ label: templateName });
-  await page.waitForTimeout(TIMEOUT_TEMPLATE_SWITCH);
+  await waitForClipperRender(clipperFrame, beforeSwitch);
 
   const fileContent = await clipAndDownload(page, clipperFrame);
   await page.close();
@@ -424,16 +600,20 @@ export async function runFilterTests(
   // Create and import all filter templates
   const templates = config.filters.map((f, i) => createFilterTemplate(f.filter, i));
   await importTemplatesViaUI(context, extensionId, templates);
+  // Give the extension time to propagate newly-imported templates to the clipper
+  // iframe before we open it. See [[Async Template Import Race Condition]].
   await new Promise(resolve => setTimeout(resolve, TIMEOUT_EXTENSION_PROCESS));
 
   // Setup clipper page
   const { page, clipperFrame } = await setupClipperPage(context, config.harPath);
+  const contentField = clipperFrame.locator('#note-content-field');
 
   // Test each filter template
   const results: FilterTestResult[] = [];
   for (let i = 0; i < templates.length; i++) {
+    const beforeSwitch = await contentField.inputValue().catch(() => '');
     await clipperFrame.locator('#template-select').selectOption({ label: templates[i].name });
-    await page.waitForTimeout(TIMEOUT_TEMPLATE_SWITCH);
+    await waitForClipperRender(clipperFrame, beforeSwitch);
 
     const fileContent = await clipAndDownload(page, clipperFrame);
     results.push({
