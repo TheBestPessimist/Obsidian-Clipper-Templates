@@ -1,0 +1,59 @@
+{
+	"schemaVersion": "0.1.0",
+	"name": "Steam Game",
+	"behavior": "create",
+	"noteContentFormat": "\n{{image|image}}\n\n",
+	"properties": [
+		{
+			"name": "title",
+			"value": "{{selector: #appHubAppName}}",
+			"type": "text"
+		},
+		{
+			"name": "year",
+			"value": "{{selector: .release_date .date | slice:-4}}",
+			"type": "number"
+		},
+		{
+			"name": "description",
+			"value": "{{description}}",
+			"type": "text"
+		},
+		{
+			"name": "genres",
+			"value": "{{selector: .popular_tags a | wikilink}}",
+			"type": "multitext"
+		},
+		{
+			"name": "creators",
+			"value": "{{selector: #developers_list | split:\\\",\\\" | wikilink}}",
+			"type": "multitext"
+		},
+		{
+			"name": "links",
+			"value": "{{url}}",
+			"type": "multitext"
+		},
+		{
+			"name": "image",
+			"value": "{{image}}",
+			"type": "multitext"
+		},
+		{
+			"name": "created",
+			"value": "{{date}}",
+			"type": "date"
+		},
+		{
+			"name": "related",
+			"value": "[[Games]]",
+			"type": "multitext"
+		}
+	],
+	"triggers": [
+		"https://store.steampowered.com/app/"
+	],
+	"noteNameFormat": "{{selector:#appHubAppName|safe_name}}",
+	"path": "Games",
+	"context": "## Videogame\n\nTitle: {{title}}\nRelease Date: {{selector: .release_date .date}}\nDescription: {{description}}\nGenres: {{selector: .popular_tags a}}\nDevelopers: {{selector: #developers_list}}\nLink: {{url}}\nImage: {{image}}\n\n## Steam Description (HTML)\n\n{{selectorHtml: #game_area_description}}"
+}
