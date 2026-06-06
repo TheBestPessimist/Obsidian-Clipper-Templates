@@ -5,10 +5,8 @@ import path from 'path';
 // Set to true to open HTML report automatically after test run
 const OPEN_HTML_REPORT = false;
 
-// User configures these at any time. Do not remove!
-const HEADLESS = true;
-// const HEADLESS = false;
-const workers = 2; // changed by user: i'm doing some intensive work, using 10 threads slows my laptop to a crawl
+// User configures this at any time. Do not remove!
+const workers = 10;
 
 // Project-specific root under the OS temp directory. All Playwright-level
 // artifacts (test-results, traces, etc.) should live under here.
