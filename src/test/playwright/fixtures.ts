@@ -40,11 +40,7 @@ const TIMEOUT_IMPORT = 10000;
 const TIMEOUT_CLIPPER_READY = 10000;
 const TIMEOUT_DOWNLOAD = 15000;
 const TIMEOUT_SECONDARY_ACTIONS = 2000;
-const TIMEOUT_TAB_ACTIVATE = 100;
 const TIMEOUT_EXTENSION_PROCESS = 1000;
-// Per-attempt bound for a service-worker evaluate (it is retried). Generous
-// enough that a merely-slow worker under machine load still answers.
-const TIMEOUT_SW_EVALUATE = 5000;
 // Upper bound for waiting on the page to go network-idle, so JS-hydrated fields
 // (e.g. the IMDB user rating, fetched via authenticated GraphQL) are present in
 // the DOM before we clip. We proceed even if idle isn't reached, so this is a
@@ -182,6 +178,9 @@ export async function seedProfile(headless: boolean = true): Promise<void> {
     writeTypesJsonFromTemplates(TEMPLATES_PATH, typesPath);
     await importPropertyTypesViaUI(context, extensionId, typesPath);
     await loadAllTemplates(context, extensionId);
+    // Make the clipper open IN THE PAGE (embedded), not as a popup, so tests
+    // trigger it through the extension's own in-page path. Set via the real UI.
+    await setOpenBehaviorViaUI(context, extensionId, 'embedded');
   } finally {
     // Close so chrome.storage is flushed to disk before workers copy the profile.
     await context.close();
@@ -274,6 +273,51 @@ async function importPropertyTypesViaUI(
 
   // The modal hiding is the extension's signal that the import finished.
   await importModal.waitFor({ state: 'hidden', timeout: TIMEOUT_IMPORT });
+  await settingsPage.close();
+}
+
+/**
+ * Set the extension's "Default open behavior" via the real settings UI (the
+ * #open-behavior-dropdown), exactly as a user would. 'embedded' makes the
+ * clipper open IN THE PAGE (an injected iframe) instead of a popup, so tests can
+ * trigger it through the extension's own in-page path rather than hand-rolling
+ * the tab lookup + toggle. The form auto-saves on change; we confirm the value
+ * reached storage.sync before returning instead of sleeping.
+ */
+async function setOpenBehaviorViaUI(
+  context: BrowserContext,
+  extensionId: string,
+  behavior: 'popup' | 'embedded' | 'reader',
+): Promise<void> {
+  const settingsPage = await context.newPage();
+  await settingsPage.goto(`chrome-extension://${extensionId}/settings.html`);
+  await settingsPage.waitForLoadState('load');
+
+  // The dropdown lives in the General section; click that nav until the dropdown
+  // is visible (handler-attach race), then pick the value.
+  const generalNav = settingsPage.locator('#sidebar li[data-section="general"]');
+  const dropdown = settingsPage.locator('#open-behavior-dropdown');
+  await expect.poll(
+    async () => {
+      if (await dropdown.isVisible()) return true;
+      await generalNav.click().catch(() => {});
+      return dropdown.isVisible();
+    },
+    { timeout: TIMEOUT_IMPORT },
+  ).toBe(true);
+  await dropdown.selectOption(behavior);
+
+  // The settings form auto-saves on change (debounced). Confirm it landed in
+  // storage.sync — the same key the background reads — before continuing.
+  const serviceWorker = await getServiceWorker(context);
+  await expect.poll(
+    async () => serviceWorker.evaluate(async () => {
+      const data = await chrome.storage.sync.get('general_settings');
+      return (data.general_settings as { openBehavior?: string } | undefined)?.openBehavior;
+    }),
+    { timeout: TIMEOUT_IMPORT },
+  ).toBe(behavior);
+
   await settingsPage.close();
 }
 
@@ -392,31 +436,41 @@ function extractUrlFromHar(harPath: string): string {
   return htmlEntry.request.url;
 }
 
-async function getTabIdForPage(context: BrowserContext, page: Page): Promise<number> {
-  const url = page.url();
-  let lastError: unknown;
-  // The MV3 service worker can be momentarily unresponsive (e.g. busy handling a
-  // freshly-loaded heavy page), which makes a single evaluate hang until the test
-  // timeout. Bound each attempt and retry, re-acquiring the worker each time.
-  for (let attempt = 1; attempt <= 4; attempt++) {
-    const serviceWorker = await getServiceWorker(context);
-    try {
-      const tabId = await Promise.race([
-        serviceWorker.evaluate(async (u) => {
-          const tabs = await chrome.tabs.query({});
-          return tabs.find(t => t.url === u)?.id;
-        }, url),
-        new Promise<undefined>((_, reject) =>
-          setTimeout(() => reject(new Error('evaluate timed out')), TIMEOUT_SW_EVALUATE)),
-      ]);
-      if (tabId) return tabId;
-      lastError = new Error('matching tab not found');
-    } catch (e) {
-      lastError = e;
+/**
+ * Open the clipper IN THE PAGE by invoking the extension's REAL handler
+ * (`getActiveTabAndToggleIframe`), instead of hand-rolling the tab lookup +
+ * toggle. That handler ensures the content script is loaded and then toggles the
+ * in-page iframe — it is the extension's own embedded-open path.
+ *
+ * Why a separate page: Playwright has no API to click the toolbar icon, and a
+ * service worker cannot fire its OWN runtime.onMessage handler, so the message
+ * must come from another extension page. We open one in the SAME window (so the
+ * background's `query({active, currentWindow})` is unambiguous — the two-window
+ * popup approach made "current window" undefined and hung), bring the content
+ * page back to the front so it is the active tab the handler resolves to, then
+ * send the message. settings.html is used as the messenger because, unlike
+ * popup.html, it never auto-toggles — so there's no risk of a double toggle.
+ */
+async function openClipperViaExtension(
+  context: BrowserContext,
+  page: Page,
+  extensionId: string,
+): Promise<void> {
+  const trigger = await context.newPage();
+  try {
+    await trigger.goto(`chrome-extension://${extensionId}/settings.html`);
+    await trigger.waitForLoadState('domcontentloaded');
+    // Content page must be the active tab when the background resolves it.
+    await page.bringToFront();
+    const result = (await trigger.evaluate(async () =>
+      chrome.runtime.sendMessage({ action: 'getActiveTabAndToggleIframe' }),
+    )) as { success?: boolean; error?: string } | undefined;
+    if (result && result.success === false) {
+      throw new Error(`Clipper in-page trigger failed: ${result.error ?? 'unknown error'}`);
     }
-    await page.waitForTimeout(300);
+  } finally {
+    await trigger.close();
   }
-  throw new Error(`No tab ID for ${url}: ${lastError instanceof Error ? lastError.message : String(lastError)}`);
 }
 
 /**
@@ -425,7 +479,8 @@ async function getTabIdForPage(context: BrowserContext, page: Page): Promise<num
  */
 async function setupClipperPage(
   context: BrowserContext,
-  harPath: string
+  harPath: string,
+  extensionId: string,
 ): Promise<{ page: Page; clipperFrame: ReturnType<Page['frameLocator']> }> {
   const harFullPath = path.join(TEST_RESOURCES_PATH, harPath);
   const url = extractUrlFromHar(harFullPath);
@@ -445,13 +500,9 @@ async function setupClipperPage(
   await page.waitForLoadState('domcontentloaded').catch(() => {});
   await page.waitForLoadState('networkidle', { timeout: TIMEOUT_NETWORK_IDLE }).catch(() => {});
 
-  // Activate tab and toggle clipper iframe
-  const tabId = await getTabIdForPage(context, page);
-  const serviceWorker = await getServiceWorker(context);
-
-  await serviceWorker.evaluate(async (tid) => { await chrome.tabs.update(tid, { active: true }); }, tabId);
-  await page.waitForTimeout(TIMEOUT_TAB_ACTIVATE);
-  await serviceWorker.evaluate(async (tid) => { await chrome.tabs.sendMessage(tid, { action: 'toggle-iframe' }); }, tabId);
+  // Open the clipper in-page via the extension's own handler. See
+  // openClipperViaExtension.
+  await openClipperViaExtension(context, page, extensionId);
 
   // Clipper readiness: its container + clip button being present is the signal.
   await page.waitForSelector('#obsidian-clipper-container', { timeout: TIMEOUT_CLIPPER_READY });
@@ -514,7 +565,7 @@ export async function runHarTest(
   config: HarTestConfig
 ): Promise<string> {
   const templateName = getTemplateNameFromPath(config.templatePath);
-  const { page, clipperFrame } = await setupClipperPage(context, config.harPath);
+  const { page, clipperFrame } = await setupClipperPage(context, config.harPath, extensionId);
 
   const contentField = clipperFrame.locator('#note-content-field');
   const beforeSwitch = await contentField.inputValue().catch(() => '');
@@ -605,7 +656,7 @@ export async function runFilterTests(
   await new Promise(resolve => setTimeout(resolve, TIMEOUT_EXTENSION_PROCESS));
 
   // Setup clipper page
-  const { page, clipperFrame } = await setupClipperPage(context, config.harPath);
+  const { page, clipperFrame } = await setupClipperPage(context, config.harPath, extensionId);
   const contentField = clipperFrame.locator('#note-content-field');
 
   // Test each filter template
