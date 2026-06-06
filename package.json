@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "playwright test --config=src/test/playwright/playwright.config.ts",
-    "test:headed": "playwright test --config=src/test/playwright/playwright.config.ts --headed",
+    "test:ui": "playwright test --config=src/test/playwright/playwright.config.ts --headed",
     "test:debug": "playwright test --config=src/test/playwright/playwright.config.ts --debug",
     "build-clipper-extension": "cd 'Other READONLY Sources To Aid With debugging/obsidian-clipper' && npm install && npm run build:chrome"
   },

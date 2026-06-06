@@ -29,7 +29,9 @@ export default defineConfig({
   // Use 'list' for console output, 'html' for full report
   reporter: OPEN_HTML_REPORT ? 'html' : 'list',
   use: {
-    headless: HEADLESS,
+    // Headless by default (`npm test`). Run `npm run test:ui` to watch the
+    // browser — it passes --headed, which overrides this.
+    headless: true,
     trace: 'on-first-retry',
   },
   projects: [
