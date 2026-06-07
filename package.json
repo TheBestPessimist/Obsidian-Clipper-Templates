@@ -8,7 +8,7 @@
     "test": "playwright test --config=src/test/playwright/playwright.config.ts",
     "test:ui": "playwright test --config=src/test/playwright/playwright.config.ts --headed",
     "test:debug": "playwright test --config=src/test/playwright/playwright.config.ts --debug",
-    "trim-hars": "node scripts/trim-har.mjs",
+    "trim-and-sanitize-hars": "node scripts/trim-and-sanitize-har.mjs",
     "build-clipper-extension": "cd 'Other READONLY Sources To Aid With debugging/obsidian-clipper' && npm install && npm run build:chrome"
   },
   "devDependencies": {
