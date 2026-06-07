@@ -494,17 +494,22 @@ async function setupClipperPage(
   const url = extractUrlFromHar(harFullPath);
 
   const page = await context.newPage();
-  // 'fallback' (NOT 'abort'): routeFromHAR also applies to this page's child
-  // frames, including the clipper's chrome-extension:// iframe whose resources
-  // are not in the HAR. 'abort' would kill those and the clipper UI couldn't
-  // load its templates; 'fallback' lets them resolve normally.
-  await page.routeFromHAR(harFullPath, { notFound: 'fallback' });
+  // Serve only http(s) requests from the HAR, and ABORT any http(s) request not
+  // recorded in it — rather than letting it hit the REAL network, which is slow,
+  // non-deterministic, and keeps the page from ever reaching network-idle. The
+  // `url` filter scopes HAR replay to the page's own http(s) traffic; the
+  // clipper's chrome-extension:// iframe assets don't match it and so load
+  // normally from the extension (they were never in the HAR). This requires the
+  // recorded HARs to be COMPLETE — a page whose content is fetched by a request
+  // missing from the HAR will lose that content (which is correct: such a test
+  // was silently depending on the live network).
+  await page.routeFromHAR(harFullPath, { url: /^https?:\/\//, notFound: 'abort' });
   // The clipper extracts text and {{image}} URLs from the DOM — it never reads
   // image/media/font BYTES, which are the bulk of the heavy IMDB/MAL HARs. Drop
   // them to speed the load and reach network-idle sooner. Registered AFTER
   // routeFromHAR so this handler runs first; everything else falls through to
-  // the HAR replay. Scoped to http(s) so the clipper's own chrome-extension://
-  // iframe assets are untouched (which is why routeFromHAR uses 'fallback').
+  // the HAR replay. The startsWith('http') guard keeps the clipper's own
+  // chrome-extension:// iframe assets (icons/fonts) from being aborted.
   await page.route('**/*', async (route) => {
     const request = route.request();
     const type = request.resourceType();
