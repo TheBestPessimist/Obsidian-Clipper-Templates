@@ -8,7 +8,7 @@ import {test, runHarTest, readExpected, expectEqualsIgnoringNewlines} from '../f
 test.describe('MAL Templates', () => {
     test('Shangri-La', async ({extensionContext, extensionId}) => {
         const actual = await runHarTest(extensionContext, extensionId, {
-            harPath: 'mal/Shangri-la.har',
+            harPath: 'mal/Shangri-La.har',
             templatePath: 'mal-myanimelist-clipper.json',
         });
 	        const expected = readExpected('mal/Shangri-La.md');
