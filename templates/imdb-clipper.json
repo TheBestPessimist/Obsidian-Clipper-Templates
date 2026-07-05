@@ -31,7 +31,7 @@
     },
     {
       "name": "writers",
-      "value": "{% set schemaWriters = schema:creator[*].name %}\n{% set cssWriters1 = selector:#__next > main > div > section.ipc-page-background.ipc-page-background--base.sc-358297d7-0.CHcbB > section > div:nth-child(5) > section > section > div.sc-14a487d5-4.bzdlEY > div.sc-14a487d5-6.gilQBG > div.sc-14a487d5-12.grWKim > div.sc-af040695-2.fLTdiX > ul > li:has(> span.ipc-metadata-list-item__label) > div > ul > li %}\n{% set allWriters = schemaWriters|merge:cssWriters1|unique %}\n{{allWriters|wikilink|join}}\n",
+      "value": "{{schema:creator[*].name|unique|wikilink|join}}",
       "type": "multitext"
     },
     {
