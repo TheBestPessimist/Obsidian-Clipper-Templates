@@ -1,0 +1,43 @@
+{
+	"schemaVersion": "0.1.0",
+	"name": "Default",
+	"behavior": "create",
+	"noteContentFormat": "{{content}}",
+	"properties": [
+		{
+			"name": "created",
+			"value": "{{date}}",
+			"type": "date"
+		},
+		{
+			"name": "aliases",
+			"value": "",
+			"type": "multitext"
+		},
+		{
+			"name": "author",
+			"value": "{{author|wikilink}}",
+			"type": "multitext"
+		},
+		{
+			"name": "Links",
+			"value": "{{url}}",
+			"type": "multitext"
+		},
+		{
+			"name": "published",
+			"value": "{{schema:@Article:datePublished}}",
+			"type": "date"
+		},
+		{
+			"name": "related",
+			"value": "[[Clippings]]",
+			"type": "multitext"
+		}
+	],
+	"triggers": [
+		".*.bandcamp.com/"
+	],
+	"noteNameFormat": "{{title}} — {{site}}",
+	"path": "Clippings"
+}
