@@ -1,5 +1,5 @@
 /.idea/
 node_modules
-/src/test-playwright/test-results/
-/src/test-playwright/playwright-report/
-/src/test-playwright/downloads/
+/src/test/playwright/test-results/
+/src/test/playwright/playwright-report/
+/src/test/playwright/downloads/
