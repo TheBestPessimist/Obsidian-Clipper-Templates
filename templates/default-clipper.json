@@ -26,7 +26,7 @@
 		},
 		{
 			"name": "published",
-			"value": "{{schema:@Article:datePublished}}",
+			"value": "{{published}}",
 			"type": "date"
 		},
 		{
