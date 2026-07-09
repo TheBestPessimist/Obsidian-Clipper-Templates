@@ -2,8 +2,39 @@
   "schemaVersion": "0.1.0",
   "name": "Simon Willison",
   "behavior": "create",
-  "noteContentFormat": "---\ncreated: {{date|date:\"YYYY-MM-DD\"}}\naliases:\nauthor:\n  - \"{{author|wikilink}}\"\nLinks:\n  - {{url}}\npublished: {{selector:.mobile-date-eyebrow|date:(\"YYYY-MM-DD\",\"Do MMMM YYYY\")}}\nrelated:\n  - \"[[Clippings]]\"\n{{selector:.item-tag?href|template:\"@@  - \\\"[[${str}]]\\\"\"|replace:\"@@\":\"\"|replace:\"/tags\":\"\"|replace:\"/\":\"\"|replace:\"\\n\\n\":\"\\n\"}}\n---\n\n{{selectorHtml:.quote blockquote|markdown}}\n\n[{{selector:.quote .cite a}}]({{selector:.quote .cite a?href}})",
-  "properties": [],
+  "noteContentFormat": "\n{{selectorHtml:.quote blockquote|markdown}}\n\n[{{selector:.quote .cite a}}]({{selector:.quote .cite a?href}})",
+  "properties": [
+    {
+      "name": "created",
+      "value": "{{date}}",
+      "type": "date"
+    },
+    {
+      "name": "aliases",
+      "value": "",
+      "type": "multitext"
+    },
+    {
+      "name": "author",
+      "value": "{{author|wikilink}}",
+      "type": "multitext"
+    },
+    {
+      "name": "Links",
+      "value": "{{url}}",
+      "type": "multitext"
+    },
+    {
+      "name": "published",
+      "value": "{{selector:.mobile-date-eyebrow|date:(\"YYYY-MM-DD\",\"Do MMMM YYYY\")}}",
+      "type": "date"
+    },
+    {
+      "name": "related",
+      "value": "[[Clippings]]{% for tagUrl in selector:.item-tag?href %}, [[{{tagUrl|split:\"/tags/\"|last|replace:\"/\":\"\"}}]]{% endfor %}",
+      "type": "multitext"
+    }
+  ],
   "triggers": [
     "https://simonwillison.net/"
   ],

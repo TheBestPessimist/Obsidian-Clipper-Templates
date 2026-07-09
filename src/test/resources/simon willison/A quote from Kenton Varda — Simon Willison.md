@@ -4,7 +4,7 @@ aliases:
 author:
   - "[[Simon Willison]]"
 Links:
-  - https://simonwillison.net/2026/Jul/8/kenton-varda/
+  - "https://simonwillison.net/2026/Jul/8/kenton-varda/"
 published: 2026-07-08
 related:
   - "[[Clippings]]"
