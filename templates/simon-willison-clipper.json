@@ -2,7 +2,7 @@
   "schemaVersion": "0.1.0",
   "name": "Simon Willison",
   "behavior": "create",
-  "noteContentFormat": "\n{{selectorHtml:.quote blockquote|markdown}}\n\n[{{selector:.quote .cite a}}]({{selector:.quote .cite a?href}})",
+  "noteContentFormat": "\n{{selectorHtml:.quote|markdown}}",
   "properties": [
     {
       "name": "created",
