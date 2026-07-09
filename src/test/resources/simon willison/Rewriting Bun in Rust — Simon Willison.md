@@ -1,10 +1,10 @@
 ---
-created: 2026-07-09
+created: 2026-02-20
 aliases:
 author:
   - "[[Simon Willison]]"
 Links:
-  - https://simonwillison.net/2026/Jul/8/rewriting-bun-in-rust/
+  - "https://simonwillison.net/2026/Jul/8/rewriting-bun-in-rust/"
 published: 2026-07-08
 related:
   - "[[Clippings]]"
