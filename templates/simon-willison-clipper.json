@@ -2,7 +2,7 @@
   "schemaVersion": "0.1.0",
   "name": "Simon Willison",
   "behavior": "create",
-  "noteContentFormat": "\n{{selectorHtml:.quote|markdown}}",
+  "noteContentFormat": "\n{{selectorHtml:.entry.entryPage|remove_html:(\".mobile-date-eyebrow,.entryFooter,.edit-page-link\")|markdown}}",
   "properties": [
     {
       "name": "created",
@@ -26,7 +26,7 @@
     },
     {
       "name": "published",
-      "value": "{{selector:.mobile-date-eyebrow|date:(\"YYYY-MM-DD\",\"Do MMMM YYYY\")}}",
+      "value": "{{selector:.entryFooter|split:\"Posted \"|last|split:\" at \"|first|date:(\"YYYY-MM-DD\",\"Do MMMM YYYY\")}}",
       "type": "date"
     },
     {

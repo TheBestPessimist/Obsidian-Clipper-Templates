@@ -14,4 +14,13 @@ test.describe('Simon Willison Templates', () => {
     const expected = readExpected('simon willison/A quote from Kenton Varda — Simon Willison.md');
     expectEqualsIgnoringNewlines(actual, expected);
   });
+
+  test('Rewriting Bun in Rust link blog', async ({ extensionContext, extensionId }) => {
+    const actual = await runHarTest(extensionContext, extensionId, {
+      harPath: 'simon willison/Rewriting Bun in Rust — Simon Willison.har',
+      templatePath: 'simon-willison-clipper.json',
+    });
+    const expected = readExpected('simon willison/Rewriting Bun in Rust — Simon Willison.md');
+    expectEqualsIgnoringNewlines(actual, expected);
+  });
 });
