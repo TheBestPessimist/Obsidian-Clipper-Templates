@@ -277,8 +277,10 @@ let totalBefore = 0;
 let totalAfter = 0;
 let totalSecrets = 0;
 
+let filePadding = 80
+
 console.log(`${dryRun ? '[dry-run] ' : ''}Trimming + sanitizing ${hars.length} HAR file(s) under ${path.relative(process.cwd(), RESOURCES_DIR)}\n`);
-console.log(`${'file'.padEnd(40)} ${'before'.padStart(8)} ${'after'.padStart(8)} ${'freed'.padStart(8)} ${'secrets'.padStart(8)}`);
+console.log(`${'file'.padEnd(filePadding)} ${'before'.padStart(8)} ${'after'.padStart(8)} ${'freed'.padStart(8)} ${'secrets'.padStart(8)}`);
 
 for (const har of hars) {
   const before = fs.statSync(har).size;
@@ -302,8 +304,8 @@ for (const har of hars) {
   totalAfter += after;
   totalSecrets += stats.redactions;
   const rel = path.relative(RESOURCES_DIR, har);
-  console.log(`${rel.padEnd(40)} ${mb(before).padStart(8)} ${mb(after).padStart(8)} ${mb(freed).padStart(8)} ${String(stats.redactions).padStart(8)}`);
+  console.log(`${rel.padEnd(filePadding)} ${mb(before).padStart(8)} ${mb(after).padStart(8)} ${mb(freed).padStart(8)} ${String(stats.redactions).padStart(8)}`);
 }
 
-console.log(`\n${'TOTAL'.padEnd(40)} ${mb(totalBefore).padStart(8)} ${mb(totalAfter).padStart(8)} ${mb(totalBefore - totalAfter).padStart(8)} ${String(totalSecrets).padStart(8)}  (MB / secrets)`);
+console.log(`\n${'TOTAL'.padEnd(filePadding)} ${mb(totalBefore).padStart(8)} ${mb(totalAfter).padStart(8)} ${mb(totalBefore - totalAfter).padStart(8)} ${String(totalSecrets).padStart(8)}  (MB / secrets)`);
 if (dryRun) console.log('\n[dry-run] no files written.');
