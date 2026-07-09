@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "0.1.0",
+  "name": "Simon Willison",
+  "behavior": "create",
+  "noteContentFormat": "---\ncreated: {{date|date:\"YYYY-MM-DD\"}}\naliases:\nauthor:\n  - \"{{author|wikilink}}\"\nLinks:\n  - {{url}}\npublished: {{selector:.mobile-date-eyebrow|date:(\"YYYY-MM-DD\",\"Do MMMM YYYY\")}}\nrelated:\n  - \"[[Clippings]]\"\n{{selector:.item-tag?href|template:\"@@  - \\\"[[${str}]]\\\"\"|replace:\"@@\":\"\"|replace:\"/tags\":\"\"|replace:\"/\":\"\"|replace:\"\\n\\n\":\"\\n\"}}\n---\n\n{{selectorHtml:.quote blockquote|markdown}}\n\n[{{selector:.quote .cite a}}]({{selector:.quote .cite a?href}})",
+  "properties": [],
+  "triggers": [
+    "https://simonwillison.net/"
+  ],
+  "noteNameFormat": "{{title}} — Simon Willison",
+  "path": "Clippings"
+}
