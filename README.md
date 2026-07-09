@@ -1,0 +1,1 @@
+My Obsidian clipper templates, along with proper tests, something which has proven quite difficult because, besides running a full browser in playwright and setting up the clipper extension, i couldn't figure out how to do _faster_ or _more correct_.
