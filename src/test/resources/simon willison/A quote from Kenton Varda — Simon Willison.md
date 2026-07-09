@@ -19,4 +19,4 @@ related:
 > 
 > AI was writing change descriptions that were worse than useless to me as I tried to review PRs: outlining details of the code that could easily be seen by looking at the code, but omitting the higher-level framing needed to understand broadly what the code is doing.
 
-[Kenton Varda](https://twitter.com/kentonvarda/status/2074924213983740233)
+— [Kenton Varda](https://twitter.com/kentonvarda/status/2074924213983740233)
