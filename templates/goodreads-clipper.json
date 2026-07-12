@@ -51,7 +51,7 @@
 		},
 		{
 			"name": "isbn",
-			"value": "{% for item in selectorHtml:.DescListItem %}          {% if item contains \\\"ISBN\\\" %}                  {% set item = item|markdown|split:[\\\\s()] %}                      {% for item in item %}                          {% set item = item|trim %}                          {% if not item contains \\\"ISBN\\\" and item != \\\"\\\" %}                              {{item}},             {% endif %}                  {% endfor %}          {% endif %}  {% endfor %}",
+			"value": "\n{% for item in selectorHtml:.DescListItem %}     \n    {% if item contains \"ISBN\" %}         \n        {% set item = item|markdown|split:[\\\\s()] %}         \n        {% for item in item %}             \n            {% set item = item|trim %}             \n            {% if not item contains \"ISBN\" and item != \"\" %}                 \n                {{item}},\n            {% endif %}         \n        {% endfor %}     \n    {% endif %} \n{% endfor %}  ",
 			"type": "multitext"
 		},
 		{
