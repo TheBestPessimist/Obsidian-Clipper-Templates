@@ -67,11 +67,9 @@ created: 2026-02-20
 >   
 > Welcome to a wondrous age of steam where pirates, rust, and syphilis aren't all you need to worry about. Ghosts abound!  
 >   
-> In this hissing and clanking steampunk anthology, there are moments that science just can't explain. All the mechanical geniuses scratch their heads and whisper words of ghosts and powers, of spirits and demons. Possessed automatons take on lives of their own. Superstitious pilots take all necessary precautions. Avant-garde machinists harness the spirits to power their creations. Revenge-minded ghosts stalk haunted gasworks. This is a mechanized playground for the souls of the dead.  
->   
+> In this hissing and clanking steampunk anthology, there are moments that science just can't explain. All the mechanical geniuses scratch their heads and whisper words of ghosts and powers, of spirits and demons. Possessed automatons take on lives of their own. Superstitious pilots take all necessary precautions. Avant-garde machinists harness the spirits to power their creations. Revenge-minded ghosts stalk haunted gasworks. This is a mechanized playground for the souls of the dead.
+>
 > Again and again, the spirit world proves itself inspiring and dangerous, useful and annoying. In rich steampunk worlds, chock full of gizmos and gadgets aplenty, these are the stories that go bump, clatter, boom in the night.
-> 
-> Show more
 
 
 ## Review
