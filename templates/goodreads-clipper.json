@@ -1,0 +1,73 @@
+{
+	"schemaVersion": "0.1.0",
+	"name": "Goodreads",
+	"behavior": "create",
+	"noteContentFormat": "\n\n\n\n{{selectorHtml:.BookPageMetadataSection__description|markdown|callout:('note', 'description')}}\n\n\n## Review\n\nREVIEW HERE",
+	"properties": [
+		{
+			"name": "title",
+			"value": "{{title}}",
+			"type": "text"
+		},
+		{
+			"name": "aliases",
+			"value": "",
+			"type": "multitext"
+		},
+		{
+			"name": "related",
+			"value": "[[Clippings]], [[Books]], [[Goodreads]]",
+			"type": "multitext"
+		},
+		{
+			"name": "year",
+			"value": "{{selector:p[data-testid='publicationInfo']|split:\\\" \\\"|last}}",
+			"type": "number"
+		},
+		{
+			"name": "author",
+			"value": "{{schema:@Book:author[*].name|wikilink}}",
+			"type": "multitext"
+		},
+		{
+			"name": "Links",
+			"value": "{{url}}, https://openlibrary.org/search?q={{title}}",
+			"type": "multitext"
+		},
+		{
+			"name": "genre",
+			"value": "{{selector:.BookPageMetadataSection__genres .BookPageMetadataSection__genreButton|wikilink|join}}",
+			"type": "multitext"
+		},
+		{
+			"name": "rating",
+			"value": "",
+			"type": "number"
+		},
+		{
+			"name": "image",
+			"value": "{{image}}",
+			"type": "multitext"
+		},
+		{
+			"name": "isbn",
+			"value": "{% for item in selectorHtml:.DescListItem %}          {% if item contains \\\"ISBN\\\" %}                  {% set item = item|markdown|split:[\\\\s()] %}                      {% for item in item %}                          {% set item = item|trim %}                          {% if not item contains \\\"ISBN\\\" and item != \\\"\\\" %}                              {{item}},             {% endif %}                  {% endfor %}          {% endif %}  {% endfor %}",
+			"type": "multitext"
+		},
+		{
+			"name": "created",
+			"value": "{{date}}",
+			"type": "date"
+		},
+		{
+			"name": "watch-status",
+			"value": "[[✅ Completed]], [[❌ Dropped]], [[🔍 Can not find]], [[⏳ Plan to Watch]]",
+			"type": "multitext"
+		}
+	],
+	"triggers": [
+		"https://www.goodreads.com/book/"
+	],
+	"noteNameFormat": "{{title}}",
+	"path": "Books"
+}
