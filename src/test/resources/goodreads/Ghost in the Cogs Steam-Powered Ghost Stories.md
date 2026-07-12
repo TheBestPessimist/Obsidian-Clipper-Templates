@@ -1,6 +1,7 @@
 ---
 title: "Ghost in the Cogs: Steam-Powered Ghost Stories"
 aliases:
+  - "Ghost in the Cogs: Steam-Powered Ghost Stories"
 related:
   - "[[Clippings]]"
   - "[[Books]]"
