@@ -10,6 +10,10 @@ test.describe('Goodreads Templates', () => {
     const actual = await runHarTest(extensionContext, extensionId, {
       harPath: 'goodreads/Ghost in the Cogs Steam-Powered Ghost Stories.har',
       templatePath: 'goodreads-clipper.json',
+      preparePage: async (page) => {
+        await page.getByRole('button', { name: 'Book details and editions' }).click();
+        await page.locator('.DescListItem').filter({ hasText: 'ISBN' }).waitFor();
+      },
     });
     const expected = readExpected('goodreads/Ghost in the Cogs Steam-Powered Ghost Stories.md');
     expectEqualsIgnoringNewlines(actual, expected);

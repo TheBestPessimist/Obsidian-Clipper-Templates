@@ -489,6 +489,7 @@ async function setupClipperPage(
   context: BrowserContext,
   harPath: string,
   extensionId: string,
+  preparePage?: (page: Page) => Promise<void>,
 ): Promise<{ page: Page; clipperFrame: ReturnType<Page['frameLocator']> }> {
   const harFullPath = path.join(TEST_RESOURCES_PATH, harPath);
   const url = extractUrlFromHar(harFullPath);
@@ -527,6 +528,8 @@ async function setupClipperPage(
   // idle isn't reached within the ceiling.
   await page.waitForLoadState('domcontentloaded').catch(() => {});
   await page.waitForLoadState('networkidle', { timeout: TIMEOUT_NETWORK_IDLE }).catch(() => {});
+
+  await preparePage?.(page);
 
   // Open the clipper in-page via the extension's own handler. See
   // openClipperViaExtension.
@@ -593,7 +596,12 @@ export async function runHarTest(
   config: HarTestConfig
 ): Promise<string> {
   const templateName = getTemplateNameFromPath(config.templatePath);
-  const { page, clipperFrame } = await setupClipperPage(context, config.harPath, extensionId);
+  const { page, clipperFrame } = await setupClipperPage(
+    context,
+    config.harPath,
+    extensionId,
+    config.preparePage,
+  );
 
   const contentField = clipperFrame.locator('#note-content-field');
   const beforeSwitch = await contentField.inputValue().catch(() => '');
@@ -601,6 +609,7 @@ export async function runHarTest(
   await waitForClipperRender(clipperFrame, beforeSwitch);
 
   const fileContent = await clipAndDownload(page, clipperFrame);
+
   await page.close();
   return fileContent;
 }
@@ -614,6 +623,7 @@ export function expectEqualsIgnoringNewlines(actual: string, expected: string): 
 export interface HarTestConfig {
   harPath: string;
   templatePath: string;
+  preparePage?: (page: Page) => Promise<void>;
 }
 
 // Filter Testing utilities
