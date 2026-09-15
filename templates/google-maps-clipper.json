@@ -35,6 +35,16 @@
 			"type": "text"
 		},
 		{
+			"name": "city",
+			"value": "{{selector:button[data-item-id='oloc']?aria-label|split:\"+\"|last|split:\" \"|slice:1|join:\" \"|split:\",\"|first|trim}}",
+			"type": "text"
+		},
+		{
+			"name": "country",
+			"value": "[[🚧 todo]]",
+			"type": "text"
+		},
+		{
 			"name": "rating",
 			"value": "",
 			"type": "number"
@@ -48,6 +58,6 @@
 	"triggers": [
 		"https://www.google.com/maps/place/"
 	],
-	"noteNameFormat": "{{selector:div[role='main']?aria-label}} {% if selector:div[role='main'] h2.fontBodyMedium %}- {{selector:div[role='main'] h2.fontBodyMedium}}{% endif %}",
+	"noteNameFormat": "{{selector:div[role='main']?aria-label}} {% if selector:div[role='main'] h2.fontBodyMedium %}- {{selector:div[role='main'] h2.fontBodyMedium}}{% endif %} {% if selector:button[data-item-id='oloc']?aria-label %}— {{selector:button[data-item-id='oloc']?aria-label|split:\"+\"|last|split:\" \"|slice:1|join:\" \"|split:\",\"|first|trim}}{% endif %}",
 	"path": "Places"
 }
