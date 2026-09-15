@@ -1,0 +1,53 @@
+{
+	"schemaVersion": "0.1.0",
+	"name": "Google Maps",
+	"behavior": "create",
+	"noteContentFormat": "",
+	"properties": [
+		{
+			"name": "created",
+			"value": "{{date}}",
+			"type": "date"
+		},
+		{
+			"name": "aliases",
+			"value": "",
+			"type": "multitext"
+		},
+		{
+			"name": "related",
+			"value": "[[Places]]",
+			"type": "multitext"
+		},
+		{
+			"name": "Links",
+			"value": "{{url}}",
+			"type": "multitext"
+		},
+		{
+			"name": "coordinates",
+			"value": "{{url|split:\\\"/@\\\"|slice:1|split:\\\",\\\"|slice:0,2}}",
+			"type": "multitext"
+		},
+		{
+			"name": "address",
+			"value": "{{selector:button[aria-label^=\\\"Address:\\\"]:aria-label|split:\\\"Address: \\\"|slice:1}}",
+			"type": "text"
+		},
+		{
+			"name": "rating",
+			"value": "",
+			"type": "number"
+		},
+		{
+			"name": "description",
+			"value": "{{selector:div[aria-label^=\\\"About \\\"] button .PYvSYb[jslog]}}",
+			"type": "text"
+		}
+	],
+	"triggers": [
+		"https://www.google.com/maps/place/"
+	],
+	"noteNameFormat": "{{selector:div[role=\"main\"]:aria-label}}",
+	"path": "Places"
+}
