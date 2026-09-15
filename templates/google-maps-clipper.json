@@ -11,17 +11,17 @@
 		},
 		{
 			"name": "aliases",
-			"value": "",
+			"value": "{{selector:div[role='main']?aria-label}}, {{selector:div[role='main'] h2.fontBodyMedium}}",
 			"type": "multitext"
 		},
 		{
 			"name": "related",
-			"value": "[[Places]]",
+			"value": "[[Places]], [[Google Maps]]",
 			"type": "multitext"
 		},
 		{
 			"name": "Links",
-			"value": "{{url}}",
+			"value": "[\"{{url}}\"]",
 			"type": "multitext"
 		},
 		{
@@ -31,7 +31,7 @@
 		},
 		{
 			"name": "address",
-			"value": "{{selector:button[aria-label^=\\\"Address:\\\"]:aria-label|split:\\\"Address: \\\"|slice:1}}",
+			"value": "{{selector:button[aria-label^='Address: ']?aria-label|split:\\\"Address: \\\"|last|trim}}",
 			"type": "text"
 		},
 		{
@@ -41,13 +41,13 @@
 		},
 		{
 			"name": "description",
-			"value": "{{selector:div[aria-label^=\\\"About \\\"] button .PYvSYb[jslog]}}",
+			"value": "",
 			"type": "text"
 		}
 	],
 	"triggers": [
 		"https://www.google.com/maps/place/"
 	],
-	"noteNameFormat": "{{selector:div[role=\"main\"]:aria-label}}",
+	"noteNameFormat": "{{selector:div[role='main']?aria-label}} {% if selector:div[role='main'] h2.fontBodyMedium %}- {{selector:div[role='main'] h2.fontBodyMedium}}{% endif %}",
 	"path": "Places"
 }

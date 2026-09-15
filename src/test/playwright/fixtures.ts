@@ -13,7 +13,7 @@
  * See [[Clipper Active Tab Query Prevents True Parallelism]].
  */
 
-import { test as base, chromium, type BrowserContext, type Page } from '@playwright/test';
+import { test as base, chromium, type BrowserContext, type Page, type Request } from '@playwright/test';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
@@ -435,13 +435,111 @@ function getTemplateNameFromPath(templatePath: string): string {
   return JSON.parse(fs.readFileSync(path.join(TEMPLATES_PATH, templatePath), 'utf-8')).name;
 }
 
-function extractUrlFromHar(harPath: string): string {
+interface HarIndex {
+  /** The page URL: the first recorded text/html document. */
+  url: string;
+  /** "<METHOD> <full url>" for every recorded entry. */
+  exact: Set<string>;
+  /**
+   * "<METHOD> <origin><pathname>" -> the full recorded URL, or null when more
+   * than one entry shares the key (ambiguous, so never safe to substitute).
+   */
+  byPathname: Map<string, string | null>;
+}
+
+/**
+ * Parse a HAR once and build the small string indexes the routing needs. Only
+ * short strings are retained, so the (10–21 MB) parsed HAR is released straight
+ * away instead of being held for the page's lifetime.
+ */
+function loadHar(harPath: string): HarIndex {
   const har = JSON.parse(fs.readFileSync(harPath, 'utf-8'));
-  const htmlEntry = har.log?.entries?.find((e: any) =>
-    e.response?.content?.mimeType?.includes('text/html')
-  );
+  const entries: any[] = har.log?.entries ?? [];
+
+  // Don't assume the first entry is the page — HAR entries are ordered by
+  // network timing. See [[HAR First Entry Is Not Always The Page URL]].
+  const htmlEntry = entries.find((e) => e.response?.content?.mimeType?.includes('text/html'));
   if (!htmlEntry?.request?.url) throw new Error(`No HTML entry in HAR: ${harPath}`);
-  return htmlEntry.request.url;
+
+  // DevTools records speculative/prefetch/aborted attempts as extra entries with
+  // the same method+URL and an EMPTY body. Playwright breaks same-URL ties by
+  // counting matching request headers, which those decoys usually win — so it
+  // replays the empty response, and when the shadowed entry is the page DOCUMENT
+  // the whole page comes up blank with every selector silently ''. That is a
+  // miserable thing to debug, so refuse to run on a HAR in that state.
+  const withBody = new Set<string>();
+  for (const entry of entries) {
+    if ((entry.response?.content?.text?.length ?? 0) > 0) {
+      withBody.add(`${entry.request?.method} ${entry.request?.url}`);
+    }
+  }
+  const shadowed = entries.filter(
+    (e) => (e.response?.content?.text?.length ?? 0) === 0
+      && withBody.has(`${e.request?.method} ${e.request?.url}`),
+  );
+  if (shadowed.length > 0) {
+    throw new Error(
+      `${shadowed.length} empty-bodied duplicate entr${shadowed.length === 1 ? 'y' : 'ies'} ` +
+      `shadow a real response in ${path.basename(harPath)} (first: ${shadowed[0].request?.url?.slice(0, 120)}). ` +
+      `Playwright would replay the EMPTY one. Run 'npm run trim-and-sanitize-hars' to drop them.`,
+    );
+  }
+
+  const exact = new Set<string>();
+  const byPathname = new Map<string, string | null>();
+  for (const entry of entries) {
+    const { url, method } = entry.request ?? {};
+    if (!url || !method) continue;
+    exact.add(`${method} ${url}`);
+    let key: string;
+    try {
+      const { origin, pathname } = new URL(url);
+      key = `${method} ${origin}${pathname}`;
+    } catch {
+      continue;
+    }
+    // First entry wins; a second one for the same key marks it ambiguous.
+    byPathname.set(key, byPathname.has(key) ? null : url);
+  }
+
+  return { url: htmlEntry.request.url, exact, byPathname };
+}
+
+/**
+ * When a request has no byte-exact match in the HAR but exactly ONE recorded
+ * GET shares its origin+pathname, the query string is the only difference —
+ * return that recorded URL so we can point Playwright's HAR router at it.
+ * Returns undefined when the request should be passed through untouched (and
+ * so abort, if the HAR has nothing for it).
+ *
+ * Why this exists: Playwright's HAR backend matches URLs byte-for-byte
+ * (harBackend.js: `candidate.request.url !== url`). Some SPAs salt request
+ * URLs with per-session or per-viewport values — Google Maps' place-details
+ * XHR embeds the map's pixel size (`!3m2!1i1048!2i806`), which depends on the
+ * window Playwright happens to launch with. Such a request never matches the
+ * recording, gets aborted, and the page is left unhydrated.
+ *
+ * Each guard is load-bearing:
+ * - exact matches are never touched, so nothing that works today changes;
+ * - GET only — Playwright compares POST bodies, and several different POSTs
+ *   can share one pathname (Maps records 5 to /maps/_/MapsWizUi/data/batchexecute);
+ * - never a navigation request, so a wrong document can't mask a bad page URL;
+ * - the pathname must be unambiguous in the HAR (18 of the 221 pathnames in
+ *   the Maps HAR are not, e.g. /maps/preview/log204 with 17 entries).
+ *
+ * This never reaches the live network and serves identical bytes every run, so
+ * the suite stays hermetic and deterministic. What it relaxes is the "HARs must
+ * be complete" caveat, for HARs that ARE complete but whose URLs carry salt.
+ */
+function harQueryInsensitiveUrl(har: HarIndex, request: Request): string | undefined {
+  if (har.exact.has(`${request.method()} ${request.url()}`)) return undefined;
+  if (request.method() !== 'GET' || request.isNavigationRequest()) return undefined;
+  try {
+    const { origin, pathname } = new URL(request.url());
+    return har.byPathname.get(`GET ${origin}${pathname}`) ?? undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 /**
@@ -492,7 +590,7 @@ async function setupClipperPage(
   preparePage?: (page: Page) => Promise<void>,
 ): Promise<{ page: Page; clipperFrame: ReturnType<Page['frameLocator']> }> {
   const harFullPath = path.join(TEST_RESOURCES_PATH, harPath);
-  const url = extractUrlFromHar(harFullPath);
+  const har = loadHar(harFullPath);
 
   const page = await context.newPage();
   // Serve only http(s) requests from the HAR, and ABORT any http(s) request not
@@ -511,16 +609,30 @@ async function setupClipperPage(
   // routeFromHAR so this handler runs first; everything else falls through to
   // the HAR replay. The startsWith('http') guard keeps the clipper's own
   // chrome-extension:// iframe assets (icons/fonts) from being aborted.
+  // This handler also rescues requests whose URL carries per-session or
+  // per-viewport salt and so never matches the recording byte-for-byte. See
+  // harQueryInsensitiveUrl for the guards and the reasoning.
   await page.route('**/*', async (route) => {
     const request = route.request();
     const type = request.resourceType();
     if ((type === 'image' || type === 'media' || type === 'font') && request.url().startsWith('http')) {
       await route.abort();
-    } else {
-      await route.fallback();
+      return;
     }
+    const recorded = harQueryInsensitiveUrl(har, request);
+    if (recorded) {
+      // `notFound: 'abort'` is also our canary for a genuinely incomplete HAR,
+      // so never rescue a request silently — a run shows what needed help.
+      console.log(`[har] query-insensitive match: ${new URL(request.url()).pathname}`);
+      // Hand routeFromHAR the URL it recorded so its exact match succeeds; it
+      // then serves the response itself, keeping headers, base64 bodies and
+      // redirect chains Playwright's job rather than ours.
+      await route.fallback({ url: recorded });
+      return;
+    }
+    await route.fallback();
   });
-  await page.goto(url);
+  await page.goto(har.url);
   // Bounded network-idle so JS-hydrated fields (e.g. the IMDB user rating fetched
   // via GraphQL) are in the DOM before we clip. We deliberately do NOT wait for
   // the full 'load' event: heavy pages (e.g. bandcamp, 6 MB of images) can keep

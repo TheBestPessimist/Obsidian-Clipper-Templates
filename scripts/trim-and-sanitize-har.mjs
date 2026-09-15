@@ -5,7 +5,14 @@
  *   npm run trim-and-sanitize-hars -- --dry-run    # report what would change, write nothing
  *   npm run trim-and-sanitize-hars -- mal imdb     # only HARs whose path contains "mal"/"imdb"
  *
- * Two independent jobs, one command (run this before committing a re-recorded HAR):
+ * Three independent jobs, one command (run this before committing a re-recorded HAR):
+ *
+ *   0. DEDUPE (correctness) — drop empty-bodied entries that SHADOW a sibling with a
+ *                        real body for the same method+URL. DevTools records
+ *                        speculative/prefetch/aborted attempts as extra entries, and
+ *                        Playwright breaks same-URL ties by counting matching request
+ *                        headers — which those decoys usually win, so it replays an
+ *                        EMPTY response and the page comes up blank. See dedupeEntries.
  *
  *   1. TRIM (size)     — blank the response bodies the clipper never reads
  *                        (image/video/audio/font/CSS). Pure size win.
@@ -68,6 +75,39 @@ import url from 'url';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const RESOURCES_DIR = path.join(__dirname, '..', 'src', 'test', 'resources');
+
+// ---------------------------------------------------------------------------
+// DEDUPE: correctness, not size. DevTools records speculative/prefetch/aborted
+// attempts alongside the real response as SEPARATE entries with the same
+// method+URL and an EMPTY body. Playwright's HAR backend breaks such ties by
+// counting matching request headers (harBackend.js `countMatchingHeaders`), and
+// the decoys typically carry MORE headers than the real request — so it serves
+// the empty body. When that shadows the page DOCUMENT, the whole page replays
+// blank and every selector silently yields ''.
+//
+// Dropping them loses nothing: replay can only ever use ONE entry per
+// method+URL, and it picks the same one every time, so an empty duplicate is
+// dead weight. Idempotent — after one pass no empty entry shares a key with a
+// bodied one, so a re-run drops nothing.
+// ---------------------------------------------------------------------------
+function bodyLength(entry) {
+  return entry?.response?.content?.text?.length ?? 0;
+}
+
+function entryKey(entry) {
+  return `${entry?.request?.method} ${entry?.request?.url}`;
+}
+
+/** Drop empty-bodied entries shadowing a sibling that has a real body.
+ *  Returns the surviving entries (original order) and how many were dropped. */
+function dedupeEntries(entries) {
+  const hasBody = new Set();
+  for (const entry of entries) {
+    if (bodyLength(entry) > 0) hasBody.add(entryKey(entry));
+  }
+  const kept = entries.filter((entry) => bodyLength(entry) > 0 || !hasBody.has(entryKey(entry)));
+  return { kept, dropped: entries.length - kept.length };
+}
 
 // ---------------------------------------------------------------------------
 // TRIM: generic, MIME-based drop list — bytes the clipper never reads, any site.
@@ -276,11 +316,12 @@ const mb = (bytes) => (bytes / 1048576).toFixed(2);
 let totalBefore = 0;
 let totalAfter = 0;
 let totalSecrets = 0;
+let totalDupes = 0;
 
 let filePadding = 80
 
 console.log(`${dryRun ? '[dry-run] ' : ''}Trimming + sanitizing ${hars.length} HAR file(s) under ${path.relative(process.cwd(), RESOURCES_DIR)}\n`);
-console.log(`${'file'.padEnd(filePadding)} ${'before'.padStart(8)} ${'after'.padStart(8)} ${'freed'.padStart(8)} ${'secrets'.padStart(8)}`);
+console.log(`${'file'.padEnd(filePadding)} ${'before'.padStart(8)} ${'after'.padStart(8)} ${'freed'.padStart(8)} ${'secrets'.padStart(8)} ${'dupes'.padStart(6)}`);
 
 for (const har of hars) {
   const before = fs.statSync(har).size;
@@ -288,24 +329,30 @@ for (const har of hars) {
   const json = JSON.parse(original);
   const entries = json.log?.entries ?? [];
 
+  // DEDUPE first, on the raw bodies: TRIM blanks bodies, which would make a real
+  // entry look like a decoy on a later pass.
+  const { kept, dropped } = dedupeEntries(entries);
+  if (json.log) json.log.entries = kept;
+
   let freed = 0;
   const stats = { redactions: 0 };
-  for (const entry of entries) {
+  for (const entry of kept) {
     freed += trimEntry(entry);
     sanitizeEntry(entry, stats);
   }
 
   const serialized = JSON.stringify(json);
-  const changed = freed > 0 || stats.redactions > 0 || serialized !== original;
+  const changed = freed > 0 || stats.redactions > 0 || dropped > 0 || serialized !== original;
   if (!dryRun && changed) fs.writeFileSync(har, serialized);
 
   const after = dryRun ? before - freed : fs.statSync(har).size;
   totalBefore += before;
   totalAfter += after;
   totalSecrets += stats.redactions;
+  totalDupes += dropped;
   const rel = path.relative(RESOURCES_DIR, har);
-  console.log(`${rel.padEnd(filePadding)} ${mb(before).padStart(8)} ${mb(after).padStart(8)} ${mb(freed).padStart(8)} ${String(stats.redactions).padStart(8)}`);
+  console.log(`${rel.padEnd(filePadding)} ${mb(before).padStart(8)} ${mb(after).padStart(8)} ${mb(freed).padStart(8)} ${String(stats.redactions).padStart(8)} ${String(dropped).padStart(6)}`);
 }
 
-console.log(`\n${'TOTAL'.padEnd(filePadding)} ${mb(totalBefore).padStart(8)} ${mb(totalAfter).padStart(8)} ${mb(totalBefore - totalAfter).padStart(8)} ${String(totalSecrets).padStart(8)}  (MB / secrets)`);
+console.log(`\n${'TOTAL'.padEnd(filePadding)} ${mb(totalBefore).padStart(8)} ${mb(totalAfter).padStart(8)} ${mb(totalBefore - totalAfter).padStart(8)} ${String(totalSecrets).padStart(8)} ${String(totalDupes).padStart(6)}  (MB / secrets / shadowing dupes)`);
 if (dryRun) console.log('\n[dry-run] no files written.');
