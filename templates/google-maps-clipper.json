@@ -30,6 +30,11 @@
 			"type": "multitext"
 		},
 		{
+			"name": "plus_code",
+			"value": "{{selector:button[data-item-id='oloc']?aria-label|split:\":\"|last|trim}}",
+			"type": "text"
+		},
+		{
 			"name": "address",
 			"value": "{{selector:button[aria-label^='Address: ']?aria-label|split:\"Address: \"|last|trim}}",
 			"type": "text"

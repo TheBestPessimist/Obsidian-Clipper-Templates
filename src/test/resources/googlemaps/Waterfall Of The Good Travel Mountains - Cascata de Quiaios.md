@@ -11,6 +11,7 @@ Links:
 coordinates:
   - "40.2098278"
   - "-8.8639423"
+plus_code: "645P+WC Quiaios"
 address: "R. Viso 24, 3080-562 Quiaios"
 city: "Quiaios"
 country: "[[🚧 todo]]"
