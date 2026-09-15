@@ -681,12 +681,13 @@ async function waitForClipperRender(
 }
 
 /**
- * Clip content using the "Save file" option and return the file content.
+ * Clip content using the "Save file" option and return the file content plus
+ * the note name the clipper produced.
  */
 async function clipAndDownload(
   page: Page,
   clipperFrame: ReturnType<Page['frameLocator']>
-): Promise<string> {
+): Promise<ClipResult> {
   await clipperFrame.locator('#more-btn').click();
   await clipperFrame.locator('.secondary-actions').waitFor({ state: 'visible', timeout: TIMEOUT_SECONDARY_ACTIONS });
 
@@ -696,17 +697,38 @@ async function clipAndDownload(
   const download = await downloadPromise;
   const downloadPath = await download.path();
   if (!downloadPath) throw new Error('Download failed');
-  return fs.readFileSync(downloadPath, 'utf-8');
+  const suggested = download.suggestedFilename();
+  return {
+    content: fs.readFileSync(downloadPath, 'utf-8'),
+    // The download's filename IS the note name: the clipper renders
+    // noteNameFormat, sanitizes it and appends '.md'. Asserting it is the only
+    // way the suite can see noteNameFormat at all -- the file CONTENT carries
+    // the frontmatter and body, never the name.
+    noteName: suggested.endsWith('.md') ? suggested.slice(0, -3) : suggested,
+  };
 }
 
 /**
- * Run a HAR-based clipper test. Each test runs in isolation within its worker.
+ * Run a HAR-based clipper test and return only the clipped file content.
+ * Use runHarClip when the test also needs to assert the note name.
  */
 export async function runHarTest(
   context: BrowserContext,
   extensionId: string,
   config: HarTestConfig
 ): Promise<string> {
+  return (await runHarClip(context, extensionId, config)).content;
+}
+
+/**
+ * Run a HAR-based clipper test and return both the clipped file content and the
+ * note name. Each test runs in isolation within its worker.
+ */
+export async function runHarClip(
+  context: BrowserContext,
+  extensionId: string,
+  config: HarTestConfig
+): Promise<ClipResult> {
   const templateName = getTemplateNameFromPath(config.templatePath);
   const { page, clipperFrame } = await setupClipperPage(
     context,
@@ -720,10 +742,10 @@ export async function runHarTest(
   await clipperFrame.locator('#template-select').selectOption({ label: templateName });
   await waitForClipperRender(clipperFrame, beforeSwitch);
 
-  const fileContent = await clipAndDownload(page, clipperFrame);
+  const result = await clipAndDownload(page, clipperFrame);
 
   await page.close();
-  return fileContent;
+  return result;
 }
 
 export function expectEqualsIgnoringNewlines(actual: string, expected: string): void {
@@ -731,6 +753,12 @@ export function expectEqualsIgnoringNewlines(actual: string, expected: string): 
 }
 
 // Test configuration interfaces
+
+/** What a single clip produced: the file's content, and the note's name. */
+export interface ClipResult {
+  content: string;
+  noteName: string;
+}
 
 export interface HarTestConfig {
   harPath: string;
@@ -816,11 +844,11 @@ export async function runFilterTests(
     await clipperFrame.locator('#template-select').selectOption({ label: templates[i].name });
     await waitForClipperRender(clipperFrame, beforeSwitch);
 
-    const fileContent = await clipAndDownload(page, clipperFrame);
+    const { content } = await clipAndDownload(page, clipperFrame);
     results.push({
       filter: config.filters[i].filter,
       expected: config.filters[i].expected,
-      actual: extractBody(fileContent),
+      actual: extractBody(content),
     });
   }
 
