@@ -235,8 +235,22 @@ export const test = base.extend<{}, ClipperWorkerFixtures>({
 
 export const expect = test.expect;
 
-export function readExpected(relativePath: string): string {
-  return fs.readFileSync(path.join(TEST_RESOURCES_PATH, relativePath), 'utf-8');
+/**
+ * Assert a clip against its expected note: the file content, and the name the
+ * clipper gave the note.
+ *
+ * expectedNoteName is required but nullable. Pass null only where a template's
+ * note name genuinely does not matter, so that skipping the check stays a
+ * deliberate choice visible at the call site rather than a silent omission.
+ */
+export function assertNote(
+  clip: ClipResult,
+  expectedPath: string,
+  expectedNoteName: string | null,
+): void {
+  const expected = fs.readFileSync(path.join(TEST_RESOURCES_PATH, expectedPath), 'utf-8');
+  expect(normalizeMarkdown(clip.content)).toBe(normalizeMarkdown(expected));
+  if (expectedNoteName !== null) expect(clip.noteName).toBe(expectedNoteName);
 }
 
 export function normalizeMarkdown(md: string): string {
@@ -746,10 +760,6 @@ export async function runHarClip(
 
   await page.close();
   return result;
-}
-
-export function expectEqualsIgnoringNewlines(actual: string, expected: string): void {
-  expect(normalizeMarkdown(actual)).toBe(normalizeMarkdown(expected));
 }
 
 // Test configuration interfaces

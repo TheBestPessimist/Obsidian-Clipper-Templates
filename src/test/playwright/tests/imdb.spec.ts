@@ -3,60 +3,25 @@
  * Each test runs in a separate Playwright worker.
  */
 
-import {test, runHarTest, readExpected, expectEqualsIgnoringNewlines} from '../fixtures';
+import { test, runHarClip, assertNote } from '../fixtures';
+
+const CASES = [
+    { name: 'Another Earth', har: 'Another Earth.har', expected: 'Another Earth.md', noteName: 'Another Earth (2011)' },
+    { name: 'Ponyo', har: 'Ponyo.har', expected: 'Ponyo.md', noteName: 'Gake no ue no Ponyo (2009)' },
+    { name: 'Kokuhô', har: 'kokuho.har', expected: 'Kokuhô.md', noteName: 'Kokuhô (2025)' },
+    { name: 'Andromeda', har: 'Andromeda.har', expected: 'Andromeda.md', noteName: 'Andromeda (2000)' },
+    { name: 'Shogun 1980', har: 'Shogun 1980.har', expected: 'Shogun 1980.md', noteName: 'Shogun (1980)' },
+    { name: 'Brooklyn Nine-Nine', har: 'Brooklyn Nine-Nine.har', expected: 'Brooklyn Nine-Nine.md', noteName: 'Brooklyn Nine-Nine (2013)' },
+];
 
 test.describe('IMDB Templates', () => {
-    test('Another Earth', async ({extensionContext, extensionId}) => {
-        const actual = await runHarTest(extensionContext, extensionId, {
-            harPath: 'imdb/Another Earth.har',
-            templatePath: 'imdb-clipper.json',
+    for (const { name, har, expected, noteName } of CASES) {
+        test(name, async ({ extensionContext, extensionId }) => {
+            const clip = await runHarClip(extensionContext, extensionId, {
+                harPath: `imdb/${har}`,
+                templatePath: 'imdb-clipper.json',
+            });
+            assertNote(clip, `imdb/${expected}`, noteName);
         });
-        const expected = readExpected('imdb/Another Earth.md');
-        expectEqualsIgnoringNewlines(actual, expected);
-    });
-
-    test('Ponyo', async ({extensionContext, extensionId}) => {
-        const actual = await runHarTest(extensionContext, extensionId, {
-            harPath: 'imdb/Ponyo.har',
-            templatePath: 'imdb-clipper.json',
-        });
-        const expected = readExpected('imdb/Ponyo.md');
-        expectEqualsIgnoringNewlines(actual, expected);
-    });
-
-    test('Kokuhô', async ({extensionContext, extensionId}) => {
-        const actual = await runHarTest(extensionContext, extensionId, {
-            harPath: 'imdb/kokuho.har',
-            templatePath: 'imdb-clipper.json',
-        });
-        const expected = readExpected('imdb/Kokuhô.md');
-        expectEqualsIgnoringNewlines(actual, expected);
-    });
-
-    test('Andromeda', async ({extensionContext, extensionId}) => {
-        const actual = await runHarTest(extensionContext, extensionId, {
-            harPath: 'imdb/Andromeda.har',
-            templatePath: 'imdb-clipper.json',
-        });
-        const expected = readExpected('imdb/Andromeda.md');
-        expectEqualsIgnoringNewlines(actual, expected);
-    });
-
-    test('Shogun 1980', async ({extensionContext, extensionId}) => {
-        const actual = await runHarTest(extensionContext, extensionId, {
-            harPath: 'imdb/Shogun 1980.har',
-            templatePath: 'imdb-clipper.json',
-        });
-        const expected = readExpected('imdb/Shogun 1980.md');
-        expectEqualsIgnoringNewlines(actual, expected);
-    });
-
-    test('Brooklyn Nine-Nine', async ({extensionContext, extensionId}) => {
-        const actual = await runHarTest(extensionContext, extensionId, {
-            harPath: 'imdb/Brooklyn Nine-Nine.har',
-            templatePath: 'imdb-clipper.json',
-        });
-        const expected = readExpected('imdb/Brooklyn Nine-Nine.md');
-        expectEqualsIgnoringNewlines(actual, expected);
-    });
+    }
 });

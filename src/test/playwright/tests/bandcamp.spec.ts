@@ -3,15 +3,15 @@
  * Each test runs in a separate Playwright worker.
  */
 
-import { test, runHarTest, readExpected, expectEqualsIgnoringNewlines } from '../fixtures';
+import { test, runHarClip, assertNote } from '../fixtures';
 
 test.describe('Bandcamp Templates', () => {
   test('Byron Discography', async ({ extensionContext, extensionId }) => {
-    const actual = await runHarTest(extensionContext, extensionId, {
+    const clip = await runHarClip(extensionContext, extensionId, {
       harPath: 'bandcamp/byron.bandcamp.com.har',
       templatePath: 'bandcamp-discography-as-tasks-clipper.json',
     });
-    const expected = readExpected('bandcamp/byron - Discography.md');
-    expectEqualsIgnoringNewlines(actual, expected);
+    // Note name deliberately unchecked for bandcamp.
+    assertNote(clip, 'bandcamp/byron - Discography.md', null);
   });
 });
