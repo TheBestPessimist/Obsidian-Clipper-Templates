@@ -236,21 +236,44 @@ export const test = base.extend<{}, ClipperWorkerFixtures>({
 export const expect = test.expect;
 
 /**
- * Assert a clip against its expected note: the file content, and the name the
- * clipper gave the note.
+ * Characters Obsidian's own sanitizeFileName deletes on every platform (see
+ * obsidian-clipper/src/utils/string-utils.ts). A rendered noteNameFormat holding
+ * one of these is a template bug -- almost always a stray |wikilink leaking
+ * '[[ ]]' into a filename -- so we fail loudly instead of letting Obsidian eat
+ * them silently.
  *
- * expectedNoteName is required but nullable. Pass null only where a template's
- * note name genuinely does not matter, so that skipping the check stays a
- * deliberate choice visible at the call site rather than a silent omission.
+ * Filesystem-illegal characters (: / \ ? * " < >) are deliberately NOT here. The
+ * colon in "Ghost in the Cogs: Steam-Powered Ghost Stories" is part of the book's
+ * title; Obsidian quietly dropping it is not a bug in our template.
+ */
+const OBSIDIAN_STRIPPED = /[#|^\[\]]/g;
+
+/**
+ * Assert a clip against its expected note: the file content, and where the note
+ * lands in the vault.
+ *
+ * expectedFixture locates the expected-content file under src/test/resources.
+ * expectedVaultPath is the template's folder + the note name + '.md' -- the only
+ * way the suite sees noteNameFormat and path at all, since the file CONTENT
+ * carries the frontmatter and body but never the name or the folder.
  */
 export function assertNote(
   clip: ClipResult,
-  expectedPath: string,
-  expectedNoteName: string | null,
+  expectedFixture: string,
+  expectedVaultPath: string,
 ): void {
-  const expected = fs.readFileSync(path.join(TEST_RESOURCES_PATH, expectedPath), 'utf-8');
+  // First, so that a leaked '[[ ]]' fails here rather than being quietly baked
+  // into expectedVaultPath and locked in as if it were correct.
+  const leaked = [...new Set(clip.vaultPath.match(OBSIDIAN_STRIPPED) ?? [])];
+  expect(
+    leaked,
+    `Note name contains characters Obsidian strips (${leaked.join(' ')}): "${clip.vaultPath}"`,
+  ).toEqual([]);
+
+  expect(clip.vaultPath).toBe(expectedVaultPath);
+
+  const expected = fs.readFileSync(path.join(TEST_RESOURCES_PATH, expectedFixture), 'utf-8');
   expect(normalizeMarkdown(clip.content)).toBe(normalizeMarkdown(expected));
-  if (expectedNoteName !== null) expect(clip.noteName).toBe(expectedNoteName);
 }
 
 export function normalizeMarkdown(md: string): string {
@@ -696,12 +719,27 @@ async function waitForClipperRender(
 
 /**
  * Clip content using the "Save file" option and return the file content plus
- * the note name the clipper produced.
+ * the vault path the clipper produced.
+ *
+ * The note name and folder come from the clipper's OWN fields, not from the
+ * download: "Save file" never creates a folder (popup.ts handleSaveToDownloads
+ * reads #path-name-field and then passes only the name to saveFile, which does
+ * a.download = fileName), and the download's filename is Chrome's sanitization
+ * of the name -- ':' becomes '_', '[ ]' survive -- which is not what a vault
+ * gets. Reading the fields gives the template's output before anyone sanitizes.
  */
 async function clipAndDownload(
   page: Page,
   clipperFrame: ReturnType<Page['frameLocator']>
 ): Promise<ClipResult> {
+  // Safe to read now: waitForClipperRender has settled the render pass that
+  // fills the name, path and content fields together (popup.ts:894-933).
+  // The clipper trims the note name for us but not the path (popup.ts:924-933).
+  const noteName = (await clipperFrame.locator('#note-name-field').inputValue()).trim();
+  const folder = (await clipperFrame.locator('#path-name-field').inputValue())
+    .trim()
+    .replace(/^\/+|\/+$/g, '');
+
   await clipperFrame.locator('#more-btn').click();
   await clipperFrame.locator('.secondary-actions').waitFor({ state: 'visible', timeout: TIMEOUT_SECONDARY_ACTIONS });
 
@@ -711,32 +749,15 @@ async function clipAndDownload(
   const download = await downloadPromise;
   const downloadPath = await download.path();
   if (!downloadPath) throw new Error('Download failed');
-  const suggested = download.suggestedFilename();
   return {
     content: fs.readFileSync(downloadPath, 'utf-8'),
-    // The download's filename IS the note name: the clipper renders
-    // noteNameFormat, sanitizes it and appends '.md'. Asserting it is the only
-    // way the suite can see noteNameFormat at all -- the file CONTENT carries
-    // the frontmatter and body, never the name.
-    noteName: suggested.endsWith('.md') ? suggested.slice(0, -3) : suggested,
+    vaultPath: folder ? `${folder}/${noteName}.md` : `${noteName}.md`,
   };
 }
 
 /**
- * Run a HAR-based clipper test and return only the clipped file content.
- * Use runHarClip when the test also needs to assert the note name.
- */
-export async function runHarTest(
-  context: BrowserContext,
-  extensionId: string,
-  config: HarTestConfig
-): Promise<string> {
-  return (await runHarClip(context, extensionId, config)).content;
-}
-
-/**
  * Run a HAR-based clipper test and return both the clipped file content and the
- * note name. Each test runs in isolation within its worker.
+ * note's vault path. Each test runs in isolation within its worker.
  */
 export async function runHarClip(
   context: BrowserContext,
@@ -764,10 +785,17 @@ export async function runHarClip(
 
 // Test configuration interfaces
 
-/** What a single clip produced: the file's content, and the note's name. */
+/** What a single clip produced: the file's content, and where the note lands. */
 export interface ClipResult {
   content: string;
-  noteName: string;
+  /**
+   * The template's rendered `path`, its rendered `noteNameFormat`, and '.md' --
+   * e.g. 'Anime/Shangri-La (2009).md'. This is the template's output BEFORE any
+   * sanitization: not Chrome's download filename (':' -> '_', '[ ]' kept) and
+   * not Obsidian's sanitizeFileName (deletes ':', strips '[ ]'). Keeping it raw
+   * is what lets assertNote catch characters leaking into a note name.
+   */
+  vaultPath: string;
 }
 
 export interface HarTestConfig {

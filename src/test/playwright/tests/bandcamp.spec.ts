@@ -11,7 +11,7 @@ test.describe('Bandcamp Templates', () => {
       harPath: 'bandcamp/byron.bandcamp.com.har',
       templatePath: 'bandcamp-discography-as-tasks-clipper.json',
     });
-    // Note name deliberately unchecked for bandcamp.
-    assertNote(clip, 'bandcamp/byron - Discography.md', null);
+    // The template's path is '', so the note lands at the vault root.
+    assertNote(clip, 'bandcamp/byron - Discography.md', 'byron - Discography.md');
   });
 });

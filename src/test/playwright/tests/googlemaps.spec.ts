@@ -14,7 +14,7 @@ test.describe('Google Maps Templates', () => {
         assertNote(
             clip,
             'googlemaps/Waterfall Of The Good Travel Mountains - Cascata de Quiaios.md',
-            'Waterfall Of The Good Travel Mountains - Cascata de Quiaios — Quiaios',
+            'Places/Waterfall Of The Good Travel Mountains - Cascata de Quiaios — Quiaios.md',
         );
     });
 });

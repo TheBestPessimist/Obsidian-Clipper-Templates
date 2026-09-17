@@ -16,24 +16,24 @@ const CASES = [
   {
     name: 'Ghost in the Cogs',
     file: 'goodreads/Ghost in the Cogs Steam-Powered Ghost Stories',
-    noteName: 'Ghost in the Cogs_ Steam-Powered Ghost Stories - [[Scott Gable]]',
+    vaultPath: 'Books/Ghost in the Cogs: Steam-Powered Ghost Stories - Scott Gable.md',
   },
   {
     name: 'Insula copacilor disparuti',
     file: 'goodreads/Insula copacilor dispăruţi - Elif Shafak',
-    noteName: 'Insula copacilor dispăruţi - [[Elif Shafak]]',
+    vaultPath: 'Books/Insula copacilor dispăruţi - Elif Shafak.md',
   },
 ];
 
 test.describe('Goodreads Templates', () => {
-  for (const { name, file, noteName } of CASES) {
+  for (const { name, file, vaultPath } of CASES) {
     test(name, async ({ extensionContext, extensionId }) => {
       const clip = await runHarClip(extensionContext, extensionId, {
         harPath: `${file}.har`,
         templatePath: 'goodreads-clipper.json',
         preparePage: openBookDetails,
       });
-      assertNote(clip, `${file}.md`, noteName);
+      assertNote(clip, `${file}.md`, vaultPath);
     });
   }
 });

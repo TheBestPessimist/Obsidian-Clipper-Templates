@@ -18,7 +18,7 @@ test.describe('Simon Willison Templates', () => {
         templatePath: 'simon-willison-clipper.json',
       });
       // The note name is the page title, so it matches the fixture's basename.
-      assertNote(clip, `${file}.md`, file.split('/')[1]);
+      assertNote(clip, `${file}.md`, `Clippings/${file.split('/')[1]}.md`);
     });
   }
 });

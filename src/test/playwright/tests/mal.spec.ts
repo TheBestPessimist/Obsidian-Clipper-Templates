@@ -11,8 +11,8 @@ test.describe('MAL Templates', () => {
             harPath: 'mal/Shangri-La.har',
             templatePath: 'mal-myanimelist-clipper.json',
         });
-        // The doubled space is real: the template's middle {{selector:...}} (the
-        // English title) is empty for this anime, leaving a dangling " - ".
-        assertNote(clip, 'mal/Shangri-La.md', 'Shangri-La -  (2009)');
+        // No English title for this anime, so the template's {% if %} guard drops
+        // the " - " separator entirely rather than leaving it dangling.
+        assertNote(clip, 'mal/Shangri-La.md', 'Anime/Shangri-La (2009).md');
     });
 });

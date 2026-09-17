@@ -68,6 +68,6 @@
 	"triggers": [
 		"https://www.goodreads.com/book/"
 	],
-	"noteNameFormat": "{{title}} - {{schema:@Book:author[0].name|wikilink}}",
+	"noteNameFormat": "{% set bookAuthor = schema:@Book:author[0].name %}{{title}} {% if bookAuthor %}- {{bookAuthor}}{% endif %}",
 	"path": "Books"
 }
