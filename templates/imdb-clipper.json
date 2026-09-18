@@ -2,7 +2,7 @@
   "schemaVersion": "0.1.0",
   "name": "IMDB",
   "behavior": "create",
-  "noteContentFormat": "\n{{schema:description|callout:('note', 'description')}}\n\n## Review\n\nREVIEW HERE",
+	"noteContentFormat": "\n{{selector:div.sc-af040695-0.iOwuHP > ul > li:nth-child(1) > a}}\n\n\n\n{{schema:description|callout:('note', 'description')}}\n\n## Review\n\nREVIEW HERE",
   "properties": [
     {
       "name": "title",
@@ -76,7 +76,7 @@
     },
     {
       "name": "watch-status",
-      "value": "[[⏳ Plan to Watch]], [[✅ Completed]], [[❌ Dropped]], [[🔍 Can not find]]",
+      "value": "[[✅ Completed]], [[❌ Dropped]], [[🔍 Can not find]], [[⏳ Plan to Watch]]",
       "type": "multitext"
     },
     {

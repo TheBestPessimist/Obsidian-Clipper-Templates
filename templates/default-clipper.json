@@ -40,9 +40,7 @@
 			"type": "text"
 		}
 	],
-	"triggers": [
-		".*.bandcamp.com/"
-	],
+	"triggers": [],
 	"noteNameFormat": "{{title}} — {{site}}",
 	"path": "Clippings"
 }
