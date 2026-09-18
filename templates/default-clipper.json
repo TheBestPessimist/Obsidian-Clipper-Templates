@@ -33,6 +33,11 @@
 			"name": "related",
 			"value": "[[Clippings]]",
 			"type": "multitext"
+		},
+		{
+			"name": "tbp-template-version",
+			"value": "1",
+			"type": "text"
 		}
 	],
 	"triggers": [

@@ -17,5 +17,6 @@ city: "Quiaios"
 country: "[[🚧 todo]]"
 rating:
 description:
+"tbp-template-version": "1"
 ---
 

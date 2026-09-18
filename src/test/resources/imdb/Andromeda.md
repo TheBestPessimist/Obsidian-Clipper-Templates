@@ -38,6 +38,7 @@ created: 2026-02-20
   - "[[✅ Completed]]"
   - "[[❌ Dropped]]"
   - "[[🔍 Can not find]]"
+"tbp-template-version": "1"
 ---
 
 > [!note] description

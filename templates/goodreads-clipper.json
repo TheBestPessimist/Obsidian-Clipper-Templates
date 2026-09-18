@@ -63,6 +63,11 @@
 			"name": "watch-status",
 			"value": "[[✅ Completed]], [[❌ Dropped]], [[🔍 Can not find]], [[⏳ Plan to Watch]]",
 			"type": "multitext"
+		},
+		{
+			"name": "tbp-template-version",
+			"value": "1",
+			"type": "text"
 		}
 	],
 	"triggers": [

@@ -19,6 +19,7 @@ related:
   - "[[conformance-suites]]"
   - "[[agentic-engineering]]"
   - "[[claude-mythos-fable]]"
+"tbp-template-version": "1"
 ---
 
 **[Rewriting Bun in Rust](https://bun.com/blog/bun-in-rust)** ([via](https://news.ycombinator.com/item?id=48837877 "Hacker News")) Jarred Sumner has been promising this blog post ([since May 9th](https://x.com/jarredsumner/status/2053063524826620129)) about his Zig to Rust rewrite of Bun for significantly longer than it took him to finish the rewrite.

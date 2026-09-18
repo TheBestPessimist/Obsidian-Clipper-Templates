@@ -13,6 +13,7 @@ related:
   - "[[llms]]"
   - "[[ai-assisted-programming]]"
   - "[[kenton-varda]]"
+"tbp-template-version": "1"
 ---
 
 > I just declared a moratorium against AI-written change descriptions (e.g. PR and commit messages, also issues/tickets) from my team.

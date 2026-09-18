@@ -58,6 +58,11 @@
 			"name": "description",
 			"value": "",
 			"type": "text"
+		},
+		{
+			"name": "tbp-template-version",
+			"value": "1",
+			"type": "text"
 		}
 	],
 	"triggers": [

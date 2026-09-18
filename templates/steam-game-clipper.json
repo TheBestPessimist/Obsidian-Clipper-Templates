@@ -48,6 +48,11 @@
 			"name": "related",
 			"value": "[[Games]]",
 			"type": "multitext"
+		},
+		{
+			"name": "tbp-template-version",
+			"value": "1",
+			"type": "text"
 		}
 	],
 	"triggers": [

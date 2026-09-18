@@ -33,6 +33,11 @@
       "name": "related",
       "value": "[[Clippings]]{% for tagUrl in selector:.item-tag?href %}, [[{{tagUrl|split:\"/tags/\"|last|replace:\"/\":\"\"}}]]{% endfor %}",
       "type": "multitext"
+    },
+    {
+      "name": "tbp-template-version",
+      "value": "1",
+      "type": "text"
     }
   ],
   "triggers": [
