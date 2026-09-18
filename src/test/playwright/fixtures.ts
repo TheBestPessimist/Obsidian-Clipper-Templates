@@ -71,7 +71,7 @@ export interface ClipperWorkerFixtures {
   extensionId: string;
 }
 
-export const MOCK_DATE = '2026-02-20T12:00:00Z';
+export const MOCK_DATE = '1111-11-11T12:00:00Z';
 
 function generateDateMockCode(mockDateISO: string): string {
   const timestamp = new Date(mockDateISO).getTime();

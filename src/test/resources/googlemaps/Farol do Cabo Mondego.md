@@ -1,5 +1,5 @@
 ---
-created: 2026-02-20
+created: 1111-11-11
 aliases:
   - "Farol do Cabo Mondego"
 related:

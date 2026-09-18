@@ -29,7 +29,7 @@ rating: 8
 image:
   - "https://m.media-amazon.com/images/M/MV5BMTAzNTIzMjkxNjJeQTJeQWpwZ15BbWU3MDEwNDQ2OTU@._V1_.jpg"
 description:
-created: 2026-02-20
+created: 1111-11-11
 "watch-status":
   - "[[✅ Completed]]"
   - "[[❌ Dropped]]"

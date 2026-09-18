@@ -28,7 +28,7 @@ image:
 isbn:
   - "9789734696048"
   - "9734696041"
-created: 2026-02-20
+created: 1111-11-11
 "watch-status":
   - "[[✅ Completed]]"
   - "[[❌ Dropped]]"

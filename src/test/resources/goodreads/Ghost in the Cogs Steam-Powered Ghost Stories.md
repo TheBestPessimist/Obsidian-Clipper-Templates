@@ -50,7 +50,7 @@ image:
 isbn:
   - "9781940372143"
   - "1940372143"
-created: 2026-02-20
+created: 1111-11-11
 "watch-status":
   - "[[✅ Completed]]"
   - "[[❌ Dropped]]"
