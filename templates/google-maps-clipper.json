@@ -56,7 +56,7 @@
 		},
 		{
 			"name": "description",
-			"value": "",
+			"value": "{{selector:div[role='region'][aria-label^='About '] div.fontBodyMedium|trim}}",
 			"type": "text"
 		},
 		{

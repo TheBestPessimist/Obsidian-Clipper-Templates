@@ -29,4 +29,16 @@ test.describe('Google Maps Templates', () => {
             'Places/Farol do Cabo Mondego — Figueira da Foz.md',
         );
     });
+
+    test('Poça Beach', async ({ extensionContext, extensionId }) => {
+        const clip = await runHarClip(extensionContext, extensionId, {
+            harPath: 'googlemaps/google maps - poca beach - portugal.har',
+            templatePath: 'google-maps-clipper.json',
+        });
+        assertNote(
+            clip,
+            'googlemaps/Poça Beach - Praia da Poça.md',
+            'Places/Poça Beach - Praia da Poça.md',
+        );
+    });
 });
