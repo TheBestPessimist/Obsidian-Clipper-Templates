@@ -17,4 +17,16 @@ test.describe('Google Maps Templates', () => {
             'Places/Waterfall Of The Good Travel Mountains - Cascata de Quiaios — Quiaios.md',
         );
     });
+
+    test('Farol do Cabo Mondego', async ({ extensionContext, extensionId }) => {
+        const clip = await runHarClip(extensionContext, extensionId, {
+            harPath: 'googlemaps/google maps - farol do cabo mondego - portugal.har',
+            templatePath: 'google-maps-clipper.json',
+        });
+        assertNote(
+            clip,
+            'googlemaps/Farol do Cabo Mondego.md',
+            'Places/Farol do Cabo Mondego — Figueira da Foz.md',
+        );
+    });
 });
