@@ -1,8 +1,8 @@
 ---
-title: Home World (The Triple Stars, Volume 0)
+title: "Home World (The Triple Stars, Volume 0)"
 aliases:
-  - Home World
-series_title: The Triple Stars
+  - "Home World"
+series_title: "The Triple Stars"
 series_volume: 0
 related:
   - "[[Clippings]]"
@@ -12,21 +12,21 @@ year: 2020
 author:
   - "[[Simon Kewin]]"
 Links:
-  - https://www.goodreads.com/book/show/50491932-home-world
-  - "https://openlibrary.org/search?q=Home World (The Triple Stars, Volume 0)"
+  - "https://www.goodreads.com/book/show/50491932-home-world"
+  - "https://openlibrary.org/search?q=Home World (The Triple Stars%2C Volume 0)"
 genre:
   - "[[Science Fiction]]"
 rating:
 image:
-  - https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1579058839i/50491932.jpg
+  - "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1579058839i/50491932.jpg"
 isbn:
-created: 2026-09-24
-watch-status:
+created: 1111-11-11
+"watch-status":
   - "[[✅ Completed]]"
   - "[[❌ Dropped]]"
   - "[[🔍 Can not find]]"
   - "[[⏳ Plan to Watch]]"
-tbp-template-version: "1"
+"tbp-template-version": "1"
 ---
 
 
@@ -41,8 +41,6 @@ tbp-template-version: "1"
 > Magdi sees an opportunity to use the rumours as a way to encourage the three worlds back to the table. But has she underestimated the risks she faces?  
 >   
 > And has she made the mistake of not taking the troubling rumours seriously enough?  
-> 
-> Show more
 
 
 ## Review

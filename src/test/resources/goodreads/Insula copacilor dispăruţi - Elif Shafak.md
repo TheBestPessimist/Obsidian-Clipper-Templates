@@ -3,6 +3,8 @@ title: "Insula copacilor dispăruţi"
 aliases:
   - "Insula copacilor dispăruţi"
   - "The Island of Missing Trees"
+series_title:
+series_volume:
 related:
   - "[[Clippings]]"
   - "[[Books]]"
@@ -12,7 +14,7 @@ author:
   - "[[Elif Shafak]]"
   - "[[Ada Tănasă]]"
 Links:
-  - "https://www.goodreads.com/book/show/210255758-insula-copacilor-disp-ru-i?ac=1&from_search=true&qid=v70q68dudw&rank=1"
+  - "https://www.goodreads.com/book/show/210255758-insula-copacilor-disp-ru-i"
   - "https://openlibrary.org/search?q=Insula copacilor dispăruţi"
 genre:
   - "[[Fiction]]"

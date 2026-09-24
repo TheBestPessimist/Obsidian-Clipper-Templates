@@ -6,13 +6,23 @@
 	"properties": [
 		{
 			"name": "title",
-			"value": "{{title}}",
+			"value": "{{title|replace:\", #\":\", Volume \"}}",
 			"type": "text"
 		},
 		{
 			"name": "aliases",
-			"value": "{{title}}, {% for item in selectorHtml:.DescListItem %}          {% if item contains \\\"Original title\\\" %}                          {{item|remove_html:\\\"dt\\\"|markdown}},     {% endif %}  {% endfor %}",
+			"value": "{{selector:h1[data-testid='bookTitle']}}, {% for item in selectorHtml:.DescListItem %}          {% if item contains \\\"Original title\\\" %}                          {{item|remove_html:\\\"dt\\\"|markdown}},     {% endif %}  {% endfor %}",
 			"type": "multitext"
+		},
+		{
+			"name": "series_title",
+			"value": "{{selector:h3 a[href*='/series/']|replace:\"/ #[^#]*$/\":\"\"}}",
+			"type": "text"
+		},
+		{
+			"name": "series_volume",
+			"value": "{{selector:h3 a[href*='/series/']|split:\"#\"|last}}",
+			"type": "number"
 		},
 		{
 			"name": "related",
@@ -31,7 +41,7 @@
 		},
 		{
 			"name": "Links",
-			"value": "{{url}}, https://openlibrary.org/search?q={{title}}",
+			"value": "{{url|split:\"?\"|first}}, https://openlibrary.org/search?q={{title|replace:(\", #\":\", Volume \", \",\":\"%2C\")}}",
 			"type": "multitext"
 		},
 		{
@@ -73,6 +83,6 @@
 	"triggers": [
 		"https://www.goodreads.com/book/"
 	],
-	"noteNameFormat": "{% set bookAuthor = schema:@Book:author[0].name %}{{title}} {% if bookAuthor %}- {{bookAuthor}}{% endif %}",
+	"noteNameFormat": "{% set bookAuthor = schema:@Book:author[0].name %}{{title|replace:\", #\":\", Volume \"}} {% if bookAuthor %}- {{bookAuthor}}{% endif %}",
 	"path": "Books"
 }

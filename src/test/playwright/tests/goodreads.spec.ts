@@ -6,10 +6,10 @@
 import type { Page } from '@playwright/test';
 import { test, runHarClip, assertNote } from '../fixtures';
 
-/** The ISBN and friends only exist once the details panel is expanded. */
+/** The ISBN/ASIN and friends only exist once the details panel is expanded. Kindle editions have ASIN only. */
 const openBookDetails = async (page: Page) => {
   await page.getByRole('button', { name: 'Book details and editions' }).click();
-  await page.locator('.DescListItem').filter({ hasText: 'ISBN' }).waitFor();
+  await page.locator('.DescListItem').filter({ hasText: /ISBN|ASIN/ }).first().waitFor();
 };
 
 const CASES = [
@@ -22,6 +22,16 @@ const CASES = [
     name: 'Insula copacilor disparuti',
     file: 'goodreads/Insula copacilor dispăruţi - Elif Shafak',
     vaultPath: 'Books/Insula copacilor dispăruţi - Elif Shafak.md',
+  },
+  {
+    name: 'Dead Star (series volume 1)',
+    file: 'goodreads/Dead Star (The Triple Stars, Volume 1) - Simon Kewin',
+    vaultPath: 'Books/Dead Star (The Triple Stars, Volume 1) - Simon Kewin.md',
+  },
+  {
+    name: 'Home World (series volume 0)',
+    file: 'goodreads/Home World (The Triple Stars, Volume 0) - Simon Kewin',
+    vaultPath: 'Books/Home World (The Triple Stars, Volume 0) - Simon Kewin.md',
   },
 ];
 

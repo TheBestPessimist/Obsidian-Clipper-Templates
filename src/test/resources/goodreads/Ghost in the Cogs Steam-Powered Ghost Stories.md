@@ -2,6 +2,8 @@
 title: "Ghost in the Cogs: Steam-Powered Ghost Stories"
 aliases:
   - "Ghost in the Cogs: Steam-Powered Ghost Stories"
+series_title:
+series_volume:
 related:
   - "[[Clippings]]"
   - "[[Books]]"
@@ -34,7 +36,7 @@ author:
   - "[[Eddy Webb]]"
   - "[[Nayad A. Monroe]]"
 Links:
-  - "https://www.goodreads.com/book/show/27761090-ghost-in-the-cogs?ac=1&from_search=true&qid=PBOEfJd0D8&rank=1"
+  - "https://www.goodreads.com/book/show/27761090-ghost-in-the-cogs"
   - "https://openlibrary.org/search?q=Ghost in the Cogs: Steam-Powered Ghost Stories"
 genre:
   - "[[Steampunk]]"
