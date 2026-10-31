@@ -12,6 +12,7 @@ const CASES = [
     { name: 'Andromeda', har: 'Andromeda.har', expected: 'Andromeda.md', vaultPath: 'Film/Andromeda (2000).md' },
     { name: 'Shogun 1980', har: 'Shogun 1980.har', expected: 'Shogun 1980.md', vaultPath: 'Film/Shogun (1980).md' },
     { name: 'Brooklyn Nine-Nine', har: 'Brooklyn Nine-Nine.har', expected: 'Brooklyn Nine-Nine.md', vaultPath: 'Film/Brooklyn Nine-Nine (2013).md' },
+    { name: 'Interview with the Vampire', har: 'interview with the vampire.har', expected: 'Interview with the Vampire The Vampire Chronicles (1994) 1.md', vaultPath: 'Film/Interview with the Vampire: The Vampire Chronicles (1994).md' },
 ];
 
 test.describe('IMDB Templates', () => {

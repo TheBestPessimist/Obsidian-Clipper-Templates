@@ -19,10 +19,10 @@ actors:
 Links:
   - "https://www.imdb.com/title/tt2467372/"
 genre:
-  - "[[Comedy]]"
-  - "[[Crime]]"
   - "[[Police Procedural]]"
   - "[[Sitcom]]"
+  - "[[Comedy]]"
+  - "[[Crime]]"
 Producers:
   - "[[Fremulon]]"
   - "[[Dr. Goor Productions]]"

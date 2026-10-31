@@ -46,7 +46,7 @@
     },
     {
       "name": "genre",
-      "value": "{% set tvGenres = schema:@TVSeries:genre %}{% set movieGenres = schema:genre %}{% set chipGenres = selector:a[href*='/interest/'] span.ipc-chip__text %}{% set allGenres = tvGenres|merge:movieGenres|merge:chipGenres|unique %}{{allGenres|wikilink|join}}",
+      "value": "{% set schemaGenres = schema:@TVSeries:genre ?? schema:genre %}{% set chipGenres = selector:a[href*='/interest/'] span.ipc-chip__text %}{% set allGenres = chipGenres ?? schemaGenres %}{% if chipGenres and schemaGenres %}{% set schemaGenres = schemaGenres|join:',' %}{% set allGenres = chipGenres|merge:schemaGenres %}{% endif %}{{allGenres|unique|wikilink|join}}",
       "type": "multitext"
     },
     {

@@ -19,10 +19,10 @@ actors:
 Links:
   - "https://www.imdb.com/title/tt0213327/"
 genre:
+  - "[[Space Sci-Fi]]"
   - "[[Action]]"
   - "[[Adventure]]"
   - "[[Drama]]"
-  - "[[Space Sci-Fi]]"
   - "[[Sci-Fi]]"
 Producers:
   - "[[Fireworks Entertainment]]"
