@@ -1,8 +1,8 @@
 ---
-title: Siu Lam juk kau
+title: "Siu Lam juk kau"
 aliases:
-  - Siu Lam juk kau
-  - Shaolin Soccer
+  - "Siu Lam juk kau"
+  - "Shaolin Soccer"
 related:
   - "[[Film]]"
   - "[[imdb]]"
@@ -19,7 +19,7 @@ actors:
   - "[[Wei Zhao]]"
   - "[[Yat-Fei Wong]]"
 Links:
-  - https://www.imdb.com/title/tt0286112/
+  - "https://www.imdb.com/title/tt0286112/"
 genre:
   - "[[Cantonese]]"
   - "[[Martial Arts]]"
@@ -36,15 +36,15 @@ Producers:
   - "[[Universe Entertainment]]"
 rating: 8
 image:
-  - https://m.media-amazon.com/images/M/MV5BM2JhYTkzYmUtYjY1Mi00OWNjLTk4N2ItNDRkZTIyMzgyMjMyXkEyXkFqcGc@._V1_.jpg
+  - "https://m.media-amazon.com/images/M/MV5BM2JhYTkzYmUtYjY1Mi00OWNjLTk4N2ItNDRkZTIyMzgyMjMyXkEyXkFqcGc@._V1_.jpg"
 description:
-created: 2026-11-07
+created: 1111-11-11
 "watch-status":
   - "[[✅ Completed]]"
   - "[[❌ Dropped]]"
   - "[[🔍 Can not find]]"
   - "[[⏳ Plan to Watch]]"
-tbp-template-version: "1"
+"tbp-template-version": "1"
 ---
 
 > [!note] description

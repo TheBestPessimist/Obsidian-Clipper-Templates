@@ -2,6 +2,7 @@
 title: "Kokuhô"
 aliases:
   - "Kokuhô"
+  - "Kokuho"
 related:
   - "[[Film]]"
   - "[[imdb]]"

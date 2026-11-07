@@ -11,7 +11,7 @@
     },
     {
       "name": "aliases",
-      "value": "{% set title_v = schema:@TVSeries:name ?? schema:@Movie:name %}{{title_v}}",
+      "value": "{% set title_v = schema:@TVSeries:name ?? schema:@Movie:name %}{% set alt_v = schema:@TVSeries:alternateName ?? schema:@Movie:alternateName %}{% set aliases_v = title_v|merge %}{% if alt_v %}{% set alt_v = alt_v|replace:',':'@@COMMA@@' %}{% set aliases_v = title_v|merge:alt_v|unique %}{% endif %}{{aliases_v|replace:'@@COMMA@@':','}}",
       "type": "multitext"
     },
     {
@@ -90,6 +90,6 @@
     "schema:@TVSeries",
     "schema:@Movie"
   ],
-  "noteNameFormat": "{% set title_v = schema:@TVSeries:name ?? schema:@Movie:name %}{{title_v}} ({{schema:datePublished|slice:0,4}})",
+  "noteNameFormat": "{% set title_v = schema:@TVSeries:name ?? schema:@Movie:name %}{% set alt_v = schema:@TVSeries:alternateName ?? schema:@Movie:alternateName %}{{title_v}} {% if alt_v and alt_v != title_v %}— {{alt_v}} — {% endif %}({{schema:datePublished|slice:0,4}})",
   "path": "Film"
 }

@@ -7,12 +7,13 @@ import { test, runHarClip, assertNote } from '../fixtures';
 
 const CASES = [
     { name: 'Another Earth', har: 'Another Earth.har', expected: 'Another Earth.md', vaultPath: 'Film/Another Earth (2011).md' },
-    { name: 'Ponyo', har: 'Ponyo.har', expected: 'Ponyo.md', vaultPath: 'Film/Gake no ue no Ponyo (2009).md' },
-    { name: 'Kokuhô', har: 'kokuho.har', expected: 'Kokuhô.md', vaultPath: 'Film/Kokuhô (2025).md' },
+    { name: 'Ponyo', har: 'Ponyo.har', expected: 'Ponyo.md', vaultPath: 'Film/Gake no ue no Ponyo — Ponyo — (2009).md' },
+    { name: 'Kokuhô', har: 'kokuho.har', expected: 'Kokuhô.md', vaultPath: 'Film/Kokuhô — Kokuho — (2025).md' },
     { name: 'Andromeda', har: 'Andromeda.har', expected: 'Andromeda.md', vaultPath: 'Film/Andromeda (2000).md' },
     { name: 'Shogun 1980', har: 'Shogun 1980.har', expected: 'Shogun 1980.md', vaultPath: 'Film/Shogun (1980).md' },
     { name: 'Brooklyn Nine-Nine', har: 'Brooklyn Nine-Nine.har', expected: 'Brooklyn Nine-Nine.md', vaultPath: 'Film/Brooklyn Nine-Nine (2013).md' },
     { name: 'Interview with the Vampire', har: 'interview with the vampire.har', expected: 'Interview with the Vampire The Vampire Chronicles (1994) 1.md', vaultPath: 'Film/Interview with the Vampire: The Vampire Chronicles (1994).md' },
+    { name: 'Shaolin Soccer', har: 'shaolin soccer.har', expected: 'Siu Lam juk kau — Shaolin Soccer — (2001).md', vaultPath: 'Film/Siu Lam juk kau — Shaolin Soccer — (2001).md' },
 ];
 
 test.describe('IMDB Templates', () => {
