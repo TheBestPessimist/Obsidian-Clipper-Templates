@@ -39,8 +39,11 @@ image:
   - https://m.media-amazon.com/images/M/MV5BM2JhYTkzYmUtYjY1Mi00OWNjLTk4N2ItNDRkZTIyMzgyMjMyXkEyXkFqcGc@._V1_.jpg
 description:
 created: 2026-11-07
-watch-status:
+"watch-status":
   - "[[✅ Completed]]"
+  - "[[❌ Dropped]]"
+  - "[[🔍 Can not find]]"
+  - "[[⏳ Plan to Watch]]"
 tbp-template-version: "1"
 ---
 
