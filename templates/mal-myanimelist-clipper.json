@@ -6,12 +6,12 @@
   "properties": [
     {
       "name": "title",
-      "value": "{{title}}",
+      "value": "{{meta:property:og:title}}",
       "type": "text"
     },
     {
       "name": "aliases",
-      "value": "{{selector:#contentWrapper > div:nth-child(1) > div > div.h1-title > div > p}}, {{title}}",
+      "value": "{{selector:#contentWrapper > div:nth-child(1) > div > div.h1-title > div > p}}, {{meta:property:og:title}}",
       "type": "multitext"
     },
     {
@@ -78,6 +78,6 @@
   "triggers": [
     "https://myanimelist.net/"
   ],
-  "noteNameFormat": "{% set englishTitle = selector:#contentWrapper > div:nth-child(1) > div > div.h1-title > div > p %}{% set airedYear = selectorHtml:.leftside|split:'Aired:'|last|split:'</div>'|first|strip_tags|split:' to'|first|split:' '|last %}{{title}} {% if englishTitle %}- {{englishTitle}} {% endif %}({{airedYear}})",
+  "noteNameFormat": "{% set englishTitle = selector:#contentWrapper > div:nth-child(1) > div > div.h1-title > div > p %}{% set airedYear = selectorHtml:.leftside|split:'Aired:'|last|split:'</div>'|first|strip_tags|split:' to'|first|split:' '|last %}{{meta:property:og:title}} {% if englishTitle %}- {{englishTitle}} {% endif %}({{airedYear}})",
   "path": "Anime"
 }
